@@ -1,0 +1,144 @@
+"use client"
+import { useState, useMemo, useEffect, useCallback } from "react"
+import { Plus } from "lucide-react"
+import { TopBar } from "@/components/layout/TopBar"
+import { SearchBar } from "@/components/shared/SearchBar"
+import { Dialog } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ClientCard } from "@/components/clients/ClientCard"
+import { ClientStats } from "@/components/clients/ClientStats"
+import api from "@/lib/api"
+
+interface Client {
+  id: number
+  name: string
+  initials: string
+  phone: string
+  email: string
+  outstanding_balance: number
+  credit_limit: number
+}
+
+export default function ClientsPage() {
+  const [clients, setClients] = useState<Client[]>([])
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState("")
+  const [addOpen, setAddOpen] = useState(false)
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
+  const [name, setName] = useState("")
+  const [phone, setPhone] = useState("")
+  const [email, setEmail] = useState("")
+
+  const fetch = useCallback(async () => {
+    setLoading(true)
+    try {
+      const { data } = await api.get<Client[]>("/clients", { params: { limit: 100 } })
+      setClients(data)
+    } catch {
+      setClients([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetch() }, [fetch])
+
+  const filtered = useMemo(() => {
+    if (!search) return clients
+    return clients.filter(
+      (c) =>
+        c.name.toLowerCase().includes(search.toLowerCase()) ||
+        c.phone.includes(search),
+    )
+  }, [clients, search])
+
+  async function handleAdd() {
+    if (!name.trim()) return
+    try {
+      await api.post("/clients", { name: name.trim(), phone: phone.trim(), email: email.trim() })
+      setName("")
+      setPhone("")
+      setEmail("")
+      setAddOpen(false)
+      fetch()
+    } catch {
+      // silently fail
+    }
+  }
+
+  function handleCardPress(id: number) {
+    const client = clients.find((c) => c.id === id)
+    if (client) {
+      setSelectedClient(client)
+      setDetailOpen(true)
+    }
+  }
+
+  return (
+    <>
+      <TopBar title="Clientes" />
+      <div className="p-4 space-y-3">
+        <ClientStats
+          totalClients={clients.length}
+          totalBalance={clients.reduce((sum, c) => sum + c.outstanding_balance, 0)}
+        />
+        <SearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
+        {loading ? (
+          <div className="flex items-center justify-center h-32 text-body-medium text-abyssal-text-secondary">
+            Cargando...
+          </div>
+        ) : filtered.length === 0 ? (
+          <p className="text-center text-body-medium text-abyssal-text-secondary py-8">
+            No se encontraron clientes
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {filtered.map((client) => (
+              <ClientCard key={client.id} client={client} onPress={handleCardPress} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <button
+        onClick={() => setAddOpen(true)}
+        className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:opacity-90 transition-opacity z-30"
+      >
+        <Plus className="w-6 h-6" />
+      </button>
+
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)}>
+        <h2 className="text-title-medium text-abyssal-text-primary mb-4">Agregar Cliente</h2>
+        <div className="space-y-3">
+          <Input placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input placeholder="Teléfono" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Button className="w-full" onClick={handleAdd}>Guardar</Button>
+        </div>
+      </Dialog>
+
+      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)}>
+        {selectedClient && (
+          <>
+            <h2 className="text-title-medium text-abyssal-text-primary mb-4">
+              {selectedClient.name}
+            </h2>
+            <div className="space-y-3 text-body-medium text-abyssal-text-secondary">
+              <p><span className="text-abyssal-text-primary font-medium">Teléfono:</span> {selectedClient.phone}</p>
+              <p><span className="text-abyssal-text-primary font-medium">Email:</span> {selectedClient.email}</p>
+              <p>
+                <span className="text-abyssal-text-primary font-medium">Saldo Pendiente:</span>{" "}
+                <span className={selectedClient.outstanding_balance > 0 ? "text-abyssal-red" : "text-abyssal-green"}>
+                  ${selectedClient.outstanding_balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                </span>
+              </p>
+              <p><span className="text-abyssal-text-primary font-medium">Límite de Crédito:</span> ${selectedClient.credit_limit.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</p>
+            </div>
+          </>
+        )}
+      </Dialog>
+    </>
+  )
+}
