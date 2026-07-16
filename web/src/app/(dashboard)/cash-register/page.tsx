@@ -41,8 +41,8 @@ export default function CashRegisterPage() {
       ])
       setSummary(summaryRes.data)
       setTransactions(txRes.data)
-    } catch {
-      // silently fail
+    } catch (err) {
+      console.error("Error fetching cash register data:", err)
     } finally {
       setLoading(false)
     }
@@ -54,8 +54,8 @@ export default function CashRegisterPage() {
     setClosing(true)
     try {
       await api.post("/transactions/close-day", { pin })
-    } catch {
-      // silently fail
+    } catch (err) {
+      console.error("Error closing day:", err)
     } finally {
       setClosing(false)
       setPinOpen(false)

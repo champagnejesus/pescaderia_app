@@ -25,13 +25,16 @@ export default function SuppliersPage() {
   const [addOpen, setAddOpen] = useState(false)
   const [name, setName] = useState("")
   const [category, setCategory] = useState("")
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
 
   const fetch = useCallback(async () => {
     setLoading(true)
     try {
       const { data } = await api.get<Supplier[]>("/suppliers", { params: { limit: 100 } })
       setSuppliers(data)
-    } catch {
+    } catch (err) {
+      console.error("Error fetching suppliers:", err)
       setSuppliers([])
     } finally {
       setLoading(false)
@@ -57,8 +60,8 @@ export default function SuppliersPage() {
       setCategory("")
       setAddOpen(false)
       fetch()
-    } catch {
-      // silently fail
+    } catch (err) {
+      console.error("Error adding supplier:", err)
     }
   }
 
@@ -78,7 +81,10 @@ export default function SuppliersPage() {
         ) : (
           <div className="space-y-2">
             {filtered.map((supplier) => (
-              <SupplierCard key={supplier.id} supplier={supplier} onPress={() => {}} />
+              <SupplierCard key={supplier.id} supplier={supplier} onPress={(id: number) => {
+                const s = suppliers.find((sup) => sup.id === id)
+                if (s) { setSelectedSupplier(s); setDetailOpen(true) }
+              }} />
             ))}
           </div>
         )}
@@ -98,6 +104,24 @@ export default function SuppliersPage() {
           <Input placeholder="Categoría" value={category} onChange={(e) => setCategory(e.target.value)} />
           <Button className="w-full" onClick={handleAdd}>Guardar</Button>
         </div>
+      </Dialog>
+      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)}>
+        {selectedSupplier && (
+          <>
+            <h2 className="text-title-medium text-abyssal-text-primary mb-4">
+              {selectedSupplier.name}
+            </h2>
+            <div className="space-y-3 text-body-medium text-abyssal-text-secondary">
+              <p><span className="text-abyssal-text-primary font-medium">Categoría:</span> {selectedSupplier.category}</p>
+              <p><span className="text-abyssal-text-primary font-medium">Estado:</span> {selectedSupplier.status}</p>
+              <p><span className="text-abyssal-text-primary font-medium">Pago Pendiente:</span>{" "}
+                <span className="text-abyssal-red">
+                  ${selectedSupplier.pending_payment.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                </span>
+              </p>
+            </div>
+          </>
+        )}
       </Dialog>
     </>
   )

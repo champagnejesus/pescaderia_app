@@ -30,13 +30,17 @@ export default function ClientsPage() {
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
+  const [adjustOpen, setAdjustOpen] = useState(false)
+  const [adjustBalance, setAdjustBalance] = useState("")
+  const [adjusting, setAdjusting] = useState(false)
 
   const fetch = useCallback(async () => {
     setLoading(true)
     try {
       const { data } = await api.get<Client[]>("/clients", { params: { limit: 100 } })
       setClients(data)
-    } catch {
+    } catch (err) {
+      console.error("Error fetching clients:", err)
       setClients([])
     } finally {
       setLoading(false)
@@ -63,8 +67,8 @@ export default function ClientsPage() {
       setEmail("")
       setAddOpen(false)
       fetch()
-    } catch {
-      // silently fail
+    } catch (err) {
+      console.error("Error adding client:", err)
     }
   }
 
@@ -73,6 +77,26 @@ export default function ClientsPage() {
     if (client) {
       setSelectedClient(client)
       setDetailOpen(true)
+    }
+  }
+
+  async function handleAdjustBalance() {
+    if (!selectedClient) return
+    const value = parseFloat(adjustBalance)
+    if (isNaN(value)) return
+    setAdjusting(true)
+    try {
+      await api.patch(`/clients/${selectedClient.id}/balance`, { new_balance: value })
+      setClients((prev) =>
+        prev.map((c) => (c.id === selectedClient.id ? { ...c, outstanding_balance: value } : c)),
+      )
+      setSelectedClient((prev) => (prev ? { ...prev, outstanding_balance: value } : null))
+      setAdjustOpen(false)
+      setAdjustBalance("")
+    } catch (err) {
+      console.error("Error adjusting balance:", err)
+    } finally {
+      setAdjusting(false)
     }
   }
 
@@ -136,8 +160,27 @@ export default function ClientsPage() {
               </p>
               <p><span className="text-abyssal-text-primary font-medium">Límite de Crédito:</span> ${selectedClient.credit_limit.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</p>
             </div>
+            <Button className="w-full mt-4" onClick={() => { setAdjustBalance(String(selectedClient.outstanding_balance)); setAdjustOpen(true) }}>
+              Ajustar Saldo
+            </Button>
           </>
         )}
+      </Dialog>
+
+      <Dialog open={adjustOpen} onClose={() => setAdjustOpen(false)}>
+        <h2 className="text-title-medium text-abyssal-text-primary mb-4">Ajustar Saldo</h2>
+        <div className="space-y-3">
+          <Input
+            type="number"
+            step="0.01"
+            placeholder="Nuevo saldo"
+            value={adjustBalance}
+            onChange={(e) => setAdjustBalance(e.target.value)}
+          />
+          <Button className="w-full" onClick={handleAdjustBalance} disabled={adjusting}>
+            {adjusting ? "Guardando..." : "Guardar"}
+          </Button>
+        </div>
       </Dialog>
     </>
   )
