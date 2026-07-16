@@ -25,7 +25,7 @@ async def update_product(db: AsyncSession, product_id: int, data: dict) -> Produ
     product = await db.get(Product, product_id)
     if not product: return None
     for key, value in data.items():
-        if value is not None: setattr(product, key, value)
+        setattr(product, key, value)
     await db.flush()
     return product
 
