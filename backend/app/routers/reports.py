@@ -1,3 +1,31 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, func
+from app.database import get_db
+from app.dependencies import get_current_user
+from app.schemas.report import DashboardResponse
+from app.models.product import Product
+from app.models.order import Order
+from app.models.client import Client
+from app.models.supplier import Supplier
+from app.models.transaction import Transaction
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
+
+@router.get("/dashboard", response_model=DashboardResponse)
+async def dashboard(db: AsyncSession = Depends(get_db)):
+    products_all = (await db.execute(select(Product))).scalars().all()
+    pending = (await db.execute(select(func.count(Order.id)).where(Order.status == "PENDIENTE"))).scalar() or 0
+    clients_count = (await db.execute(select(func.count(Client.id)))).scalar() or 0
+    suppliers_count = (await db.execute(select(func.count(Supplier.id)))).scalar() or 0
+    txs = (await db.execute(select(Transaction))).scalars().all()
+    total_sales = sum(t.amount for t in txs if t.amount > 0)
+    total_expenses = sum(abs(t.amount) for t in txs if t.amount < 0)
+    cash = sum(t.amount for t in txs if t.type == "Efectivo" and t.amount > 0)
+    transfer = sum(t.amount for t in txs if t.type in ("Transferencia", "Transfer") and t.amount > 0)
+    return DashboardResponse(
+        gross_profit=total_sales - total_expenses, sales_total=total_sales, purchases_total=total_expenses,
+        cash_total=cash, transfer_total=transfer, pending_orders=pending,
+        low_stock_count=sum(1 for p in products_all if p.stock <= p.low_stock_threshold),
+        total_clients=clients_count, total_suppliers=suppliers_count,
+    )
