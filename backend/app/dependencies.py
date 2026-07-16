@@ -13,10 +13,10 @@ async def get_current_user(
 ):
     token = credentials.credentials
     try:
-        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm], options={"verify_exp": False})
-        user_id: int = payload.get("sub")
-        if user_id is None:
+        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+        user_id_str: str = payload.get("sub")
+        if user_id_str is None:
             raise HTTPException(status_code=401, detail="Invalid token")
-        return {"id": user_id, "email": payload.get("email")}
-    except JWTError as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+        return {"id": int(user_id_str), "email": payload.get("email")}
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
