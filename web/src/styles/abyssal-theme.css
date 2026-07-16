@@ -1,0 +1,18 @@
+:root {
+  --abyssal-bg: #F5F5F7; --abyssal-surface: #FFFFFF; --abyssal-surface-high: #E8E8ED;
+  --abyssal-surface-highest: #D1D1D6; --abyssal-outline: #D1D1D6; --abyssal-outline-variant: #C7C4D7;
+  --abyssal-primary: #5E5CE6; --abyssal-primary-light: #7B7AF7; --abyssal-on-primary: #FFFFFF;
+  --abyssal-green: #30D158; --abyssal-green-bg: rgba(48,209,88,0.12);
+  --abyssal-yellow: #FFD60A; --abyssal-yellow-bg: rgba(255,214,10,0.12);
+  --abyssal-red: #FF453A; --abyssal-red-bg: rgba(255,69,58,0.12);
+  --abyssal-text-primary: #1C1C1E; --abyssal-text-secondary: #8E8E93; --abyssal-text-secondary-variant: #636366;
+}
+.dark {
+  --abyssal-bg: #121212; --abyssal-surface: #1C1C1E; --abyssal-surface-high: #27272A;
+  --abyssal-surface-highest: #34343D; --abyssal-outline: #333336; --abyssal-outline-variant: #464554;
+  --abyssal-primary: #5E5CE6; --abyssal-primary-light: #C2C1FF; --abyssal-on-primary: #FFFFFF;
+  --abyssal-green: #30D158; --abyssal-green-bg: rgba(48,209,88,0.15);
+  --abyssal-yellow: #FFD60A; --abyssal-yellow-bg: rgba(255,214,10,0.15);
+  --abyssal-red: #FF453A; --abyssal-red-bg: rgba(255,69,58,0.15);
+  --abyssal-text-primary: #E4E1ED; --abyssal-text-secondary: #8E8E93; --abyssal-text-secondary-variant: #C7C4D7;
+}
