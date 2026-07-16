@@ -1,9 +1,9 @@
 import pytest
+import pytest_asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from app.database import Base, get_db
-from app.main import app
+from app.database import Base
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def async_session():
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
     async with engine.begin() as conn:
