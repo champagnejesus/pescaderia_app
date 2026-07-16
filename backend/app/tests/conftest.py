@@ -10,3 +10,4 @@ async def async_session():
         await conn.run_sync(Base.metadata.create_all)
     async with AsyncSession(engine) as session:
         yield session
+    await engine.dispose()
