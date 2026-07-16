@@ -7,11 +7,11 @@ import { cn } from "@/lib/utils"
 
 const tabs = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/productos", label: "Productos", icon: Fish },
-  { href: "/pedidos", label: "Pedidos", icon: ClipboardList },
-  { href: "/clientes", label: "Clientes", icon: Users },
-  { href: "/proveedores", label: "Proveedores", icon: Truck },
-  { href: "/caja", label: "Caja", icon: DollarSign },
+  { href: "/products", label: "Productos", icon: Fish },
+  { href: "/orders", label: "Pedidos", icon: ClipboardList },
+  { href: "/clients", label: "Clientes", icon: Users },
+  { href: "/suppliers", label: "Proveedores", icon: Truck },
+  { href: "/cash-register", label: "Caja", icon: DollarSign },
 ]
 
 export function BottomNav() {
