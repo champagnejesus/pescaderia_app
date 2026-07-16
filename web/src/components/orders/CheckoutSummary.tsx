@@ -1,6 +1,5 @@
 "use client"
 import { Button } from "@/components/ui/button"
-import { StatusBadge } from "@/components/shared/StatusBadge"
 
 interface CheckoutItem {
   product_id: number
@@ -61,7 +60,7 @@ export function CheckoutSummary({ items, paymentMethod, onSubmit, loading }: Che
       </div>
 
       <div className="flex items-center justify-between pt-1">
-        <StatusBadge status={paymentMethod} />
+        <span className="text-body-medium text-abyssal-text-secondary">{paymentMethod}</span>
         <Button onClick={onSubmit} disabled={loading || items.length === 0} size="md">
           {loading ? "Creando..." : "Realizar Pedido"}
         </Button>

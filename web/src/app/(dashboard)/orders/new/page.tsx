@@ -23,7 +23,6 @@ interface Product {
 }
 
 interface SelectedItem {
-  id: number
   product_id: number
   product_name: string
   quantity: number
@@ -41,11 +40,24 @@ export default function NewOrderPage() {
   const [submitting, setSubmitting] = useState(false)
   const [successOrder, setSuccessOrder] = useState<{ order_number: string } | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
+  const [clientSearchQuery, setClientSearchQuery] = useState("")
+  const [clientsLoading, setClientsLoading] = useState(true)
+  const [productsLoading, setProductsLoading] = useState(true)
+  const [clientsError, setClientsError] = useState<string | null>(null)
+  const [productsError, setProductsError] = useState<string | null>(null)
 
   useEffect(() => {
-    api.get<Client[]>("/clients").then(({ data }) => setClients(data)).catch(() => {})
-    api.get<Product[]>("/products").then(({ data }) => setAllProducts(data)).catch(() => {})
+    api.get<Client[]>("/clients")
+      .then(({ data }) => { setClients(data); setClientsLoading(false) })
+      .catch(() => { setClientsError("Error al cargar clientes"); setClientsLoading(false) })
+    api.get<Product[]>("/products")
+      .then(({ data }) => { setAllProducts(data); setProductsLoading(false) })
+      .catch(() => { setProductsError("Error al cargar productos"); setProductsLoading(false) })
   }, [])
+
+  const filteredClients = clients.filter((c) =>
+    c.name.toLowerCase().includes(clientSearchQuery.toLowerCase()),
+  )
 
   const filteredProducts = allProducts.filter((p) =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -60,7 +72,6 @@ export default function NewOrderPage() {
         )
       }
       const newItem: SelectedItem = {
-        id: Date.now(),
         product_id: product.id,
         product_name: product.name,
         quantity: 1,
@@ -98,9 +109,9 @@ export default function NewOrderPage() {
         delivery_date: deliveryDate || null,
         status: "PENDIENTE",
       })
-      setSuccessOrder({ order_number: data.order_number || data.order_number || "N/A" })
+      setSuccessOrder({ order_number: data?.order_number || "N/A" })
     } catch {
-      // error handled silently
+      alert("Error al crear el pedido. Intente de nuevo.")
     } finally {
       setSubmitting(false)
     }
@@ -129,20 +140,32 @@ export default function NewOrderPage() {
         <h1 className="text-title-large text-abyssal-text-primary">Nuevo Pedido</h1>
       </div>
 
-      <ClientSelector
-        clients={clients}
-        selectedId={selectedClient?.id ?? null}
-        onSelect={(client) => setSelectedClient(client)}
-        onSearch={() => {}}
-      />
+      {clientsError ? (
+        <p className="text-body-medium text-abyssal-red">{clientsError}</p>
+      ) : clientsLoading ? (
+        <p className="text-body-medium text-abyssal-text-secondary">Cargando clientes...</p>
+      ) : (
+        <ClientSelector
+          clients={filteredClients}
+          selectedId={selectedClient?.id ?? null}
+          onSelect={(client) => setSelectedClient(client)}
+          onSearch={setClientSearchQuery}
+        />
+      )}
 
-      <ProductPicker
-        products={filteredProducts}
-        selected={selectedItems}
-        onAdd={handleAddProduct}
-        onUpdateQty={handleUpdateQty}
-        onSearch={setSearchQuery}
-      />
+      {productsError ? (
+        <p className="text-body-medium text-abyssal-red">{productsError}</p>
+      ) : productsLoading ? (
+        <p className="text-body-medium text-abyssal-text-secondary">Cargando productos...</p>
+      ) : (
+        <ProductPicker
+          products={filteredProducts}
+          selected={selectedItems}
+          onAdd={handleAddProduct}
+          onUpdateQty={handleUpdateQty}
+          onSearch={setSearchQuery}
+        />
+      )}
 
       <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
 

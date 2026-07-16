@@ -1,5 +1,5 @@
 "use client"
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Plus } from "lucide-react"
 import { TopBar } from "@/components/layout/TopBar"
@@ -21,11 +21,6 @@ export default function OrdersPage() {
   const apiStatus = statusMap[filter]
   const { data: orders, loading, error } = useOrders(apiStatus)
 
-  const filtered = useMemo(() => {
-    if (!apiStatus) return orders
-    return orders.filter((o) => o.status === apiStatus)
-  }, [orders, apiStatus])
-
   return (
     <>
       <TopBar title="Pedidos" />
@@ -37,13 +32,13 @@ export default function OrdersPage() {
           </div>
         ) : error ? (
           <p className="text-center text-body-medium text-abyssal-red py-8">{error}</p>
-        ) : filtered.length === 0 ? (
+        ) : orders.length === 0 ? (
           <p className="text-center text-body-medium text-abyssal-text-secondary py-8">
             No hay pedidos
           </p>
         ) : (
           <div className="space-y-2">
-            {filtered.map((order) => (
+            {orders.map((order) => (
               <OrderCard
                 key={order.id}
                 order={order}
