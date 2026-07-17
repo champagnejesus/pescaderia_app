@@ -41,4 +41,5 @@ async def update_order_status(db: AsyncSession, order_id: int, new_status: str) 
     if not order: return None
     order.status = new_status
     await db.flush()
+    await db.refresh(order, ["items"])
     return order
