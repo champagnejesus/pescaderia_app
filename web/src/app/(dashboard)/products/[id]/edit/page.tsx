@@ -32,7 +32,8 @@ export default function EditProductPage() {
       await api.put(`/products/${id}`, form)
       router.push(`/products/${id}`)
     } catch (err: any) {
-      setError(err.response?.data?.detail || "Error al actualizar producto")
+      const detail = err.response?.data?.detail || err.response?.data || err.message || "Error al actualizar producto"
+      setError(typeof detail === "string" ? detail : JSON.stringify(detail))
     } finally {
       setLoading(false)
     }
