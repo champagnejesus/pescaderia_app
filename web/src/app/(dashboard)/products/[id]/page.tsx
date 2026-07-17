@@ -128,7 +128,7 @@ export default function ProductDetailPage() {
               placeholder="Cantidad"
               className="flex-1"
             />
-            <Button variant="primary" size="md">Actualizar</Button>
+            <Button variant="primary" size="md" onClick={async () => { try { const res = await api.patch(`/products/${id}/stock`, { stock: adjustQty }); setProduct(res.data) } catch {} } }>Actualizar</Button>
           </div>
         </div>
       </div>
