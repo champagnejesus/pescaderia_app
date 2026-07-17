@@ -8,7 +8,6 @@ async def create_order(db: AsyncSession, data: dict) -> Order:
     order_number = f"ORD-{random.randint(1000, 9999)}"
     items_data = data.pop("items", [])
     total_value = sum(i["subtotal"] for i in items_data)
-    data.pop("payment_method", None)
     order = Order(order_number=order_number, total_value=total_value, items_count=len(items_data), **data)
     db.add(order)
     await db.flush()

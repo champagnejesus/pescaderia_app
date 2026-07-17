@@ -109,8 +109,8 @@ export default function NewOrderPage() {
         delivery_date: deliveryDate || "",
       })
       setSuccessOrder({ id: data?.id, order_number: data?.order_number || "N/A" })
-    } catch (err: any) {
-      alert(err.response?.data?.detail || err.message || "Error al crear el pedido")
+    } catch {
+      alert("Error al crear el pedido. Intente de nuevo.")
     } finally {
       setSubmitting(false)
     }

@@ -73,11 +73,7 @@ export default function ClientsPage() {
   }
 
   function handleCardPress(id: number) {
-    const client = clients.find((c) => c.id === id)
-    if (client) {
-      setSelectedClient(client)
-      setDetailOpen(true)
-    }
+    window.location.href = `/clients/${id}`
   }
 
   async function handleAdjustBalance() {
