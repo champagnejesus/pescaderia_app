@@ -1,6 +1,7 @@
 import random
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from app.models.order import Order, OrderItem
 from app.models.product import Product
 
@@ -26,9 +27,9 @@ async def get_orders(db: AsyncSession, status: str = "", page: int = 1, limit: i
     if status and status != "Todos":
         status_map = {"Pendientes": "PENDIENTE", "Entregados": "ENTREGADO", "Anulados": "ANULADO"}
         query = query.where(Order.status == status_map.get(status, status))
-    query = query.order_by(Order.created_at.desc()).offset((page-1)*limit).limit(limit)
+    query = query.options(selectinload(Order.items)).order_by(Order.created_at.desc()).offset((page-1)*limit).limit(limit)
     result = await db.execute(query)
-    return result.scalars().all()
+    return result.scalars().unique().all()
 
 async def get_order(db: AsyncSession, order_id: int) -> Order | None:
     order = await db.get(Order, order_id)
