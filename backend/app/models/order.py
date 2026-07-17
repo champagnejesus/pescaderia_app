@@ -11,6 +11,7 @@ class Order(Base):
     delivery_date = Column(String(100))
     items_count = Column(Integer, default=0)
     status = Column(String(50), default="PENDIENTE", index=True)
+    payment_method = Column(String(50), default="Efectivo")
     total_value = Column(Float, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     delivered_at = Column(DateTime(timezone=True))
