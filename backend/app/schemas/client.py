@@ -43,4 +43,4 @@ class ClientOrderResponse(BaseModel):
 
 class ClientOrdersResponse(BaseModel):
     orders: list[ClientOrderResponse]
-    total: int
+    count: int

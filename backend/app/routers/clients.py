@@ -40,5 +40,8 @@ async def adjust_client_balance(client_id: int, data: BalanceAdjust, db: AsyncSe
 
 @router.get("/{client_id}/orders", response_model=ClientOrdersResponse)
 async def get_client_orders_endpoint(client_id: int, limit: int = Query(5), db: AsyncSession = Depends(get_db)):
+    client = await client_service.get_client(db, client_id)
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
     orders = await client_service.get_client_orders(db, client_id, limit)
-    return ClientOrdersResponse(orders=orders, total=len(orders))
+    return ClientOrdersResponse(orders=orders, count=len(orders))
