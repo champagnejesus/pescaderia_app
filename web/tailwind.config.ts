@@ -28,6 +28,17 @@ const config: Config = {
         "body-medium": ["13px", { lineHeight: "18px", fontWeight: "400" }],
         "label-small": ["11px", { lineHeight: "13px", fontWeight: "700", letterSpacing: "0.5px" }],
       },
+      animation: {
+        'fade-in': 'fadeIn 0.3s ease-out',
+        'stagger-in': 'staggerIn 0.3s ease-out forwards',
+        'subtle-pulse': 'subtlePulse 2s ease-in-out infinite',
+        'spin': 'spin 1s linear infinite',
+      },
+      boxShadow: {
+        'abyssal-sm': '0 1px 3px rgba(0, 0, 0, 0.1)',
+        'abyssal-md': '0 4px 6px rgba(0, 0, 0, 0.1)',
+        'abyssal-lg': '0 10px 15px rgba(0, 0, 0, 0.1)',
+      },
     },
   },
   plugins: [],

@@ -23,18 +23,22 @@ export function BentoGrid({ data }: BentoGridProps) {
   const formatCurrency = (n: number) =>
     `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
 
+  const items = [
+    { icon: <TrendingUp size={18} />, label: "Ganancia Bruta", value: formatCurrency(data.gross_profit) },
+    { icon: <ShoppingCart size={18} />, label: "Ventas", value: formatCurrency(data.sales_total) },
+    { icon: <Package size={18} />, label: "Compras", value: formatCurrency(data.purchases_total) },
+    { icon: <DollarSign size={18} />, label: "Efectivo", value: formatCurrency(data.cash_total) },
+    { icon: <Repeat size={18} />, label: "Transferencias", value: formatCurrency(data.transfer_total) },
+    { icon: <AlertTriangle size={18} />, label: "Pendientes / Stock Bajo", value: `${data.pending_orders} / ${data.low_stock_count}` },
+  ]
+
   return (
     <div className="grid grid-cols-2 gap-3">
-      <StatsCard icon={<TrendingUp size={18} />} label="Ganancia Bruta" value={formatCurrency(data.gross_profit)} />
-      <StatsCard icon={<ShoppingCart size={18} />} label="Ventas" value={formatCurrency(data.sales_total)} />
-      <StatsCard icon={<Package size={18} />} label="Compras" value={formatCurrency(data.purchases_total)} />
-      <StatsCard icon={<DollarSign size={18} />} label="Efectivo" value={formatCurrency(data.cash_total)} />
-      <StatsCard icon={<Repeat size={18} />} label="Transferencias" value={formatCurrency(data.transfer_total)} />
-      <StatsCard
-        icon={<AlertTriangle size={18} />}
-        label="Pendientes / Stock Bajo"
-        value={`${data.pending_orders} / ${data.low_stock_count}`}
-      />
+      {items.map((item, i) => (
+        <div key={i} className="animate-stagger-in" style={{ animationDelay: `${i * 50}ms` }}>
+          <StatsCard icon={item.icon} label={item.label} value={item.value} />
+        </div>
+      ))}
     </div>
   )
 }

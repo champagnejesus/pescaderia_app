@@ -6,7 +6,7 @@ interface StatusBadgeProps {
 }
 
 const statusStyles: Record<string, string> = {
-  PENDIENTE: "bg-abyssal-yellow-bg text-abyssal-yellow",
+  PENDIENTE: "bg-abyssal-yellow-bg text-abyssal-yellow animate-subtle-pulse",
   ENTREGADO: "bg-abyssal-green-bg text-abyssal-green",
   PAGADO: "bg-abyssal-green-bg text-abyssal-green",
   ANULADO: "bg-abyssal-red-bg text-abyssal-red",
@@ -19,7 +19,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
       className={cn(
         "inline-block rounded-abyssal-sm px-3 py-1 text-label-small uppercase",
         style,
-        className,
+        className
       )}
     >
       {status}

@@ -21,8 +21,11 @@ export function Dialog({ open, onClose, children, className }: DialogProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div className={cn("relative bg-abyssal-surface rounded-abyssal-md p-6 z-10 mx-4 w-full max-w-md", className)}>
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm animate-fade-in" onClick={onClose} />
+      <div className={cn(
+        "relative bg-abyssal-surface rounded-abyssal-md p-6 z-10 mx-4 w-full max-w-md shadow-lg animate-fade-in",
+        className
+      )}>
         {children}
       </div>
     </div>

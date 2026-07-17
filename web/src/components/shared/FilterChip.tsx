@@ -11,10 +11,10 @@ export function FilterChip({ label, selected, onClick }: FilterChipProps) {
     <button
       onClick={onClick}
       className={cn(
-        "rounded-abyssal-full px-3 py-1 text-body-medium transition-colors",
+        "rounded-abyssal-full px-3 py-1 text-body-medium transition-all duration-200",
         selected
-          ? "bg-abyssal-primary text-abyssal-on-primary"
-          : "bg-abyssal-surface-high text-abyssal-text-secondary",
+          ? "bg-abyssal-primary text-abyssal-on-primary shadow-sm"
+          : "bg-abyssal-surface-high text-abyssal-text-secondary hover:bg-abyssal-surface-highest"
       )}
     >
       {label}

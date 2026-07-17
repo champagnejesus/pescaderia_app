@@ -1,11 +1,13 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus } from "lucide-react"
+import { Plus, Users } from "lucide-react"
+import Link from "next/link"
 import { TopBar } from "@/components/layout/TopBar"
 import { SearchBar } from "@/components/shared/SearchBar"
 import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ClientCard } from "@/components/clients/ClientCard"
 import { ClientStats } from "@/components/clients/ClientStats"
 import api from "@/lib/api"
@@ -108,13 +110,20 @@ export default function ClientsPage() {
         />
         <SearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
         {loading ? (
-          <div className="flex items-center justify-center h-32 text-body-medium text-abyssal-text-secondary">
-            Cargando...
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-16" />
+            ))}
           </div>
         ) : filtered.length === 0 ? (
-          <p className="text-center text-body-medium text-abyssal-text-secondary py-8">
-            No se encontraron clientes
-          </p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Users size={48} className="text-abyssal-text-secondary mb-4" />
+            <p className="text-title-medium text-abyssal-text-primary mb-2">No hay clientes</p>
+            <p className="text-body-medium text-abyssal-text-secondary mb-4">Agrega tu primer cliente para comenzar</p>
+            <Link href="/clients/new">
+              <Button variant="primary">Agregar Cliente</Button>
+            </Link>
+          </div>
         ) : (
           <div className="space-y-2">
             {filtered.map((client) => (
@@ -126,7 +135,7 @@ export default function ClientsPage() {
 
       <button
         onClick={() => setAddOpen(true)}
-        className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:opacity-90 transition-opacity z-30"
+        className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 z-30"
       >
         <Plus className="w-6 h-6" />
       </button>

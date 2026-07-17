@@ -24,21 +24,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-abyssal-bg flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-sm flex flex-col items-center gap-4">
-        <Fish size={64} className="text-abyssal-primary" />
+    <div className="min-h-screen bg-abyssal-bg flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-abyssal-primary/5 via-transparent to-abyssal-primary/10" />
 
-        <div className="text-center">
+      <div className="w-full max-w-sm flex flex-col items-center gap-4 relative z-10">
+        <Fish size={64} className="text-abyssal-primary animate-fade-in" />
+
+        <div className="text-center animate-fade-in">
           <h1 className="text-headline-medium text-abyssal-text-primary">Bienvenido</h1>
           <p className="text-body-medium text-abyssal-text-secondary">Inicia sesión o regístrate</p>
         </div>
 
-        <div className="flex items-center gap-1 bg-abyssal-surface-high rounded-abyssal-full p-1">
+        <div className="flex items-center gap-1 bg-abyssal-surface-high rounded-abyssal-full p-1 animate-fade-in">
           <button
             type="button"
             onClick={() => setIsRegister(false)}
-            className={`px-4 py-2 rounded-abyssal-full text-body-medium transition-colors ${
-              !isRegister ? "bg-abyssal-primary text-abyssal-on-primary" : "text-abyssal-text-secondary"
+            className={`px-4 py-2 rounded-abyssal-full text-body-medium transition-all duration-200 ${
+              !isRegister ? "bg-abyssal-primary text-abyssal-on-primary shadow-sm" : "text-abyssal-text-secondary hover:text-abyssal-text-primary"
             }`}
           >
             Iniciar sesión
@@ -46,15 +48,15 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => setIsRegister(true)}
-            className={`px-4 py-2 rounded-abyssal-full text-body-medium transition-colors ${
-              isRegister ? "bg-abyssal-primary text-abyssal-on-primary" : "text-abyssal-text-secondary"
+            className={`px-4 py-2 rounded-abyssal-full text-body-medium transition-all duration-200 ${
+              isRegister ? "bg-abyssal-primary text-abyssal-on-primary shadow-sm" : "text-abyssal-text-secondary hover:text-abyssal-text-primary"
             }`}
           >
             Registrarse
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3 animate-fade-in">
           {isRegister && (
             <>
               <div className="relative">
@@ -119,10 +121,10 @@ export default function LoginPage() {
             type="submit"
             variant="primary"
             size="lg"
-            disabled={loading}
+            loading={loading}
             className="w-full rounded-abyssal-sm"
           >
-            {loading ? "Cargando..." : isRegister ? "Registrarse" : "Ingresar"}
+            {loading ? "" : isRegister ? "Registrarse" : "Ingresar"}
           </Button>
         </form>
 

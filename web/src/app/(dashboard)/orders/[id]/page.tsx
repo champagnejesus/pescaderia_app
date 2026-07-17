@@ -1,9 +1,10 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, Phone, MessageCircle, ShoppingCart } from "lucide-react"
+import { ArrowLeft, ShoppingCart } from "lucide-react"
 import api from "@/lib/api"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { TopBar } from "@/components/layout/TopBar"
 import { BottomNav } from "@/components/layout/BottomNav"
@@ -60,6 +61,7 @@ export default function OrderDetailPage() {
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     api.get<OrderDetail>(`/orders/${id}`)
@@ -69,11 +71,14 @@ export default function OrderDetailPage() {
   }, [id])
 
   async function handleStatusChange(newStatus: string) {
+    setSubmitting(true)
     try {
       const { data } = await api.patch(`/orders/${id}/status`, { status: newStatus })
       setOrder(data)
     } catch {
       alert("Error al actualizar el estado")
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -82,8 +87,10 @@ export default function OrderDetailPage() {
       <>
         <TopBar title="Detalle del Pedido" />
         <div className="p-4 space-y-4">
-          <div className="h-48 rounded-abyssal-md bg-abyssal-surface-overlay animate-pulse" />
-          <div className="h-32 rounded-abyssal-md bg-abyssal-surface-overlay animate-pulse" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-48" />
+          <Skeleton className="h-32" />
         </div>
       </>
     )
@@ -110,7 +117,7 @@ export default function OrderDetailPage() {
         rightAction={
           <button
             onClick={() => router.back()}
-            className="p-2 rounded-abyssal-full hover:bg-abyssal-surface-overlay transition-colors duration-150 cursor-pointer"
+            className="p-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all duration-200 active:scale-95"
           >
             <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
           </button>
@@ -118,8 +125,7 @@ export default function OrderDetailPage() {
       />
 
       <div className="p-4 space-y-4 pb-24">
-        {/* Estado y Acciones Rápidas */}
-        <div className="bg-abyssal-surface rounded-abyssal-md p-4 border border-abyssal-border">
+        <div className="bg-abyssal-surface rounded-abyssal-md p-4 border border-abyssal-outline/50 shadow-sm animate-fade-in">
           <div className="flex items-center justify-between mb-3">
             <p className="text-label-medium text-abyssal-text-secondary">Estado</p>
             <StatusBadge status={order.status} />
@@ -134,8 +140,7 @@ export default function OrderDetailPage() {
           </div>
         </div>
 
-        {/* Fechas */}
-        <div className="bg-abyssal-surface rounded-abyssal-md p-4 border border-abyssal-border">
+        <div className="bg-abyssal-surface rounded-abyssal-md p-4 border border-abyssal-outline/50 shadow-sm animate-fade-in" style={{ animationDelay: "50ms" }}>
           <div className="flex items-center justify-between mb-3">
             <div>
               <p className="text-label-small text-abyssal-text-secondary">Creado</p>
@@ -148,8 +153,7 @@ export default function OrderDetailPage() {
           </div>
         </div>
 
-        {/* Productos */}
-        <div className="bg-abyssal-surface rounded-abyssal-md p-4 border border-abyssal-border">
+        <div className="bg-abyssal-surface rounded-abyssal-md p-4 border border-abyssal-outline/50 shadow-sm animate-fade-in" style={{ animationDelay: "100ms" }}>
           <p className="text-title-medium text-abyssal-text-primary mb-3">Productos ({order.items_count})</p>
           <div className="space-y-3">
             {order.items.map((item, idx) => (
@@ -168,8 +172,7 @@ export default function OrderDetailPage() {
           </div>
         </div>
 
-        {/* Totales */}
-        <div className="bg-abyssal-surface rounded-abyssal-md p-4 border border-abyssal-border space-y-2">
+        <div className="bg-abyssal-surface rounded-abyssal-md p-4 border border-abyssal-outline/50 shadow-sm space-y-2 animate-fade-in" style={{ animationDelay: "150ms" }}>
           <div className="flex justify-between text-body-medium">
             <span className="text-abyssal-text-secondary">Subtotal</span>
             <span className="text-abyssal-text-primary">{formatCurrency(subtotal)}</span>
@@ -178,20 +181,29 @@ export default function OrderDetailPage() {
             <span className="text-abyssal-text-secondary">IVA (10%)</span>
             <span className="text-abyssal-text-primary">{formatCurrency(tax)}</span>
           </div>
-          <div className="flex justify-between text-title-medium pt-2 border-t border-abyssal-border">
+          <div className="flex justify-between text-title-medium pt-2 border-t border-abyssal-outline/50">
             <span className="text-abyssal-text-primary">Total</span>
             <span className="text-abyssal-text-primary font-bold">{formatCurrency(order.total_value)}</span>
           </div>
         </div>
 
-        {/* Acciones de Estado */}
         {order.status === "PENDIENTE" && (
           <div className="flex gap-3">
-            <Button variant="primary" className="flex-1" onClick={() => handleStatusChange("ENTREGADO")}>
+            <Button
+              variant="primary"
+              className="flex-1"
+              onClick={() => handleStatusChange("ENTREGADO")}
+              loading={submitting}
+            >
               <ShoppingCart className="w-4 h-4 mr-2" />
               Entregar
             </Button>
-            <Button variant="secondary" className="flex-1" onClick={() => handleStatusChange("ANULADO")}>
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => handleStatusChange("ANULADO")}
+              disabled={submitting}
+            >
               Anular
             </Button>
           </div>

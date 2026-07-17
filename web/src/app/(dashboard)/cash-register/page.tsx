@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
 import { TopBar } from "@/components/layout/TopBar"
+import { Skeleton } from "@/components/ui/skeleton"
 import { DaySummaryCard } from "@/components/cash-register/DaySummaryCard"
 import { CashBentoGrid } from "@/components/cash-register/CashBentoGrid"
 import { TransactionRow } from "@/components/cash-register/TransactionRow"
@@ -68,14 +69,21 @@ export default function CashRegisterPage() {
       <TopBar title="Cierre de Caja" />
       <div className="p-4 space-y-3">
         {loading ? (
-          <div className="flex items-center justify-center h-32 text-body-medium text-abyssal-text-secondary">
-            Cargando...
-          </div>
+          <>
+            <Skeleton className="h-24" />
+            <div className="grid grid-cols-2 gap-3">
+              <Skeleton className="h-20" />
+              <Skeleton className="h-20" />
+            </div>
+            <Skeleton className="h-48" />
+          </>
         ) : (
           <>
             {summary && (
               <>
-                <DaySummaryCard totalSales={summary.total_sales} />
+                <div className="bg-gradient-to-br from-abyssal-primary/10 to-abyssal-surface rounded-abyssal-md p-4 border border-abyssal-primary/20 animate-fade-in">
+                  <DaySummaryCard totalSales={summary.total_sales} />
+                </div>
                 <CashBentoGrid data={summary} />
               </>
             )}
@@ -94,9 +102,17 @@ export default function CashRegisterPage() {
             <button
               onClick={() => setPinOpen(true)}
               disabled={closing}
-              className="w-full bg-abyssal-primary text-abyssal-on-primary rounded-abyssal-md py-3 text-body-medium font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="w-full bg-abyssal-primary text-abyssal-on-primary rounded-abyssal-md py-3 text-body-medium font-medium transition-all duration-200 hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
             >
-              {closing ? "Cerrando..." : "Cerrar Día"}
+              {closing ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Cerrando...
+                </span>
+              ) : "Cerrar Día"}
             </button>
           </>
         )}

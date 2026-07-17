@@ -1,8 +1,11 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus } from "lucide-react"
+import { Plus, Package } from "lucide-react"
+import Link from "next/link"
 import { TopBar } from "@/components/layout/TopBar"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ProductSearchBar } from "@/components/products/ProductSearchBar"
 import { CategoryFilter } from "@/components/products/CategoryFilter"
 import { ProductCard } from "@/components/products/ProductCard"
@@ -28,13 +31,20 @@ export default function ProductsPage() {
         <ProductSearchBar value={search} onChange={setSearch} />
         <CategoryFilter categories={categories} selected={category} onSelect={setCategory} />
         {loading ? (
-          <div className="flex items-center justify-center h-32 text-body-medium text-abyssal-text-secondary">
-            Cargando...
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-16" />
+            ))}
           </div>
         ) : filtered.length === 0 ? (
-          <p className="text-center text-body-medium text-abyssal-text-secondary py-8">
-            No se encontraron productos
-          </p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Package size={48} className="text-abyssal-text-secondary mb-4" />
+            <p className="text-title-medium text-abyssal-text-primary mb-2">No se encontraron productos</p>
+            <p className="text-body-medium text-abyssal-text-secondary mb-4">Agrega tu primer producto para comenzar</p>
+            <Link href="/products/new">
+              <Button variant="primary">Agregar Producto</Button>
+            </Link>
+          </div>
         ) : (
           <div className="space-y-2">
             {filtered.map((product) => (
@@ -47,12 +57,12 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
-      <button
-        onClick={() => router.push("/products/new")}
-        className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:opacity-90 transition-opacity z-30"
+      <Link
+        href="/products/new"
+        className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 z-30"
       >
         <Plus className="w-6 h-6" />
-      </button>
+      </Link>
     </>
   )
 }

@@ -3,6 +3,7 @@ import { TrendingUp, Plus, ShoppingCart } from "lucide-react"
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { SparklineChart } from "@/components/dashboard/SparklineChart"
 import { BentoGrid } from "@/components/dashboard/BentoGrid"
 import { RecentOrdersList } from "@/components/dashboard/RecentOrdersList"
@@ -40,39 +41,54 @@ export default function DashboardPage() {
     <>
       <TopBar title="Resumen" />
       <div className="p-4 space-y-4">
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <p className="text-label-medium text-abyssal-text-secondary">Ganancia Bruta</p>
-              <p className="text-headline-medium text-abyssal-text-primary font-bold">
-                ${(dashboardData.gross_profit ?? 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
-              </p>
+        {loading ? (
+          <>
+            <Skeleton className="h-32" />
+            <div className="grid grid-cols-2 gap-3">
+              <Skeleton className="h-24" />
+              <Skeleton className="h-24" />
+              <Skeleton className="h-24" />
+              <Skeleton className="h-24" />
             </div>
-            <div className="w-10 h-10 rounded-full bg-abyssal-primary/10 flex items-center justify-center text-abyssal-primary">
-              <TrendingUp size={20} />
+            <Skeleton className="h-48" />
+          </>
+        ) : (
+          <>
+            <Card className="p-4 bg-gradient-to-br from-abyssal-primary/10 to-abyssal-surface border-abyssal-primary/20 animate-fade-in">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <p className="text-label-medium text-abyssal-text-secondary">Ganancia Bruta</p>
+                  <p className="text-headline-medium text-abyssal-text-primary font-bold">
+                    ${(dashboardData.gross_profit ?? 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-abyssal-primary/10 flex items-center justify-center text-abyssal-primary">
+                  <TrendingUp size={20} />
+                </div>
+              </div>
+              <SparklineChart data={grossProfitHistory} color="#30D158" />
+            </Card>
+
+            <BentoGrid data={dashboardData} />
+
+            <RecentOrdersList orders={orders} onPress={(id) => router.push(`/orders/${id}`)} />
+
+            <div className="flex gap-3">
+              <Link href="/orders/new" className="flex-1">
+                <Button variant="primary" size="lg" className="w-full gap-2">
+                  <Plus size={18} />
+                  Nuevo Pedido
+                </Button>
+              </Link>
+              <Link href="/cash-register" className="flex-1">
+                <Button variant="secondary" size="lg" className="w-full gap-2">
+                  <ShoppingCart size={18} />
+                  Nueva Venta
+                </Button>
+              </Link>
             </div>
-          </div>
-          <SparklineChart data={grossProfitHistory} color="#30D158" />
-        </Card>
-
-        <BentoGrid data={dashboardData} />
-
-        <RecentOrdersList orders={orders} onPress={(id) => router.push(`/orders/${id}`)} />
-
-        <div className="flex gap-3">
-          <Link href="/orders/new" className="flex-1">
-            <Button variant="primary" size="lg" className="w-full gap-2">
-              <Plus size={18} />
-              Nuevo Pedido
-            </Button>
-          </Link>
-          <Link href="/cash-register" className="flex-1">
-            <Button variant="secondary" size="lg" className="w-full gap-2">
-              <ShoppingCart size={18} />
-              Nueva Venta
-            </Button>
-          </Link>
-        </div>
+          </>
+        )}
       </div>
     </>
   )

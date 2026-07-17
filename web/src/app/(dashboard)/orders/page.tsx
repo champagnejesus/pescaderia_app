@@ -1,8 +1,11 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Plus } from "lucide-react"
+import { Plus, ClipboardList } from "lucide-react"
+import Link from "next/link"
 import { TopBar } from "@/components/layout/TopBar"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { OrderFilters } from "@/components/orders/OrderFilters"
 import { OrderCard } from "@/components/orders/OrderCard"
 import { useOrders } from "@/hooks/useOrders"
@@ -27,15 +30,22 @@ export default function OrdersPage() {
       <div className="p-4 space-y-3">
         <OrderFilters selected={filter} onSelect={setFilter} />
         {loading ? (
-          <div className="flex items-center justify-center h-32 text-body-medium text-abyssal-text-secondary">
-            Cargando...
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-16" />
+            ))}
           </div>
         ) : error ? (
           <p className="text-center text-body-medium text-abyssal-red py-8">{error}</p>
         ) : orders.length === 0 ? (
-          <p className="text-center text-body-medium text-abyssal-text-secondary py-8">
-            No hay pedidos
-          </p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <ClipboardList size={48} className="text-abyssal-text-secondary mb-4" />
+            <p className="text-title-medium text-abyssal-text-primary mb-2">No hay pedidos</p>
+            <p className="text-body-medium text-abyssal-text-secondary mb-4">Crea tu primer pedido para comenzar</p>
+            <Link href="/orders/new">
+              <Button variant="primary">Crear Pedido</Button>
+            </Link>
+          </div>
         ) : (
           <div className="space-y-2">
             {orders.map((order) => (
@@ -48,12 +58,12 @@ export default function OrdersPage() {
           </div>
         )}
       </div>
-      <button
-        onClick={() => router.push("/orders/new")}
-        className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:opacity-90 transition-opacity z-30"
+      <Link
+        href="/orders/new"
+        className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 z-30"
       >
         <Plus className="w-6 h-6" />
-      </button>
+      </Link>
     </>
   )
 }
