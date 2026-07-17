@@ -38,7 +38,7 @@ export default function NewOrderPage() {
   const [paymentMethod, setPaymentMethod] = useState("Efectivo")
   const [deliveryDate, setDeliveryDate] = useState("")
   const [submitting, setSubmitting] = useState(false)
-  const [successOrder, setSuccessOrder] = useState<{ order_number: string } | null>(null)
+  const [successOrder, setSuccessOrder] = useState<{ id: number; order_number: string } | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [clientSearchQuery, setClientSearchQuery] = useState("")
   const [clientsLoading, setClientsLoading] = useState(true)
@@ -109,7 +109,7 @@ export default function NewOrderPage() {
         delivery_date: deliveryDate || null,
         status: "PENDIENTE",
       })
-      setSuccessOrder({ order_number: data?.order_number || "N/A" })
+      setSuccessOrder({ id: data?.id, order_number: data?.order_number || "N/A" })
     } catch {
       alert("Error al crear el pedido. Intente de nuevo.")
     } finally {
@@ -122,7 +122,7 @@ export default function NewOrderPage() {
       <SuccessOverlay
         open
         order={successOrder}
-        onView={() => router.push(`/orders/${successOrder.order_number}`)}
+        onView={() => router.push(`/orders/${successOrder.id}`)}
         onClose={() => router.push("/orders")}
       />
     )

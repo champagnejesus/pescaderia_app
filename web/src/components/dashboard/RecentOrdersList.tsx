@@ -13,6 +13,7 @@ interface RecentOrder {
 
 interface RecentOrdersListProps {
   orders: RecentOrder[]
+  onPress?: (id: number) => void
 }
 
 function formatDate(dateStr: string) {
@@ -28,7 +29,7 @@ function formatCurrency(n: number) {
   return `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
 }
 
-export function RecentOrdersList({ orders }: RecentOrdersListProps) {
+export function RecentOrdersList({ orders, onPress }: RecentOrdersListProps) {
   const recent = orders.slice(0, 5)
 
   return (
@@ -36,10 +37,11 @@ export function RecentOrdersList({ orders }: RecentOrdersListProps) {
       <h3 className="text-title-medium text-abyssal-text-primary mb-3">Pedidos Recientes</h3>
       <div className="bg-abyssal-surface rounded-abyssal-md overflow-hidden">
         {recent.map((order, i) => (
-          <div
+          <button
             key={order.id}
+            onClick={() => onPress?.(order.id)}
             className={cn(
-              "flex items-center justify-between p-3",
+              "flex items-center justify-between p-3 w-full text-left transition-colors hover:bg-abyssal-surface-high",
               i < recent.length - 1 && "border-b border-abyssal-outline",
             )}
           >
@@ -57,7 +59,7 @@ export function RecentOrdersList({ orders }: RecentOrdersListProps) {
                 {formatCurrency(order.total_value)}
               </span>
             </div>
-          </div>
+          </button>
         ))}
         {recent.length === 0 && (
           <p className="p-3 text-body-medium text-abyssal-text-secondary text-center">

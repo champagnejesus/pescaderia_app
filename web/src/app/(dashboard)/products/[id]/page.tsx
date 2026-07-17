@@ -29,11 +29,11 @@ export default function ProductDetailPage() {
   const [adjustQty, setAdjustQty] = useState(0)
 
   useEffect(() => {
-    api.get<Product>(`/products/${id}`).then((res) => setProduct(res.data)).catch(() => {}).finally(() => setLoading(false))
+    api.get<Product>("/products/" + id).then((res) => setProduct(res.data)).catch(() => setProduct(null)).finally(() => setLoading(false))
   }, [id])
 
   const priceHistory = Array.from({ length: 7 }, (_, i) => ({
-    day: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"][i],
+    day: ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"][i],
     price: product ? Math.max(0, product.price * (0.85 + Math.random() * 0.3)) : 0,
   }))
 
@@ -54,7 +54,7 @@ export default function ProductDetailPage() {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <h1 className="text-title-large text-abyssal-text-primary font-bold">Producto</h1>
-        <button onClick={() => router.push(`/products/${id}/edit`)} className="text-abyssal-text-secondary hover:text-abyssal-text-primary transition-colors">
+        <button onClick={() => router.push("/products/" + id + "/edit")} className="text-abyssal-text-secondary hover:text-abyssal-text-primary transition-colors">
           <Pencil className="w-5 h-5" />
         </button>
       </div>
@@ -114,7 +114,7 @@ export default function ProductDetailPage() {
         </div>
 
         <div className="bg-abyssal-surface rounded-abyssal-md p-4 flex items-center justify-between">
-          <span className="text-body-medium text-abyssal-text-secondary">Stock mínimo</span>
+          <span className="text-body-medium text-abyssal-text-secondary">Stock minimo</span>
           <span className="text-body-medium text-abyssal-text-primary font-semibold">{product.low_stock_threshold}</span>
         </div>
 
@@ -128,7 +128,14 @@ export default function ProductDetailPage() {
               placeholder="Cantidad"
               className="flex-1"
             />
-            <Button variant="primary" size="md" onClick={async () => { try { const res = await api.patch(`/products/${id}/stock`, { stock: adjustQty }); setProduct(res.data) } catch {} } }>Actualizar</Button>
+            <Button variant="primary" size="md" onClick={async () => {
+              try {
+                const res = await api.patch("/products/" + id + "/stock", { stock: adjustQty })
+                setProduct(res.data)
+              } catch (e) {
+                alert("Error al actualizar stock")
+              }
+            }}>Actualizar</Button>
           </div>
         </div>
       </div>

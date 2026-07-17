@@ -1,0 +1,22 @@
+Task 1: complete (commits 9cebaaa..e753b27, review clean)
+Task 2: complete (commits e753b27..cd58549, review clean)
+Task 3: complete (commits cd58549..b1aea1e, review clean)
+Task 4: complete (commits b1aea1e..b5d31a8, review clean)
+Task 5: complete (commits b5d31a8..85b5d19, review clean after fix)
+Task 6: complete (commits 85b5d19..1ac029f, review clean after fix)
+Task 7: complete (commits 1ac029f..19a524d, review clean)
+Task 8: complete (commits 19a524d..278c773, review clean)
+Task 9: complete (commits 278c773..9e0fe5c, review clean)
+Task 10: complete (commits 9e0fe5c..bb76adf, review clean)
+Task 11: complete (commits bb76adf..6e3b761, review clean)
+Task 12: complete (commits 6e3b761..2dc8c1c, review clean)
+Task 13: complete (commits 2dc8c1c..7ff7c27, review approved)
+Task 14: complete (commits 7ff7c27..979882c, review approved)
+Task 15: complete (commits 979882c..de67124, review pending)
+Task 16: complete (commits de67124..7a47eda, review clean after fixes)
+
+## Phase 3 — Android Refactor
+
+Task 17: complete (commit 5fa6bca, 10 files created)
+Task 18: complete (commit a2f02d2, Repository refactor + SyncWorker + SyncManager)
+Task 19: complete (commit 12b8b29, Theme dark/light toggle)

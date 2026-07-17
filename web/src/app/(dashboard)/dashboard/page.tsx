@@ -10,8 +10,10 @@ import { useProducts } from "@/hooks/useProducts"
 import { useOrders } from "@/hooks/useOrders"
 import { useTransactions } from "@/hooks/useTransactions"
 import { TopBar } from "@/components/layout/TopBar"
+import { useRouter } from "next/navigation"
 
 export default function DashboardPage() {
+  const router = useRouter()
   const { lowStockCount, loading: productsLoading } = useProducts()
   const { data: orders, loading: ordersLoading } = useOrders()
   const { data: summary, loading: txsLoading } = useTransactions()
@@ -55,7 +57,7 @@ export default function DashboardPage() {
 
         <BentoGrid data={dashboardData} />
 
-        <RecentOrdersList orders={orders} />
+        <RecentOrdersList orders={orders} onPress={(id) => router.push(`/orders/${id}`)} />
 
         <div className="flex gap-3">
           <Link href="/orders/new" className="flex-1">
