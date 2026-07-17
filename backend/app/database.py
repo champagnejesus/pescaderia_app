@@ -16,3 +16,7 @@ async def get_db():
         except Exception:
             await session.rollback()
             raise
+
+async def migrate_add_column(table: str, column: str, definition: str):
+    async with engine.begin() as conn:
+        await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column} {definition}"))
