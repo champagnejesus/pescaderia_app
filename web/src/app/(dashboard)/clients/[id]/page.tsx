@@ -39,7 +39,7 @@ export default function ClientDetail() {
   const router = useRouter()
   const id = params.id as string
   const { client, loading: clientLoading, error: clientError } = useClient(id)
-  const { orders, loading: ordersLoading } = useClientOrders(id)
+  const { orders, loading: ordersLoading, error: ordersError } = useClientOrders(id)
 
   if (clientLoading) {
     return (
@@ -190,6 +190,11 @@ export default function ClientDetail() {
                   </div>
                 </div>
               ))
+            ) : ordersError ? (
+              <div className="bg-[#2a2932] rounded-lg p-6 text-center border border-[#464554]/30">
+                <span className="material-symbols-outlined text-[#ffb4ab] text-4xl">error</span>
+                <p className="text-[15px] text-[#ffb4ab] mt-2">{ordersError}</p>
+              </div>
             ) : orders.length === 0 ? (
               <div className="bg-[#2a2932] rounded-lg p-6 text-center border border-[#464554]/30">
                 <span className="material-symbols-outlined text-[#918fa0] text-4xl">inbox</span>

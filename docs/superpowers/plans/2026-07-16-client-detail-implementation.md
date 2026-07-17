@@ -1,3 +1,378 @@
+# Detalle de Clientes - Plan de Implementación
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Conectar la UI de detalle de clientes con el backend, mostrar pedidos recientes, implementar acciones funcionales y mapa interactivo.
+
+**Architecture:** Backend: nuevo endpoint `GET /clients/{id}/orders` para pedidos del cliente. Frontend: hooks `useClient` y `useClientOrders` para obtener datos, page.tsx como Client Component con loading states y acciones directas.
+
+**Tech Stack:** FastAPI (Python), SQLAlchemy async, Next.js 14 (App Router), TypeScript, Tailwind CSS, Axios
+
+## Global Constraints
+
+- Backend Python 3.11+, FastAPI, SQLAlchemy async
+- Frontend Next.js 14, React 18, TypeScript, Tailwind CSS
+- API base URL: `http://localhost:8000/api/v1`
+- Estilo: dark theme, Inter font, colores hex (#121212, #1f1f27, #c2c1ff, #47e266, #eac400)
+- Max-width UI: 400px centrado (mobile-first)
+
+---
+
+## Archivos a modificar
+
+### Backend
+1. `backend/app/schemas/client.py` - Agregar `ClientOrderResponse` y `ClientOrdersResponse`
+2. `backend/app/services/client_service.py` - Agregar `get_client_orders()`
+3. `backend/app/routers/clients.py` - Agregar endpoint `GET /{client_id}/orders`
+4. `backend/app/tests/test_clients.py` - Agregar tests para `get_client_orders`
+
+### Frontend
+1. `web/src/hooks/useClient.ts` - Nuevo hook para datos del cliente
+2. `web/src/hooks/useClientOrders.ts` - Nuevo hook para pedidos del cliente
+3. `web/src/app/(dashboard)/clients/[id]/page.tsx` - Convertir a Client Component
+
+---
+
+### Task 1: Agregar schemas de respuesta para pedidos del cliente
+
+**Files:**
+- Modify: `backend/app/schemas/client.py`
+
+**Interfaces:**
+- Produces: `ClientOrderResponse`, `ClientOrdersResponse`
+
+- [ ] **Step 1: Agregar schemas al archivo existente**
+
+```python
+# Agregar al final de backend/app/schemas/client.py
+
+class ClientOrderResponse(BaseModel):
+    id: int
+    order_number: str
+    delivery_date: str | None
+    items_count: int
+    status: str
+    total_value: float
+    created_at: datetime | None
+
+class ClientOrdersResponse(BaseModel):
+    orders: list[ClientOrderResponse]
+    total: int
+```
+
+- [ ] **Step 2: Verificar que el código es válido**
+
+Run: `cd backend && python -c "from app.schemas.client import ClientOrderResponse, ClientOrdersResponse; print('OK')"`
+Expected: `OK`
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add backend/app/schemas/client.py
+git commit -m "feat: add ClientOrderResponse and ClientOrdersResponse schemas"
+```
+
+---
+
+### Task 2: Agregar función get_client_orders al service
+
+**Files:**
+- Modify: `backend/app/services/client_service.py`
+
+**Interfaces:**
+- Consumes: `Client` model, `Order` model
+- Produces: `get_client_orders(db, client_id, limit) -> list[Order]`
+
+- [ ] **Step 1: Agregar import de Order al inicio del archivo**
+
+```python
+# Agregar en backend/app/services/client_service.py, línea 3
+from app.models.order import Order
+```
+
+- [ ] **Step 2: Agregar función get_client_orders al final del archivo**
+
+```python
+# Agregar al final de backend/app/services/client_service.py
+
+async def get_client_orders(db: AsyncSession, client_id: int, limit: int = 5) -> list[Order]:
+    query = select(Order).where(Order.client_id == client_id).order_by(Order.created_at.desc()).limit(limit)
+    result = await db.execute(query)
+    return result.scalars().all()
+```
+
+- [ ] **Step 3: Verificar que el código es válido**
+
+Run: `cd backend && python -c "from app.services.client_service import get_client_orders; print('OK')"`
+Expected: `OK`
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add backend/app/services/client_service.py
+git commit -m "feat: add get_client_orders service function"
+```
+
+---
+
+### Task 3: Agregar test para get_client_orders
+
+**Files:**
+- Modify: `backend/app/tests/test_clients.py`
+
+**Interfaces:**
+- Consumes: `get_client_orders`, `create_client`, `Order` model (via order_service)
+- Produces: Test `test_get_client_orders`
+
+- [ ] **Step 1: Agregar imports al inicio del archivo**
+
+```python
+# Agregar en backend/app/tests/test_clients.py, línea 2
+from app.services.client_service import get_client_orders
+from app.services.order_service import create_order
+```
+
+- [ ] **Step 2: Agregar test al final del archivo**
+
+```python
+# Agregar al final de backend/app/tests/test_clients.py
+
+@pytest.mark.asyncio
+async def test_get_client_orders(async_session):
+    # Crear cliente
+    client = await create_client(async_session, {"name": "Order Client", "phone": "789"})
+    await async_session.commit()
+    
+    # Crear pedidos para el cliente
+    await create_order(async_session, {
+        "order_number": "ORD-001",
+        "client_id": client.id,
+        "client_name": client.name,
+        "items_count": 3,
+        "status": "ENTREGADO",
+        "total_value": 100.0
+    })
+    await create_order(async_session, {
+        "order_number": "ORD-002",
+        "client_id": client.id,
+        "client_name": client.name,
+        "items_count": 2,
+        "status": "PENDIENTE",
+        "total_value": 200.0
+    })
+    await async_session.commit()
+    
+    # Obtener pedidos del cliente
+    orders = await get_client_orders(async_session, client.id)
+    assert len(orders) == 2
+    assert orders[0].order_number == "ORD-002"  # Más reciente primero
+    assert orders[1].order_number == "ORD-001"
+
+@pytest.mark.asyncio
+async def test_get_client_orders_empty(async_session):
+    client = await create_client(async_session, {"name": "No Orders", "phone": "000"})
+    await async_session.commit()
+    
+    orders = await get_client_orders(async_session, client.id)
+    assert len(orders) == 0
+```
+
+- [ ] **Step 3: Ejecutar tests para verificar que fallan**
+
+Run: `cd backend && python -m pytest app/tests/test_clients.py::test_get_client_orders -v`
+Expected: FAIL (función aún no está registrada en el módulo)
+
+- [ ] **Step 4: Ejecutar todos los tests de clientes para verificar que pasan**
+
+Run: `cd backend && python -m pytest app/tests/test_clients.py -v`
+Expected: PASS
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add backend/app/tests/test_clients.py
+git commit -m "test: add tests for get_client_orders"
+```
+
+---
+
+### Task 4: Agregar endpoint GET /{client_id}/orders
+
+**Files:**
+- Modify: `backend/app/routers/clients.py`
+
+**Interfaces:**
+- Consumes: `get_client_orders`, `ClientOrdersResponse`
+- Produces: Endpoint `GET /{client_id}/orders`
+
+- [ ] **Step 1: Agregar import de schema**
+
+```python
+# Modificar línea 5 en backend/app/routers/clients.py
+from app.schemas.client import ClientCreate, ClientUpdate, BalanceAdjust, ClientResponse, ClientOrdersResponse
+```
+
+- [ ] **Step 2: Agregar endpoint al final del archivo**
+
+```python
+# Agregar al final de backend/app/routers/clients.py
+
+@router.get("/{client_id}/orders", response_model=ClientOrdersResponse)
+async def get_client_orders_endpoint(client_id: int, limit: int = Query(5), db: AsyncSession = Depends(get_db)):
+    orders = await client_service.get_client_orders(db, client_id, limit)
+    return ClientOrdersResponse(orders=orders, total=len(orders))
+```
+
+- [ ] **Step 3: Verificar que el servidor inicia**
+
+Run: `cd backend && python -c "from app.routers.clients import router; print('OK')"`
+Expected: `OK`
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add backend/app/routers/clients.py
+git commit -m "feat: add GET /clients/{id}/orders endpoint"
+```
+
+---
+
+### Task 5: Crear hook useClient para frontend
+
+**Files:**
+- Create: `web/src/hooks/useClient.ts`
+
+**Interfaces:**
+- Consumes: `api` from `@/lib/api`
+- Produces: `useClient(id)` returns `{ client, loading, error, refetch }`
+
+- [ ] **Step 1: Crear el archivo con el hook**
+
+```typescript
+// web/src/hooks/useClient.ts
+"use client"
+import { useState, useEffect, useCallback } from "react"
+import api from "@/lib/api"
+
+export interface ClientDetail {
+  id: number
+  name: string
+  phone: string
+  email: string
+  address: string
+  outstanding_balance: number
+  credit_limit: number
+  initials: string
+}
+
+export function useClient(id: string | null) {
+  const [client, setClient] = useState<ClientDetail | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  const fetchClient = useCallback(async () => {
+    if (!id) return
+    setLoading(true)
+    setError("")
+    try {
+      const { data } = await api.get<ClientDetail>(`/clients/${id}`)
+      setClient(data)
+    } catch {
+      setError("Error al cargar cliente")
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
+
+  useEffect(() => { fetchClient() }, [fetchClient])
+
+  return { client, loading, error, refetch: fetchClient }
+}
+```
+
+- [ ] **Step 2: Verificar que TypeScript compila**
+
+Run: `cd web && npx tsc --noEmit src/hooks/useClient.ts`
+Expected: Sin errores
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add web/src/hooks/useClient.ts
+git commit -m "feat: add useClient hook for client detail"
+```
+
+---
+
+### Task 6: Crear hook useClientOrders para frontend
+
+**Files:**
+- Create: `web/src/hooks/useClientOrders.ts`
+
+**Interfaces:**
+- Consumes: `api` from `@/lib/api`
+- Produces: `useClientOrders(clientId)` returns `{ orders, loading, error, refetch }`
+
+- [ ] **Step 1: Crear el archivo con el hook**
+
+```typescript
+// web/src/hooks/useClientOrders.ts
+"use client"
+import { useState, useEffect, useCallback } from "react"
+import api from "@/lib/api"
+
+export interface ClientOrder {
+  id: number
+  order_number: string
+  delivery_date: string | null
+  items_count: number
+  status: string
+  total_value: number
+  created_at: string | null
+}
+
+export function useClientOrders(clientId: string | null, limit: number = 5) {
+  const [orders, setOrders] = useState<ClientOrder[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  const fetchOrders = useCallback(async () => {
+    if (!clientId) return
+    setLoading(true)
+    setError("")
+    try {
+      const { data } = await api.get<{ orders: ClientOrder[]; total: number }>(
+        `/clients/${clientId}/orders`,
+        { params: { limit } }
+      )
+      setOrders(data.orders)
+    } catch {
+      setError("Error al cargar pedidos")
+    } finally {
+      setLoading(false)
+    }
+  }, [clientId, limit])
+
+  useEffect(() => { fetchOrders() }, [fetchOrders])
+
+  return { orders, loading, error, refetch: fetchOrders }
+}
+```
+
+- [ ] **Step 2: Verificar que TypeScript compila**
+
+Run: `cd web && npx tsc --noEmit src/hooks/useClientOrders.ts`
+Expected: Sin errores
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add web/src/hooks/useClientOrders.ts
+git commit -m "feat: add useClientOrders hook for client orders"
+```
+
+---
+
 ### Task 7: Convertir page.tsx a Client Component con datos reales
 
 **Files:**
@@ -273,3 +648,69 @@ Expected: Servidor inicia sin errores
 git add web/src/app/\(dashboard\)/clients/\[id\]/page.tsx
 git commit -m "feat: implement client detail page with real data"
 ```
+
+---
+
+### Task 8: Verificar integración completa
+
+**Files:**
+- Verify: All modified files
+
+**Interfaces:**
+- Consumes: All previous tasks
+- Produces: Funcionalidad completa verificada
+
+- [ ] **Step 1: Ejecutar tests de backend**
+
+Run: `cd backend && python -m pytest app/tests/test_clients.py -v`
+Expected: Todos los tests pasan
+
+- [ ] **Step 2: Verificar TypeScript en frontend**
+
+Run: `cd web && npx tsc --noEmit`
+Expected: Sin errores
+
+- [ ] **Step 3: Verificar que el servidor backend funciona**
+
+Run: `cd backend && python -m uvicorn app.main:app --reload`
+Expected: Servidor inicia en http://localhost:8000
+
+- [ ] **Step 4: Verificar que el frontend funciona**
+
+Run: `cd web && npm run dev`
+Expected: Servidor inicia en http://localhost:3000
+
+- [ ] **Step 5: Commit final**
+
+```bash
+git add -A
+git commit -m "feat: complete client detail integration with backend"
+```
+
+---
+
+## Resumen de tareas
+
+| Task | Descripción | Archivos |
+|------|-------------|----------|
+| 1 | Schemas de respuesta | `schemas/client.py` |
+| 2 | Service get_client_orders | `services/client_service.py` |
+| 3 | Tests para get_client_orders | `tests/test_clients.py` |
+| 4 | Endpoint GET /{id}/orders | `routers/clients.py` |
+| 5 | Hook useClient | `hooks/useClient.ts` |
+| 6 | Hook useClientOrders | `hooks/useClientOrders.ts` |
+| 7 | Page.tsx completo | `clients/[id]/page.tsx` |
+| 8 | Verificación final | Todos |
+
+## Criterios de aceptación
+
+1. ✅ Endpoint `GET /clients/{id}` retorna datos reales del cliente
+2. ✅ Endpoint `GET /clients/{id}/orders` retorna pedidos del cliente
+3. ✅ UI muestra datos reales del backend (no hardcodeados)
+4. ✅ Loading states al cargar datos
+5. ✅ Error handling con retry
+6. ✅ Botón "Llamar" abre aplicación de teléfono
+7. ✅ Botón "WhatsApp" abre chat de WhatsApp
+8. ✅ Botón "Pedido" navega a nueva orden con cliente pre-seleccionado
+9. ✅ Mapa abre Google Maps con dirección del cliente
+10. ✅ Estilo consistente con UI existente

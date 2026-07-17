@@ -1,23 +1,28 @@
-# Task 5: Auth Service + Endpoints — Report
+# Task 5 Report: Crear hook useClient para frontend
 
-**Status:** ✅ Complete
+## What I Implemented
+Created `web/src/hooks/useClient.ts` — a React hook that fetches client detail from the backend API using the existing axios client.
 
-## Files Created/Modified
-- `backend/app/services/auth_service.py` — new (password hashing, token creation, register/authenticate)
-- `backend/app/routers/auth.py` — overwritten (POST /register, POST /login endpoints)
-- `backend/app/tests/test_auth.py` — new (password hashing & token tests)
-- `backend/requirements.txt` — pinned `bcrypt==4.1.3` (passlib 1.7.4 incompatibility with bcrypt 5.x)
+The hook:
+- Uses `"use client"` directive (matches existing pattern in `useOrders.ts`)
+- Exports `ClientDetail` interface with all specified fields
+- `useClient(id)` accepts a string ID (or null) and returns `{ client, loading, error, refetch }`
+- Follows identical pattern to `useOrders.ts` (useState/useCallback/useEffect)
+- Gracefully handles null ID by returning early
 
-## Test Results
-```
-app/tests/test_auth.py::test_password_hashing PASSED
-app/tests/test_auth.py::test_token_creation PASSED
-```
+## TypeScript Verification
+- `npx tsc --noEmit` (full project): **passed, no errors**
+- Single-file check (`tsc --noEmit src/hooks/useClient.ts`) fails on path alias — expected since path aliases require full tsconfig resolution
 
 ## Commit
-```
-64eec40 feat(backend): add auth with register, login, JWT
-```
+- `58f9a10` — `feat: add useClient hook for client detail`
 
-## Concerns
-- bcrypt 5.x breaks passlib 1.7.4 — pinned to `bcrypt==4.1.3` as a fix.
+## Files Changed
+- `web/src/hooks/useClient.ts` (created)
+
+## Self-Review
+- ✅ Follows established `useOrders.ts` pattern exactly
+- ✅ Same naming conventions, same error handling style
+- ✅ Interface fields match task brief exactly
+- ✅ No overbuilding — matches spec precisely
+- ✅ TypeScript compiles cleanly

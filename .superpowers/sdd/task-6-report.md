@@ -1,23 +1,28 @@
-# Task 6: CRUD Products Endpoints - Report
+## Task 6: Crear hook useClientOrders para frontend
 
-## Status: Complete
+**Status:** DONE
 
-## Commits
-- `7a731c8` `feat(backend): add CRUD products endpoints`
+### What I implemented
+Created `web/src/hooks/useClientOrders.ts` — a React hook that fetches orders for a specific client from the backend API. Follows the same pattern as `useClient.ts` and `useOrders.ts`:
+- Accepts `clientId` (string | null) and optional `limit` (default 5)
+- Returns `{ orders, loading, error, refetch }`
+- Uses `count` (not `total`) in the API response type per Task 4 fix
+- Early-returns when `clientId` is null
+- Handles loading/error states and provides refetch capability
 
-## Files Changed
-- **Created:** `backend/app/services/product_service.py` — full CRUD service with `get_products`, `get_product`, `create_product`, `update_product`, `delete_product`, `adjust_stock`, `get_low_stock`
-- **Overwritten:** `backend/app/routers/products.py` — from stub to full router with list, create, read, update, delete, stock adjust, and low-stock endpoints
-- **Created:** `backend/app/tests/test_products.py` — two async tests: create+list, get by ID
-- **Modified:** `backend/app/tests/conftest.py` — fixed `async_session` fixture to use `@pytest_asyncio.fixture` so it properly resolves as async generator
+### What I tested
+- `npx tsc --noEmit` — **0 errors** (full project TypeScript check passes)
 
-## Test Results
-```
-app/tests/test_products.py::test_create_and_list_products PASSED
-app/tests/test_products.py::test_get_product_by_id PASSED
-```
+### Files changed
+- Created: `web/src/hooks/useClientOrders.ts`
 
-## Concerns
-- `conftest.py` had to be fixed: `@pytest.fixture` on an `async def` generator doesn't work with pytest-asyncio strict mode; changed to `@pytest_asyncio.fixture`
-- Second test needed to capture `p.id` before `commit()` to avoid expired object lazy-load issues
-- No pytest config file exists — `pytest-asyncio` warns about unset `asyncio_default_fixture_loop_scope`
+### Commit
+- `65fe916` — `feat: add useClientOrders hook for client orders`
+
+### Self-review findings
+- Hook closely follows `useClient.ts` pattern (null guard, loading state, try/catch/finally, refetch)
+- Interface `ClientOrder` matches the fields returned by the `/clients/{id}/orders` endpoint
+- No overengineering — just the hook as specified
+
+### Concerns
+None.

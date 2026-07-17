@@ -1,5 +1,5 @@
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime
 from app.services.client_service import create_client, get_clients, get_client, update_client, delete_client, adjust_balance, get_client_orders
 from app.models.order import Order
 

@@ -40,6 +40,7 @@ class ClientOrderResponse(BaseModel):
     status: str
     total_value: float
     created_at: datetime | None
+    class Config: from_attributes = True
 
 class ClientOrdersResponse(BaseModel):
     orders: list[ClientOrderResponse]

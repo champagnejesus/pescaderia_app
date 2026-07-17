@@ -1,43 +1,42 @@
-# Task 1 Report: Project Scaffold — Structure, Config, Docker
+# Task 1 Report: Agregar schemas de respuesta para pedidos del cliente
 
-## Status: DONE
+## What I Implemented
+Added two new Pydantic response schemas to `backend/app/schemas/client.py`:
 
-## What Was Created
+1. **ClientOrderResponse** - Response model for a single client order with fields:
+   - `id: int`
+   - `order_number: str`
+   - `delivery_date: str | None`
+   - `items_count: int`
+   - `status: str`
+   - `total_value: float`
+   - `created_at: datetime | None`
 
-All 16 files specified in the brief were created under `backend/`:
+2. **ClientOrdersResponse** - Response model for a list of client orders with fields:
+   - `orders: list[ClientOrderResponse]`
+   - `total: int`
 
-| File | Purpose |
-|------|---------|
-| `backend/requirements.txt` | Python dependencies |
-| `backend/Dockerfile` | Container image for the API |
-| `backend/docker-compose.yml` | Multi-service orchestration (PostgreSQL + Redis + API) |
-| `backend/app/__init__.py` | App package |
-| `backend/app/config.py` | Pydantic-based settings |
-| `backend/app/database.py` | Async SQLAlchemy engine, session, and Base |
-| `backend/app/main.py` | FastAPI application with routers and CORS |
-| `backend/app/dependencies.py` | JWT auth dependency |
-| `backend/app/models/__init__.py` | Models package (empty) |
-| `backend/app/schemas/__init__.py` | Schemas package (empty) |
-| `backend/app/routers/__init__.py` | Routers package (empty) |
-| `backend/app/services/__init__.py` | Services package (empty) |
-| `backend/app/middleware/__init__.py` | Middleware package (empty) |
-| `backend/app/tests/__init__.py` | Tests package (empty) |
-| `backend/app/tests/conftest.py` | Test fixtures (in-memory SQLite) |
-| `backend/.gitignore` | Excludes `__pycache__`, `.env`, etc. |
+## Testing
+Verified the schemas can be imported correctly:
+```
+python -c "from app.schemas.client import ClientOrderResponse, ClientOrdersResponse; print('OK')"
+Output: OK
+```
 
-Additionally, 8 stub router modules were created (`backend/app/routers/{auth,products,clients,suppliers,orders,transactions,reports,sync}.py`) so that `main.py` imports resolve successfully.
+## Self-Review
 
-## Verification Results
+**Completeness:** ✅ All requirements from the task brief implemented exactly as specified.
 
-- **Dependencies installed**: All 49 packages from `requirements.txt` installed successfully via pip.
-- **Import check**: `python -c "import sys; sys.path.insert(0, 'backend'); from app.main import app; print('OK')"` → **OK**
+**Quality:** ✅ Schemas follow existing patterns in the codebase (BaseModel, type hints, field definitions).
+
+**Discipline:** ✅ Minimal changes, no overengineering, no comments added.
+
+**Testing:** ✅ Import verification passed.
 
 ## Files Changed
+- `backend/app/schemas/client.py` - Added 13 lines (two new Pydantic models)
 
-24 files in `backend/` (per `git diff --stat` on the commit).
-
-## Issues
-
-- Python was not installed on this machine. Had to install Python 3.12 via `winget` before installing dependencies.
-- The `main.py` imports 8 router modules (`auth`, `products`, `clients`, `suppliers`, `orders`, `transactions`, `reports`, `sync`) that don't exist yet. Stub router files with minimal `APIRouter()` instances were created to allow the app to import successfully. These will be replaced by later tasks.
-- `__pycache__` directories were accidentally staged; amended the commit to remove them and added a `.gitignore`.
+## Commit
+```
+117462a feat: add ClientOrderResponse and ClientOrdersResponse schemas
+```

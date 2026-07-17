@@ -1,74 +1,78 @@
-### Task 3: SQLAlchemy Models — Orders, Transactions
+### Task 3: Agregar test para get_client_orders
 
 **Files:**
-- Create: `backend/app/models/order.py`
-- Create: `backend/app/models/transaction.py`
-- Update: `backend/app/models/__init__.py`
+- Modify: `backend/app/tests/test_clients.py`
 
-- [ ] **Step 1: Create `backend/app/models/order.py`**
+**Interfaces:**
+- Consumes: `get_client_orders`, `create_client`, `Order` model (via order_service)
+- Produces: Test `test_get_client_orders`
 
-```python
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, func
-from sqlalchemy.orm import relationship
-from app.database import Base
-
-class Order(Base):
-    __tablename__ = "orders"
-    id = Column(Integer, primary_key=True, index=True)
-    order_number = Column(String(50), unique=True, nullable=False, index=True)
-    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
-    client_name = Column(String(255), nullable=False)
-    delivery_date = Column(String(100))
-    items_count = Column(Integer, default=0)
-    status = Column(String(50), default="PENDIENTE", index=True)
-    total_value = Column(Float, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    delivered_at = Column(DateTime(timezone=True))
-    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
-
-class OrderItem(Base):
-    __tablename__ = "order_items"
-    id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, ForeignKey("orders.id", ondelete="CASCADE"), nullable=False)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    quantity = Column(Float, nullable=False)
-    unit_price = Column(Float, nullable=False)
-    subtotal = Column(Float, nullable=False)
-    order = relationship("Order", back_populates="items")
-```
-
-- [ ] **Step 2: Create `backend/app/models/transaction.py`**
+- [ ] **Step 1: Agregar imports al inicio del archivo**
 
 ```python
-from sqlalchemy import Column, Integer, String, Float, DateTime, func
-from app.database import Base
-
-class Transaction(Base):
-    __tablename__ = "transactions"
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=False)
-    time = Column(String(50), nullable=False)
-    type = Column(String(50), nullable=False, index=True)
-    amount = Column(Float, nullable=False)
-    status = Column(String(50), default="PAGADO")
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+# Agregar en backend/app/tests/test_clients.py, línea 2
+from app.services.client_service import get_client_orders
+from app.services.order_service import create_order
 ```
 
-- [ ] **Step 3: Update `backend/app/models/__init__.py`**
+- [ ] **Step 2: Agregar test al final del archivo**
 
 ```python
-from app.models.business import BusinessConfig
-from app.models.product import Product
-from app.models.client import Client
-from app.models.supplier import Supplier
-from app.models.order import Order, OrderItem
-from app.models.transaction import Transaction
-__all__ = ["BusinessConfig", "Product", "Client", "Supplier", "Order", "OrderItem", "Transaction"]
+# Agregar al final de backend/app/tests/test_clients.py
+
+@pytest.mark.asyncio
+async def test_get_client_orders(async_session):
+    # Crear cliente
+    client = await create_client(async_session, {"name": "Order Client", "phone": "789"})
+    await async_session.commit()
+    
+    # Crear pedidos para el cliente
+    await create_order(async_session, {
+        "order_number": "ORD-001",
+        "client_id": client.id,
+        "client_name": client.name,
+        "items_count": 3,
+        "status": "ENTREGADO",
+        "total_value": 100.0
+    })
+    await create_order(async_session, {
+        "order_number": "ORD-002",
+        "client_id": client.id,
+        "client_name": client.name,
+        "items_count": 2,
+        "status": "PENDIENTE",
+        "total_value": 200.0
+    })
+    await async_session.commit()
+    
+    # Obtener pedidos del cliente
+    orders = await get_client_orders(async_session, client.id)
+    assert len(orders) == 2
+    assert orders[0].order_number == "ORD-002"  # Más reciente primero
+    assert orders[1].order_number == "ORD-001"
+
+@pytest.mark.asyncio
+async def test_get_client_orders_empty(async_session):
+    client = await create_client(async_session, {"name": "No Orders", "phone": "000"})
+    await async_session.commit()
+    
+    orders = await get_client_orders(async_session, client.id)
+    assert len(orders) == 0
 ```
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 3: Ejecutar tests para verificar que fallan**
+
+Run: `cd backend && python -m pytest app/tests/test_clients.py::test_get_client_orders -v`
+Expected: FAIL (función aún no está registrada en el módulo)
+
+- [ ] **Step 4: Ejecutar todos los tests de clientes para verificar que pasan**
+
+Run: `cd backend && python -m pytest app/tests/test_clients.py -v`
+Expected: PASS
+
+- [ ] **Step 5: Commit**
 
 ```bash
-git add backend/app/models/
-git commit -m "feat(backend): add Order, OrderItem, Transaction models"
+git add backend/app/tests/test_clients.py
+git commit -m "test: add tests for get_client_orders"
 ```
