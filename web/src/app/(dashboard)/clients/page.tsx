@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { ClientCard } from "@/components/clients/ClientCard"
 import { ClientStats } from "@/components/clients/ClientStats"
 import api from "@/lib/api"
+import { useRouter } from "next/navigation"
 
 interface Client {
   id: number
@@ -21,6 +22,7 @@ interface Client {
 }
 
 export default function ClientsPage() {
+  const router = useRouter()
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -73,7 +75,7 @@ export default function ClientsPage() {
   }
 
   function handleCardPress(id: number) {
-    window.location.href = `/clients/${id}`
+    router.push(`/clients/${id}`)
   }
 
   async function handleAdjustBalance() {
