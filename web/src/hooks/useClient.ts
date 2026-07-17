@@ -19,7 +19,11 @@ export function useClient(id: string | null) {
   const [error, setError] = useState("")
 
   const fetchClient = useCallback(async () => {
-    if (!id) return
+    if (!id) {
+      setClient(null)
+      setLoading(false)
+      return
+    }
     setLoading(true)
     setError("")
     try {
