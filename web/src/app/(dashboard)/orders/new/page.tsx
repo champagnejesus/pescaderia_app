@@ -99,15 +99,14 @@ export default function NewOrderPage() {
         product_id: s.product_id,
         quantity: s.quantity,
         unit_price: s.unit_price,
+        subtotal: s.quantity * s.unit_price,
       }))
-      const subtotal = items.reduce((sum, i) => sum + i.quantity * i.unit_price, 0)
       const { data } = await api.post("/orders", {
         client_id: selectedClient.id,
+        client_name: selectedClient.name,
         items,
-        total_value: subtotal * 1.10,
         payment_method: paymentMethod.toUpperCase(),
-        delivery_date: deliveryDate || null,
-        status: "PENDIENTE",
+        delivery_date: deliveryDate || "",
       })
       setSuccessOrder({ id: data?.id, order_number: data?.order_number || "N/A" })
     } catch {
