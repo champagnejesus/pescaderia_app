@@ -42,8 +42,13 @@ async def delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
     if not await product_service.delete_product(db, product_id):
         raise HTTPException(status_code=404, detail="Product not found")
 
-@router.patch("/{product_id}/stock", response_model=ProductResponse)
+@router.patch("/{product_id}/stock")
 async def adjust_product_stock(product_id: int, data: StockAdjust, db: AsyncSession = Depends(get_db)):
-    product = await product_service.adjust_stock(db, product_id, data.stock)
-    if not product: raise HTTPException(status_code=404, detail="Product not found")
-    return product
+    try:
+        product = await product_service.adjust_stock(db, product_id, data.stock)
+        if not product: raise HTTPException(status_code=404, detail="Product not found")
+        return {"ok": True, "id": product.id, "stock": product.stock}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"{type(e).__name__}: {str(e)}")

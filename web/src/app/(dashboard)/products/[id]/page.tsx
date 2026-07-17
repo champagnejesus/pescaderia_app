@@ -130,10 +130,13 @@ export default function ProductDetailPage() {
             />
             <Button variant="primary" size="md" onClick={async () => {
               try {
-                const res = await api.patch("/products/" + id + "/stock", { stock: adjustQty })
+                await api.patch("/products/" + id + "/stock", { stock: adjustQty })
+                const res = await api.get<Product>("/products/" + id)
                 setProduct(res.data)
-              } catch (e) {
-                alert("Error al actualizar stock")
+                setAdjustQty(0)
+              } catch (e: any) {
+                const msg = e.response?.data?.detail || e.message || "Error al actualizar stock"
+                alert(msg)
               }
             }}>Actualizar</Button>
           </div>
