@@ -31,3 +31,16 @@ class ClientResponse(BaseModel):
     credit_limit: float
     created_at: datetime | None = None
     class Config: from_attributes = True
+
+class ClientOrderResponse(BaseModel):
+    id: int
+    order_number: str
+    delivery_date: str | None
+    items_count: int
+    status: str
+    total_value: float
+    created_at: datetime | None
+
+class ClientOrdersResponse(BaseModel):
+    orders: list[ClientOrderResponse]
+    total: int
