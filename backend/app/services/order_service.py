@@ -18,6 +18,7 @@ async def create_order(db: AsyncSession, data: dict) -> Order:
         if product:
             product.stock = max(0.0, product.stock - item_data["quantity"])
     await db.flush()
+    await db.refresh(order, ["items"])
     return order
 
 async def get_orders(db: AsyncSession, status: str = "", page: int = 1, limit: int = 50) -> list[Order]:

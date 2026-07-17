@@ -33,6 +33,7 @@ class OrderResponse(BaseModel):
     delivery_date: str
     items_count: int
     status: str
+    payment_method: str = "Efectivo"
     total_value: float
     created_at: datetime | None = None
     items: list[OrderItemResponse] = []
