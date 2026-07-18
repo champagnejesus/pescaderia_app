@@ -45,7 +45,7 @@ export function CollapsibleSearchBar({ value, onChange, placeholder = "Buscar...
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className="w-full bg-abyssal-surface-high/80 backdrop-blur-sm rounded-2xl px-4 py-3 pl-11 pr-11 text-[15px] text-black outline-none border border-abyssal-outline/30 focus:border-abyssal-primary/50 focus:ring-4 focus:ring-abyssal-primary/10 placeholder:text-gray-400 transition-all duration-200"
+            className="w-full bg-abyssal-surface-high/80 backdrop-blur-sm rounded-2xl px-4 py-3 pl-11 pr-11 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline/30 focus:border-abyssal-primary/40 focus:ring-2 focus:ring-abyssal-primary/5 placeholder:text-abyssal-text-secondary/50 transition-all duration-200"
           />
           <button
             onClick={handleClear}

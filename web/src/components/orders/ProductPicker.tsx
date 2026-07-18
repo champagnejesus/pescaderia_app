@@ -24,19 +24,20 @@ interface ProductPickerProps {
   onAdd: (product: Product) => void
   onUpdateQty: (productId: number, qty: number) => void
   onSearch: (q: string) => void
+  searchValue: string
 }
 
 function formatCurrency(n: number) {
   return `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
 }
 
-export function ProductPicker({ products, selected, onAdd, onUpdateQty, onSearch }: ProductPickerProps) {
+export function ProductPicker({ products, selected, onAdd, onUpdateQty, onSearch, searchValue }: ProductPickerProps) {
   const selectedIds = new Set(selected.map((s) => s.product_id))
 
   return (
     <div>
       <p className="text-title-medium text-abyssal-text-primary mb-2">Productos</p>
-      <SearchBar value="" onChange={onSearch} placeholder="Buscar producto..." className="mb-3" />
+      <SearchBar value={searchValue} onChange={onSearch} placeholder="Buscar producto..." className="mb-3" />
 
       <div className="space-y-2 max-h-48 overflow-y-auto mb-4">
         {products

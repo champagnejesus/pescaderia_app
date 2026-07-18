@@ -171,6 +171,7 @@ export default function NewOrderPage() {
           selectedId={selectedClient?.id ?? null}
           onSelect={(client) => setSelectedClient(client)}
           onSearch={setClientSearchQuery}
+          searchValue={clientSearchQuery}
         />
       )}
 
@@ -190,6 +191,7 @@ export default function NewOrderPage() {
           onAdd={handleAddProduct}
           onUpdateQty={handleUpdateQty}
           onSearch={setSearchQuery}
+          searchValue={searchQuery}
         />
       )}
 

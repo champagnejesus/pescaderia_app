@@ -12,6 +12,7 @@ interface ClientSelectorProps {
   selectedId: number | null
   onSelect: (client: Client) => void
   onSearch: (q: string) => void
+  searchValue: string
 }
 
 function getInitials(name: string) {
@@ -22,11 +23,11 @@ function getInitials(name: string) {
     .join("")
 }
 
-export function ClientSelector({ clients, selectedId, onSelect, onSearch }: ClientSelectorProps) {
+export function ClientSelector({ clients, selectedId, onSelect, onSearch, searchValue }: ClientSelectorProps) {
   return (
     <div>
       <p className="text-title-medium text-abyssal-text-primary mb-2">Cliente</p>
-      <SearchBar value="" onChange={onSearch} placeholder="Buscar cliente..." className="mb-3" />
+      <SearchBar value={searchValue} onChange={onSearch} placeholder="Buscar cliente..." className="mb-3" />
       <div className="flex gap-2 overflow-x-auto pb-2">
         {clients.map((client) => (
           <button
