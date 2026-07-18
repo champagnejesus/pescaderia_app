@@ -54,7 +54,7 @@ export default function DashboardPage() {
           </>
         ) : (
           <>
-            <Card className="p-4 bg-abyssal-surface border border-abyssal-outline/50 animate-fade-in">
+            <Card className="p-4 animate-fade-in">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <p className="text-label-medium text-abyssal-text-secondary">Ganancia Bruta</p>
@@ -62,8 +62,16 @@ export default function DashboardPage() {
                     ${(dashboardData.gross_profit ?? 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-abyssal-primary/10 flex items-center justify-center text-abyssal-primary">
-                  <TrendingUp size={20} />
+                <div className="flex items-center gap-2">
+                  {dashboardData.pending_orders > 0 && (
+                    <span className="inline-flex items-center gap-1 bg-abyssal-yellow-bg text-abyssal-yellow rounded-abyssal-full px-2.5 py-1 text-label-small">
+                      <span className="w-1.5 h-1.5 rounded-full bg-abyssal-yellow animate-subtle-pulse" />
+                      {dashboardData.pending_orders} pendiente{dashboardData.pending_orders !== 1 ? "s" : ""}
+                    </span>
+                  )}
+                  <div className="w-10 h-10 rounded-full bg-abyssal-primary/10 flex items-center justify-center text-abyssal-primary">
+                    <TrendingUp size={20} />
+                  </div>
                 </div>
               </div>
               <SparklineChart data={grossProfitHistory} color="#30D158" />

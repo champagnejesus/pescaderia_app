@@ -80,7 +80,7 @@ export default function SuppliersPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Truck size={48} className="text-abyssal-text-secondary mb-4" />
+            <Truck size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-title-medium text-abyssal-text-primary mb-2">No hay proveedores</p>
             <p className="text-body-medium text-abyssal-text-secondary mb-4">Agrega tu primer proveedor para comenzar</p>
             <Button variant="primary" onClick={() => setAddOpen(true)}>Agregar Proveedor</Button>

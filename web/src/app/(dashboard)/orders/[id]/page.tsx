@@ -125,7 +125,7 @@ export default function OrderDetailPage() {
       />
 
       <div className="p-4 space-y-4 pb-24">
-        <div className="bg-abyssal-surface rounded-abyssal-md p-4 shadow-sm animate-fade-in">
+        <div className="bg-abyssal-surface rounded-abyssal-md p-4 shadow-abyssal-sm animate-fade-in">
           <div className="flex items-center justify-between mb-3">
             <p className="text-label-medium text-abyssal-text-secondary">Estado</p>
             <StatusBadge status={order.status} />
@@ -140,7 +140,7 @@ export default function OrderDetailPage() {
           </div>
         </div>
 
-        <div className="bg-abyssal-surface rounded-abyssal-md p-4 shadow-sm animate-fade-in" style={{ animationDelay: "50ms" }}>
+        <div className="bg-abyssal-surface rounded-abyssal-md p-4 shadow-abyssal-sm animate-fade-in" style={{ animationDelay: "50ms" }}>
           <div className="flex items-center justify-between mb-3">
             <div>
               <p className="text-label-small text-abyssal-text-secondary">Creado</p>
@@ -153,7 +153,7 @@ export default function OrderDetailPage() {
           </div>
         </div>
 
-        <div className="bg-abyssal-surface rounded-abyssal-md p-4 shadow-sm animate-fade-in" style={{ animationDelay: "100ms" }}>
+        <div className="bg-abyssal-surface rounded-abyssal-md p-4 shadow-abyssal-sm animate-fade-in" style={{ animationDelay: "100ms" }}>
           <p className="text-title-medium text-abyssal-text-primary mb-3">Productos ({order.items_count})</p>
           <div className="space-y-3">
             {order.items.map((item, idx) => (
@@ -172,7 +172,7 @@ export default function OrderDetailPage() {
           </div>
         </div>
 
-        <div className="bg-abyssal-surface rounded-abyssal-md p-4 shadow-sm space-y-2 animate-fade-in" style={{ animationDelay: "150ms" }}>
+        <div className="bg-abyssal-surface rounded-abyssal-md p-4 shadow-abyssal-sm space-y-2 animate-fade-in" style={{ animationDelay: "150ms" }}>
           <div className="flex justify-between text-body-medium">
             <span className="text-abyssal-text-secondary">Subtotal</span>
             <span className="text-abyssal-text-primary">{formatCurrency(subtotal)}</span>

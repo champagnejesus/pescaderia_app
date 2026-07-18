@@ -117,7 +117,7 @@ export default function ClientsPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Users size={48} className="text-abyssal-text-secondary mb-4" />
+            <Users size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-title-medium text-abyssal-text-primary mb-2">No hay clientes</p>
             <p className="text-body-medium text-abyssal-text-secondary mb-4">Agrega tu primer cliente para comenzar</p>
             <Link href="/clients/new">

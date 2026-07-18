@@ -35,7 +35,7 @@ export function RecentOrdersList({ orders, onPress }: RecentOrdersListProps) {
   return (
     <div>
       <h3 className="text-title-medium text-abyssal-text-primary mb-3">Pedidos Recientes</h3>
-      <div className="bg-abyssal-surface rounded-abyssal-md overflow-hidden">
+      <div className="bg-abyssal-surface rounded-abyssal-md shadow-abyssal-sm overflow-hidden">
         {recent.map((order, i) => (
           <button
             key={order.id}

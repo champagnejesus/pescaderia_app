@@ -38,7 +38,7 @@ export default function ProductsPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Package size={48} className="text-abyssal-text-secondary mb-4" />
+            <Package size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-title-medium text-abyssal-text-primary mb-2">No se encontraron productos</p>
             <p className="text-body-medium text-abyssal-text-secondary mb-4">Agrega tu primer producto para comenzar</p>
             <Link href="/products/new">
