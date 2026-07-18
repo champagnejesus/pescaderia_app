@@ -13,6 +13,10 @@ class RegisterRequest(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
+    refresh_token: str = ""
     token_type: str = "bearer"
-    business_name: str
-    owner_name: str
+    business_name: str = ""
+    owner_name: str = ""
+
+class RefreshRequest(BaseModel):
+    refresh_token: str

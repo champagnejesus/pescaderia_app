@@ -4,7 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from app.database import engine, Base, migrate_add_column, migrate_client_fk, migrate_product_fk
 from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync
-import traceback
+from app.config import settings
+from app.middleware.rate_limit import RateLimitMiddleware
 
 
 @asynccontextmanager
@@ -19,18 +20,20 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(title="Abyssal ERP API", version="1.0.0", lifespan=lifespan)
+app.add_middleware(RateLimitMiddleware, max_requests=20, window_seconds=60)
 
+origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=origins if origins != ["*"] else ["*"],
+    allow_credentials=origins != ["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 @app.exception_handler(Exception)
 async def global_handler(request: Request, exc: Exception):
-    return JSONResponse(status_code=500, content={"detail": type(exc).__name__, "message": str(exc)})
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(products.router, prefix="/api/v1/products", tags=["Products"])

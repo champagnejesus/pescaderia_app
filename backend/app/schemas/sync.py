@@ -3,6 +3,7 @@ from datetime import datetime
 
 class SyncPullRequest(BaseModel):
     since: datetime | None = None
+    limit: int = 500
 
 class SyncPullResponse(BaseModel):
     products: list = []

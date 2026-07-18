@@ -29,8 +29,8 @@ async def migrate_add_column(table: str, column: str, definition: str):
         if dialect == "sqlite":
             try:
                 await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} {definition}"))
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"ℹ SQLite migration skipped for {table}.{column}: {e}")
         else:
             await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column} {definition}"))
 

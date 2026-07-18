@@ -15,6 +15,8 @@ class ClientUpdate(BaseModel):
     phone: str | None = None
     email: str | None = None
     address: str | None = None
+    outstanding_balance: float | None = None
+    initials: str | None = None
     credit_limit: float | None = None
 
 class BalanceAdjust(BaseModel):

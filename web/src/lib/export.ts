@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function exportCSV(data: any[], filename: string, headerMap: Record<string, string>) {
+export function exportCSV<T extends Record<string, unknown>>(data: T[], filename: string, headerMap: Record<string, string>) {
   if (data.length === 0) return
 
   const keys = Object.keys(headerMap)

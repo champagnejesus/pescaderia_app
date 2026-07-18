@@ -4,7 +4,6 @@ import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { SparklineChart } from "@/components/dashboard/SparklineChart"
 import { BentoGrid } from "@/components/dashboard/BentoGrid"
 import { RecentOrdersList } from "@/components/dashboard/RecentOrdersList"
 import { useProducts } from "@/hooks/useProducts"
@@ -36,10 +35,6 @@ export default function DashboardPage() {
     total_clients: 0,
     total_suppliers: 0,
   }
-
-  const grossProfitHistory = Array.from({ length: 7 }, (_, i) => ({
-    value: Math.max(0, dashboardData.gross_profit * (0.8 + Math.random() * 0.4)),
-  }))
 
   return (
     <>
@@ -78,7 +73,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
-              <SparklineChart data={grossProfitHistory} color="#30D158" />
             </Card>
 
             <BentoGrid data={dashboardData} />

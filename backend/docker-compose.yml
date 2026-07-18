@@ -3,30 +3,27 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: abyssal
-      POSTGRES_PASSWORD: abyssal_pass
-      POSTGRES_DB: abyssal_erp
+      POSTGRES_USER: ${PG_USER:-abyssal}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-abyssal_pass}
+      POSTGRES_DB: ${PG_DB:-abyssal_erp}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
 
   api:
     build: .
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql+asyncpg://abyssal:abyssal_pass@db:5432/abyssal_erp
-      REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: change-this-in-production
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL:-}
+      SECRET_KEY: ${SECRET_KEY}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:8000}
     depends_on:
       - db
-      - redis
+    env_file:
+      - ../.env
 
 volumes:
   pgdata:
