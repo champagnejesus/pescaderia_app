@@ -23,12 +23,12 @@ class BalanceAdjust(BaseModel):
 class ClientResponse(BaseModel):
     id: int
     name: str
-    phone: str
-    email: str
-    address: str
-    outstanding_balance: float
-    initials: str
-    credit_limit: float
+    phone: str | None = None
+    email: str | None = None
+    address: str | None = None
+    outstanding_balance: float = 0.0
+    initials: str | None = None
+    credit_limit: float = 1500.0
     created_at: datetime | None = None
     class Config: from_attributes = True
 
