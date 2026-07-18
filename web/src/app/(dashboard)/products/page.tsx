@@ -38,8 +38,8 @@ export default function ProductsPage() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Package size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
-            <p className="text-title-medium text-abyssal-text-primary mb-2">No se encontraron productos</p>
-            <p className="text-body-medium text-abyssal-text-secondary mb-4">Agrega tu primer producto para comenzar</p>
+            <p className="text-[17px] font-semibold text-abyssal-text-primary mb-2">No se encontraron productos</p>
+            <p className="text-[15px] text-abyssal-text-secondary mb-4">Agrega tu primer producto para comenzar</p>
             <Link href="/products/new">
               <Button variant="primary">Agregar Producto</Button>
             </Link>

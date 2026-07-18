@@ -74,12 +74,12 @@ export default function OrdersPage() {
             ))}
           </div>
         ) : error ? (
-          <p className="text-center text-body-medium text-abyssal-red py-8">{error}</p>
+          <p className="text-center text-[15px] text-abyssal-red py-8">{error}</p>
         ) : orders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <ClipboardList size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
-            <p className="text-title-medium text-abyssal-text-primary mb-2">No hay pedidos</p>
-            <p className="text-body-medium text-abyssal-text-secondary mb-4">Crea tu primer pedido para comenzar</p>
+            <p className="text-[17px] font-semibold text-abyssal-text-primary mb-2">No hay pedidos</p>
+            <p className="text-[15px] text-abyssal-text-secondary mb-4">Crea tu primer pedido para comenzar</p>
             <Link href="/orders/new">
               <Button variant="primary">Crear Pedido</Button>
             </Link>

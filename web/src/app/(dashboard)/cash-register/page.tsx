@@ -87,7 +87,7 @@ export default function CashRegisterPage() {
           </>
         ) : error && !summary ? (
           <div className="bg-abyssal-surface glass rounded-3xl p-8 text-center">
-            <p className="text-body-large text-abyssal-red font-medium">{error}</p>
+            <p className="text-[17px] text-abyssal-red font-medium">{error}</p>
             <Button variant="secondary" size="md" className="mt-4" onClick={fetch}>
               Reintentar
             </Button>
@@ -111,7 +111,7 @@ export default function CashRegisterPage() {
 
             <div className="space-y-3 animate-fade-in" style={{ animationDelay: "100ms" }}>
               <div className="flex items-center justify-between">
-                <p className="text-title-medium text-abyssal-text-primary">Transacciones</p>
+                <p className="text-[17px] font-semibold text-abyssal-text-primary">Transacciones</p>
                 {transactions.length > 0 && (
                   <p className="text-[12px] text-abyssal-text-secondary">
                     {filteredTransactions.length} de {transactions.length}
@@ -132,7 +132,7 @@ export default function CashRegisterPage() {
 
               {filteredTransactions.length === 0 ? (
                 <div className="bg-abyssal-surface glass rounded-2xl p-8 text-center">
-                  <p className="text-body-medium text-abyssal-text-secondary">
+                  <p className="text-[15px] text-abyssal-text-secondary">
                     {selectedFilter
                       ? `No hay transacciones de tipo "${selectedFilter}"`
                       : "No hay transacciones hoy"}

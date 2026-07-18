@@ -43,7 +43,7 @@ export default function ProductDetailPage() {
     return (
       <div className="min-h-screen bg-abyssal-bg p-4 space-y-4">
         <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-48 w-full rounded-abyssal-md" />
+        <Skeleton className="h-48 w-full rounded-2xl" />
         <div className="grid grid-cols-2 gap-3">
           <Skeleton className="h-24" />
           <Skeleton className="h-24" />
@@ -59,13 +59,12 @@ export default function ProductDetailPage() {
     return (
       <div className="min-h-screen bg-abyssal-bg flex flex-col items-center justify-center gap-3 p-4">
         <AlertCircle className="w-12 h-12 text-abyssal-red" />
-        <p className="text-title-medium text-abyssal-text-primary">Producto no encontrado</p>
+        <p className="text-[20px] font-bold text-abyssal-text-primary">Producto no encontrado</p>
         <Button variant="ghost" onClick={() => router.back()}>Volver</Button>
       </div>
     )
   }
 
-  const initial = product.name.charAt(0).toUpperCase()
   const priceHistory = DAYS.map((day) => ({
     day,
     price: Math.max(0, product.price * (0.85 + Math.random() * 0.3)),
@@ -73,18 +72,18 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-abyssal-bg">
-      <header className="bg-abyssal-surface/80 backdrop-blur-xl border-b border-abyssal-outline/30 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
-        <button onClick={() => router.back()} className="p-2 -ml-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all active:scale-95">
+      <header className="bg-abyssal-surface/80 glass sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
+        <button onClick={() => router.back()} className="p-2 -ml-2 rounded-full hover:bg-abyssal-surface-high transition-all active:scale-95">
           <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
-        <h1 className="text-title-large text-abyssal-text-primary font-bold">Producto</h1>
-        <button onClick={() => router.push("/products/" + id + "/edit")} className="p-2 -mr-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all active:scale-95">
+        <h1 className="text-[20px] font-bold text-abyssal-text-primary">Producto</h1>
+        <button onClick={() => router.push("/products/" + id + "/edit")} className="p-2 -mr-2 rounded-full hover:bg-abyssal-surface-high transition-all active:scale-95">
           <Pencil className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
       </header>
 
       <div className="max-w-[480px] mx-auto">
-        <div className="mx-4 rounded-abyssal-md overflow-hidden h-48 mt-4 animate-fade-in">
+        <div className="mx-4 rounded-2xl overflow-hidden h-48 mt-4 animate-fade-in">
           {product.image_url ? (
             <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
           ) : (
@@ -96,13 +95,13 @@ export default function ProductDetailPage() {
 
         <div className="p-4 space-y-4">
           <div className="animate-fade-in" style={{ animationDelay: "50ms" }}>
-            <h1 className="text-title-large text-abyssal-text-primary font-bold">{product.name}</h1>
+            <h1 className="text-[20px] font-bold text-abyssal-text-primary">{product.name}</h1>
             <div className="flex items-center gap-2 mt-2">
-              <span className="bg-abyssal-surface-high text-abyssal-text-secondary rounded-abyssal-full px-3 py-0.5 text-label-small">
+              <span className="bg-abyssal-surface-high/60 glass-subtle text-abyssal-text-secondary rounded-full px-3 py-0.5 text-[12px] font-medium">
                 {product.category}
               </span>
               {product.is_extra_quality && (
-                <span className="bg-abyssal-yellow-bg text-abyssal-yellow rounded-abyssal-full px-3 py-0.5 text-label-small">
+                <span className="bg-abyssal-yellow/15 text-abyssal-yellow rounded-full px-3 py-0.5 text-[12px] font-medium">
                   Calidad Extra
                 </span>
               )}
@@ -110,23 +109,23 @@ export default function ProductDetailPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-3 animate-fade-in" style={{ animationDelay: "100ms" }}>
-            <div className="bg-abyssal-surface rounded-abyssal-md p-4">
-              <p className="text-label-medium text-abyssal-text-secondary">Precio</p>
-              <p className="text-headline-medium text-abyssal-text-primary font-bold mt-1">
+            <div className="bg-abyssal-surface glass rounded-2xl p-4">
+              <p className="text-[12px] text-abyssal-text-secondary">Precio</p>
+              <p className="text-[20px] font-bold text-abyssal-text-primary mt-1">
                 ${product.price.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
               </p>
             </div>
-            <div className="bg-abyssal-surface rounded-abyssal-md p-4">
-              <p className="text-label-medium text-abyssal-text-secondary">Stock</p>
+            <div className="bg-abyssal-surface glass rounded-2xl p-4">
+              <p className="text-[12px] text-abyssal-text-secondary">Stock</p>
               <div className="flex items-center gap-2 mt-2">
                 <StockBadge stock={product.stock} threshold={product.low_stock_threshold} />
-                <span className="text-body-medium text-abyssal-text-secondary">{product.unit}</span>
+                <span className="text-[15px] text-abyssal-text-secondary">{product.unit}</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-abyssal-surface rounded-abyssal-md p-4 animate-fade-in" style={{ animationDelay: "150ms" }}>
-            <p className="text-title-medium text-abyssal-text-primary mb-3">Tendencia de Precio</p>
+          <div className="bg-abyssal-surface glass rounded-2xl p-4 animate-fade-in" style={{ animationDelay: "150ms" }}>
+            <p className="text-[17px] font-semibold text-abyssal-text-primary mb-3">Tendencia de Precio</p>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={priceHistory}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--abyssal-outline)" />
@@ -138,20 +137,20 @@ export default function ProductDetailPage() {
             </ResponsiveContainer>
           </div>
 
-          <div className="bg-abyssal-surface rounded-abyssal-md p-4 flex items-center justify-between animate-fade-in" style={{ animationDelay: "200ms" }}>
-            <span className="text-body-medium text-abyssal-text-secondary">Stock mínimo</span>
-            <span className="text-body-medium text-abyssal-text-primary font-semibold">{product.low_stock_threshold} {product.unit}</span>
+          <div className="bg-abyssal-surface glass rounded-2xl p-4 flex items-center justify-between animate-fade-in" style={{ animationDelay: "200ms" }}>
+            <span className="text-[15px] text-abyssal-text-secondary">Stock mínimo</span>
+            <span className="text-[15px] text-abyssal-text-primary font-semibold">{product.low_stock_threshold} {product.unit}</span>
           </div>
 
           {product.description && (
-            <div className="bg-abyssal-surface rounded-abyssal-md p-4 animate-fade-in" style={{ animationDelay: "250ms" }}>
-              <p className="text-label-medium text-abyssal-text-secondary mb-1">Descripción</p>
-              <p className="text-body-medium text-abyssal-text-primary">{product.description}</p>
+            <div className="bg-abyssal-surface glass rounded-2xl p-4 animate-fade-in" style={{ animationDelay: "250ms" }}>
+              <p className="text-[12px] text-abyssal-text-secondary mb-1">Descripción</p>
+              <p className="text-[15px] text-abyssal-text-primary">{product.description}</p>
             </div>
           )}
 
-          <div className="bg-abyssal-surface rounded-abyssal-md p-4 animate-fade-in" style={{ animationDelay: "300ms" }}>
-            <p className="text-title-medium text-abyssal-text-primary mb-3">Ajustar Stock</p>
+          <div className="bg-abyssal-surface glass rounded-2xl p-4 animate-fade-in" style={{ animationDelay: "300ms" }}>
+            <p className="text-[17px] font-semibold text-abyssal-text-primary mb-3">Ajustar Stock</p>
             <div className="flex items-center gap-3">
               <Input
                 type="number"

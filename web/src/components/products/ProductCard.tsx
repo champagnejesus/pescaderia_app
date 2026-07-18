@@ -29,7 +29,7 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
       {product.image_url ? (
         <img src={product.image_url} alt={product.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
       ) : (
-        <div className="w-12 h-12 rounded-xl bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary text-title-medium font-bold shrink-0">
+        <div className="w-12 h-12 rounded-xl bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary text-[17px] font-bold shrink-0">
           {initial}
         </div>
       )}

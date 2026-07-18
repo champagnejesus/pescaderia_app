@@ -54,34 +54,34 @@ export default function EditClientPage() {
 
   return (
     <div className="min-h-screen bg-abyssal-bg">
-      <header className="bg-abyssal-surface/80 backdrop-blur-xl border-b border-abyssal-outline/30 px-4 py-3 flex items-center gap-3 sticky top-0 z-40">
-        <button onClick={() => router.back()} className="p-2 -ml-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all active:scale-95">
+      <header className="bg-abyssal-surface/80 glass sticky top-0 z-40 px-4 py-3 flex items-center gap-3">
+        <button onClick={() => router.back()} className="p-2 -ml-2 rounded-full hover:bg-abyssal-surface-high transition-all active:scale-95">
           <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
-        <h1 className="text-title-large text-abyssal-text-primary flex-1">Editar Cliente</h1>
+        <h1 className="text-[20px] font-bold text-abyssal-text-primary flex-1">Editar Cliente</h1>
       </header>
       <form onSubmit={handleSubmit} className="p-4 space-y-4 max-w-[480px] mx-auto">
         {error && (
-          <div className="bg-abyssal-red-bg rounded-abyssal-sm px-4 py-2 text-body-medium text-abyssal-red">{error}</div>
+          <div className="bg-abyssal-red/15 rounded-xl px-4 py-2.5 text-[15px] text-abyssal-red">{error}</div>
         )}
         <div className="space-y-1.5">
-          <label className="text-label-small text-abyssal-text-secondary">Nombre</label>
+          <label className="text-[12px] text-abyssal-text-secondary">Nombre</label>
           <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
         </div>
         <div className="space-y-1.5">
-          <label className="text-label-small text-abyssal-text-secondary">Teléfono</label>
+          <label className="text-[12px] text-abyssal-text-secondary">Teléfono</label>
           <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
         </div>
         <div className="space-y-1.5">
-          <label className="text-label-small text-abyssal-text-secondary">Email</label>
+          <label className="text-[12px] text-abyssal-text-secondary">Email</label>
           <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         </div>
         <div className="space-y-1.5">
-          <label className="text-label-small text-abyssal-text-secondary">Dirección</label>
+          <label className="text-[12px] text-abyssal-text-secondary">Dirección</label>
           <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
         </div>
         <div className="space-y-1.5">
-          <label className="text-label-small text-abyssal-text-secondary">Límite de Crédito</label>
+          <label className="text-[12px] text-abyssal-text-secondary">Límite de Crédito</label>
           <Input type="number" step="0.01" value={form.credit_limit} onChange={(e) => setForm({ ...form, credit_limit: +e.target.value })} />
         </div>
         <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full">

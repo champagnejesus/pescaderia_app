@@ -1,5 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button"
+import { formatCurrency } from "@/lib/formatters"
 
 interface CheckoutItem {
   product_id: number
@@ -15,22 +16,18 @@ interface CheckoutSummaryProps {
   loading: boolean
 }
 
-function formatCurrency(n: number) {
-  return `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
-}
-
 export function CheckoutSummary({ items, paymentMethod, onSubmit, loading }: CheckoutSummaryProps) {
   const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unit_price, 0)
   const tax = subtotal * 0.10
   const total = subtotal + tax
 
   return (
-    <div className="bg-abyssal-surface rounded-abyssal-sm p-4 space-y-3">
-      <p className="text-title-medium text-abyssal-text-primary">Resumen</p>
+    <div className="bg-abyssal-surface glass rounded-2xl p-4 space-y-3">
+      <p className="text-[17px] font-semibold text-abyssal-text-primary">Resumen</p>
 
       <div className="space-y-2">
         {items.map((item) => (
-          <div key={item.product_id} className="flex items-center justify-between text-body-medium">
+          <div key={item.product_id} className="flex items-center justify-between text-[15px]">
             <span className="text-abyssal-text-primary truncate flex-1">
               {item.product_name}
             </span>
@@ -44,23 +41,23 @@ export function CheckoutSummary({ items, paymentMethod, onSubmit, loading }: Che
         ))}
       </div>
 
-      <div className="border-t border-abyssal-outline pt-2 space-y-1">
-        <div className="flex justify-between text-body-medium">
+      <div className="border-t border-abyssal-outline/15 pt-3 space-y-1.5">
+        <div className="flex justify-between text-[15px]">
           <span className="text-abyssal-text-secondary">Subtotal</span>
           <span className="text-abyssal-text-primary">{formatCurrency(subtotal)}</span>
         </div>
-        <div className="flex justify-between text-body-medium">
+        <div className="flex justify-between text-[15px]">
           <span className="text-abyssal-text-secondary">IVA (10%)</span>
           <span className="text-abyssal-text-primary">{formatCurrency(tax)}</span>
         </div>
-        <div className="flex justify-between text-title-medium pt-1 border-t border-abyssal-outline">
+        <div className="flex justify-between text-[17px] font-semibold pt-2 border-t border-abyssal-outline/15">
           <span className="text-abyssal-text-primary">Total</span>
           <span className="text-abyssal-text-primary font-bold">{formatCurrency(total)}</span>
         </div>
       </div>
 
       <div className="flex items-center justify-between pt-1">
-        <span className="text-body-medium text-abyssal-text-secondary">{paymentMethod}</span>
+        <span className="text-[15px] text-abyssal-text-secondary">{paymentMethod}</span>
         <Button onClick={onSubmit} disabled={loading || items.length === 0} size="md">
           {loading ? "Creando..." : "Realizar Pedido"}
         </Button>

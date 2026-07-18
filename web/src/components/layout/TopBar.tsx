@@ -14,7 +14,7 @@ export function TopBar({ title, leftAction, rightAction }: TopBarProps) {
         <div className="flex items-center gap-2 min-w-[40px]">
           {leftAction}
         </div>
-        <h1 className="text-title-large text-abyssal-text-primary flex-1 text-center font-semibold">{title}</h1>
+        <h1 className="text-[20px] text-abyssal-text-primary flex-1 text-center font-bold">{title}</h1>
         <div className="flex items-center gap-2 min-w-[40px] justify-end">
           {rightAction}
         </div>
