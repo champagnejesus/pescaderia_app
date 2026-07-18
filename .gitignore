@@ -18,3 +18,16 @@ local.properties
 debug.keystore
 web/node_modules/
 web/.next/
+web/tsconfig.tsbuildinfo
+web/next-env.d.ts
+.next/
+*.db
+*.sqlite
+*.log
+__pycache__/
+*.pyc
+*.pyo
+.superpowers/
+docs/superpowers/
+.impeccable/
+fill_form.js
