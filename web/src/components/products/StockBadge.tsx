@@ -15,7 +15,7 @@ export function StockBadge({ stock, threshold }: StockBadgeProps) {
         : "bg-abyssal-green-bg text-abyssal-green"
 
   return (
-    <span className={cn("inline-block rounded-abyssal-sm px-2 py-0.5 text-label-small font-semibold", colorClass)}>
+    <span className={cn("inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold", colorClass)}>
       {stock}
     </span>
   )

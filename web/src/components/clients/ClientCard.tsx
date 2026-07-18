@@ -24,20 +24,20 @@ export function ClientCard({ client, onPress }: ClientCardProps) {
   return (
     <button
       onClick={() => onPress(client.id)}
-      className="flex items-center gap-3 p-3 bg-abyssal-surface rounded-abyssal-sm w-full text-left transition-colors hover:bg-abyssal-surface-high"
+      className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl border border-abyssal-outline/20 w-full text-left transition-all duration-200 active:scale-[0.98]"
     >
-      <div className="w-10 h-10 rounded-full bg-abyssal-primary-light flex items-center justify-center text-abyssal-primary text-label-large font-bold shrink-0">
+      <div className="w-11 h-11 rounded-full bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary font-semibold text-[15px] shrink-0">
         {client.initials}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-body-medium text-abyssal-text-primary font-medium truncate">
+        <p className="text-[15px] text-abyssal-text-primary font-medium truncate">
           {client.name}
         </p>
-        <p className="text-label-small text-abyssal-text-secondary truncate">
+        <p className="text-[12px] text-abyssal-text-secondary mt-0.5 truncate">
           {client.phone}
         </p>
       </div>
-      <p className={`text-body-medium font-semibold shrink-0 ${balanceColor}`}>
+      <p className={`text-[15px] font-semibold shrink-0 ${balanceColor}`}>
         {formatCurrency(client.outstanding_balance)}
       </p>
     </button>

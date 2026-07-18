@@ -103,3 +103,20 @@
 .min-h-screen[class*="bg-abyssal"] {
   background-color: transparent !important;
 }
+
+/* iOS frosted glass surfaces */
+.glass {
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+}
+
+.glass-subtle {
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+}
+
+/* iOS separator */
+.ios-separator {
+  height: 0.5px;
+  background: rgba(255, 255, 255, 0.08);
+}

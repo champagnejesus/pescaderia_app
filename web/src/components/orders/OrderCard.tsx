@@ -33,19 +33,19 @@ export function OrderCard({ order, onPress }: OrderCardProps) {
   return (
     <button
       onClick={() => onPress(order.id)}
-      className="bg-abyssal-surface rounded-abyssal-sm p-3 flex items-center justify-between w-full text-left transition-colors hover:bg-abyssal-surface-high"
+      className="bg-abyssal-surface glass rounded-2xl border border-abyssal-outline/20 p-3.5 flex items-center justify-between w-full text-left transition-all duration-200 active:scale-[0.98]"
     >
       <div className="min-w-0 flex-1">
-        <p className="text-body-medium text-abyssal-text-primary font-medium truncate">
+        <p className="text-[15px] text-abyssal-text-primary font-medium truncate">
           {order.client_name}
         </p>
-        <p className="text-label-small text-abyssal-text-secondary">
+        <p className="text-[12px] text-abyssal-text-secondary mt-0.5">
           #{order.order_number} · {formatDate(order.created_at)}
         </p>
       </div>
       <div className="flex items-center gap-3 shrink-0">
         <StatusBadge status={order.status} />
-        <span className="text-body-medium text-abyssal-text-primary font-semibold">
+        <span className="text-[15px] text-abyssal-text-primary font-semibold">
           {formatCurrency(order.total_value)}
         </span>
       </div>

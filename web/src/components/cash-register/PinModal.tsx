@@ -37,15 +37,15 @@ export function PinModal({ open, onClose, onConfirm }: PinModalProps) {
 
   return (
     <Dialog open={open} onClose={handleClose} title="Ingrese PIN de Seguridad" showClose>
-      <div className="flex justify-center gap-3 mb-6">
+      <div className="flex justify-center gap-3.5 mb-8">
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
             className={cn(
-              "w-4 h-4 rounded-full border-2 transition-all duration-200",
+              "w-3.5 h-3.5 rounded-full transition-all duration-300",
               pin.length > i
-                ? "bg-abyssal-primary border-abyssal-primary scale-110"
-                : "border-abyssal-outline"
+                ? "bg-abyssal-primary scale-110"
+                : "bg-abyssal-surface-high border-2 border-abyssal-outline/50"
             )}
           />
         ))}
@@ -58,7 +58,7 @@ export function PinModal({ open, onClose, onConfirm }: PinModalProps) {
             <button
               key={i}
               onClick={() => handleDigit(d)}
-              className="h-14 rounded-abyssal-sm bg-abyssal-surface-high text-title-large text-abyssal-text-primary font-bold hover:bg-abyssal-surface transition-all active:scale-95"
+              className="h-[52px] rounded-full bg-abyssal-surface-high/60 glass-subtle text-[17px] text-abyssal-text-primary font-semibold border border-abyssal-outline/20 hover:bg-abyssal-surface-highest/60 transition-all active:scale-90"
             >
               {d}
             </button>
@@ -66,7 +66,7 @@ export function PinModal({ open, onClose, onConfirm }: PinModalProps) {
         })}
         <button
           onClick={handleDelete}
-          className="h-14 rounded-abyssal-sm bg-abyssal-surface-high flex items-center justify-center text-abyssal-text-secondary hover:bg-abyssal-surface transition-all active:scale-95"
+          className="h-[52px] rounded-full bg-abyssal-surface-high/60 glass-subtle flex items-center justify-center text-abyssal-text-secondary border border-abyssal-outline/20 hover:bg-abyssal-surface-highest/60 transition-all active:scale-90"
         >
           <Delete className="w-5 h-5" />
         </button>
@@ -76,8 +76,8 @@ export function PinModal({ open, onClose, onConfirm }: PinModalProps) {
         onClick={handleConfirm}
         disabled={pin.length < 4}
         className={cn(
-          "w-full mt-4 bg-abyssal-primary text-abyssal-on-primary rounded-abyssal-sm py-3 text-body-medium font-medium transition-all",
-          pin.length === 4 ? "hover:opacity-90 active:scale-[0.98]" : "opacity-50 cursor-not-allowed"
+          "w-full mt-5 bg-abyssal-primary text-white rounded-full py-3.5 text-[15px] font-semibold transition-all shadow-[0_2px_8px_rgba(94,92,230,0.35)]",
+          pin.length === 4 ? "hover:brightness-110 active:scale-[0.97]" : "opacity-40 cursor-not-allowed"
         )}
       >
         Confirmar

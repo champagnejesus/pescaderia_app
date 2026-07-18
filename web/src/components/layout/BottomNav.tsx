@@ -17,8 +17,9 @@ export function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-abyssal-surface border-t border-abyssal-outline/50 z-40">
-      <div className="max-w-[480px] mx-auto flex items-center justify-around h-16 px-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-40">
+      <div className="absolute inset-0 bg-abyssal-surface glass border-t border-abyssal-outline/40" />
+      <div className="relative max-w-[480px] mx-auto flex items-center justify-around h-[68px] px-2 pb-1">
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = pathname.startsWith(href)
           return (
@@ -26,15 +27,20 @@ export function BottomNav() {
               key={href}
               href={href}
               className={cn(
-                "flex flex-col items-center gap-1 py-1 px-3 rounded-abyssal-sm transition-all duration-200 relative active:scale-95",
-                active ? "text-abyssal-primary" : "text-abyssal-text-secondary hover:text-abyssal-text-primary",
+                "flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl transition-all duration-200 relative active:scale-90",
+                active ? "text-abyssal-primary" : "text-abyssal-text-secondary",
               )}
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-[10px] font-medium leading-tight">{label}</span>
-              {active && (
-                <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-abyssal-primary" />
-              )}
+              <div className={cn(
+                "relative flex items-center justify-center w-10 h-7 rounded-full transition-all duration-300",
+                active && "bg-abyssal-primary/12"
+              )}>
+                <Icon className="w-[22px] h-[22px]" strokeWidth={active ? 2.2 : 1.8} />
+              </div>
+              <span className={cn(
+                "text-[10px] leading-tight transition-all duration-200",
+                active ? "font-semibold text-abyssal-primary" : "font-medium"
+              )}>{label}</span>
             </Link>
           )
         })}

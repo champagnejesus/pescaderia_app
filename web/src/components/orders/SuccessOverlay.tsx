@@ -17,21 +17,23 @@ export function SuccessOverlay({ open, order, onView, onClose }: SuccessOverlayP
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 bg-abyssal-bg flex flex-col items-center justify-center px-6">
-      <div className="w-20 h-20 rounded-full bg-abyssal-green-bg flex items-center justify-center mb-6 animate-bounce">
-        <Check className="w-10 h-10 text-abyssal-green" />
-      </div>
-      <h2 className="text-headline-medium text-abyssal-text-primary font-bold mb-2">¡Pedido Creado!</h2>
-      <p className="text-body-medium text-abyssal-text-secondary mb-2">
-        Pedido #{order?.order_number}
-      </p>
-      <div className="flex gap-3 mt-6">
-        <Button variant="primary" onClick={onView}>
-          Ver Pedido
-        </Button>
-        <Button variant="secondary" onClick={onClose}>
-          Volver
-        </Button>
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center px-6">
+      <div className="bg-abyssal-surface glass rounded-3xl border border-abyssal-outline/20 p-8 flex flex-col items-center max-w-sm w-full">
+        <div className="w-20 h-20 rounded-full bg-abyssal-green/15 flex items-center justify-center mb-5">
+          <Check className="w-10 h-10 text-abyssal-green" />
+        </div>
+        <h2 className="text-[22px] font-semibold text-abyssal-text-primary mb-1">¡Pedido Creado!</h2>
+        <p className="text-[15px] text-abyssal-text-secondary">
+          Pedido #{order?.order_number}
+        </p>
+        <div className="flex gap-3 mt-6 w-full">
+          <Button variant="primary" onClick={onView} className="flex-1">
+            Ver Pedido
+          </Button>
+          <Button variant="secondary" onClick={onClose} className="flex-1">
+            Volver
+          </Button>
+        </div>
       </div>
     </div>
   )

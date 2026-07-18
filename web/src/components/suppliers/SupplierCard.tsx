@@ -24,26 +24,26 @@ export function SupplierCard({ supplier, onPress }: SupplierCardProps) {
   return (
     <button
       onClick={() => onPress(supplier.id)}
-      className="flex items-center gap-3 p-3 bg-abyssal-surface rounded-abyssal-sm w-full text-left transition-colors hover:bg-abyssal-surface-high"
+      className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl border border-abyssal-outline/20 w-full text-left transition-all duration-200 active:scale-[0.98]"
     >
       {supplier.image_url ? (
-        <img src={supplier.image_url} alt={supplier.name} className="w-12 h-12 rounded-abyssal-sm object-cover shrink-0" />
+        <img src={supplier.image_url} alt={supplier.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
       ) : (
-        <div className="w-12 h-12 rounded-abyssal-sm bg-abyssal-primary-light flex items-center justify-center text-abyssal-primary text-title-medium font-bold shrink-0">
+        <div className="w-12 h-12 rounded-xl bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary text-[17px] font-bold shrink-0">
           {initial}
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <p className="text-body-medium text-abyssal-text-primary font-medium truncate">
+        <p className="text-[15px] text-abyssal-text-primary font-medium truncate">
           {supplier.name}
         </p>
-        <p className="text-label-small text-abyssal-text-secondary">
+        <p className="text-[12px] text-abyssal-text-secondary mt-0.5">
           {supplier.category}
         </p>
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <StatusBadge status={supplier.status} />
-        <p className="text-body-medium text-abyssal-red font-semibold">
+        <p className="text-[15px] text-abyssal-red font-semibold">
           {formatCurrency(supplier.pending_payment)}
         </p>
       </div>

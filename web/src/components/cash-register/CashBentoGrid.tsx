@@ -35,12 +35,12 @@ export function CashBentoGrid({ data }: CashBentoGridProps) {
   return (
     <div className="grid grid-cols-2 gap-3">
       {cells.map((cell) => (
-        <div key={cell.key} className="bg-abyssal-surface rounded-abyssal-md p-4">
+        <div key={cell.key} className="bg-abyssal-surface glass rounded-2xl border border-abyssal-outline/20 p-4">
           <div className="flex items-center gap-2 mb-2">
-            <cell.icon className={`w-5 h-5 ${cell.color}`} />
-            <span className="text-label-small text-abyssal-text-secondary">{cell.label}</span>
+            <cell.icon className={`w-[18px] h-[18px] ${cell.color}`} />
+            <span className="text-[12px] text-abyssal-text-secondary font-medium">{cell.label}</span>
           </div>
-          <p className={`text-title-large font-bold ${cell.color}`}>
+          <p className={`text-[17px] font-semibold ${cell.color}`}>
             {formatCurrency(values[cell.key])}
           </p>
         </div>
