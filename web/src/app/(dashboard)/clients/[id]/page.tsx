@@ -83,25 +83,7 @@ export default function ClientDetail() {
       </header>
 
       <main className="max-w-[480px] mx-auto p-4 pb-24 space-y-4">
-        <section className="relative overflow-hidden bg-abyssal-primary rounded-[2rem] p-6 flex flex-col justify-between min-h-[180px] shadow-abyssal-lg animate-fade-in">
-          <div className="relative z-10">
-            <span className="text-label-small text-white/70">Saldo Pendiente</span>
-            <p className="text-display-large text-white font-bold mt-1">{formatCurrency(client.outstanding_balance)}</p>
-          </div>
-          <div className="relative z-10 flex justify-between items-end">
-            <div>
-              <span className="text-label-small text-white/60">Límite de crédito</span>
-              <p className="text-body-large text-white">{formatCurrency(client.credit_limit)}</p>
-            </div>
-            <button className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-5 py-2 rounded-abyssal-full text-body-medium font-semibold transition-all active:scale-95">
-              Pagar
-            </button>
-          </div>
-          <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-abyssal-green/20 rounded-full blur-2xl" />
-        </section>
-
-        <section className="grid grid-cols-3 gap-3 animate-fade-in" style={{ animationDelay: "50ms" }}>
+        <section className="grid grid-cols-3 gap-3 animate-fade-in">
           <a href={phoneUrl} className="flex flex-col items-center justify-center bg-abyssal-surface glass rounded-2xl p-4 gap-2 hover:bg-abyssal-surface-high transition-all active:scale-95">
             <div className="w-10 h-10 rounded-full bg-abyssal-green-bg flex items-center justify-center text-abyssal-green">
               <Phone className="w-5 h-5" />

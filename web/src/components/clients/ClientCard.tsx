@@ -13,14 +13,8 @@ interface ClientCardProps {
   onPress: (id: number) => void
 }
 
-function formatCurrency(n: number) {
-  return `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
-}
-
 export function ClientCard({ client, onPress }: ClientCardProps) {
   const initial = client.name.charAt(0).toUpperCase()
-  const balanceColor =
-    client.outstanding_balance > 0 ? "text-abyssal-red" : "text-abyssal-green"
 
   return (
     <button
@@ -38,9 +32,6 @@ export function ClientCard({ client, onPress }: ClientCardProps) {
           {client.phone}
         </p>
       </div>
-      <p className={`text-[15px] font-semibold shrink-0 ${balanceColor}`}>
-        {formatCurrency(client.outstanding_balance)}
-      </p>
     </button>
   )
 }

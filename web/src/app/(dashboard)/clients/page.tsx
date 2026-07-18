@@ -4,7 +4,6 @@ import { Download, Plus, Users } from "lucide-react"
 import Link from "next/link"
 import { TopBar } from "@/components/layout/TopBar"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
-import { formatCurrency } from "@/lib/formatters"
 import { exportCSV } from "@/lib/export"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
@@ -38,9 +37,6 @@ export default function ClientsPage() {
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
-  const [adjustOpen, setAdjustOpen] = useState(false)
-  const [adjustBalance, setAdjustBalance] = useState("")
-  const [adjusting, setAdjusting] = useState(false)
 
   const { toasts, addToast, removeToast } = useToast()
 
@@ -86,26 +82,6 @@ export default function ClientsPage() {
     router.push(`/clients/${id}`)
   }
 
-  async function handleAdjustBalance() {
-    if (!selectedClient) return
-    const value = parseFloat(adjustBalance)
-    if (isNaN(value)) return
-    setAdjusting(true)
-    try {
-      await api.patch(`/clients/${selectedClient.id}/balance`, { new_balance: value })
-      setClients((prev) =>
-        prev.map((c) => (c.id === selectedClient.id ? { ...c, outstanding_balance: value } : c)),
-      )
-      setSelectedClient((prev) => (prev ? { ...prev, outstanding_balance: value } : null))
-      setAdjustOpen(false)
-      setAdjustBalance("")
-    } catch (err) {
-      console.error("Error adjusting balance:", err)
-    } finally {
-      setAdjusting(false)
-    }
-  }
-
   return (
     <>
       <TopBar
@@ -118,7 +94,6 @@ export default function ClientsPage() {
                 if (clients.length === 0) { addToast("No hay datos para exportar", "error"); return }
                 exportCSV(clients, "clientes", {
                   name: "Nombre", phone: "Teléfono", email: "Email",
-                  outstanding_balance: "Saldo Pendiente", credit_limit: "Límite de Crédito"
                 })
                 addToast("Clientes exportados", "success")
               }}
@@ -131,10 +106,7 @@ export default function ClientsPage() {
         }
       />
       <div className="p-4 space-y-3">
-        <ClientStats
-          totalClients={clients.length}
-          totalBalance={clients.reduce((sum, c) => sum + c.outstanding_balance, 0)}
-        />
+        <ClientStats totalClients={clients.length} />
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -181,34 +153,11 @@ export default function ClientsPage() {
           <div className="space-y-3 text-body-medium text-abyssal-text-secondary">
             <p><span className="text-abyssal-text-primary font-medium">Teléfono:</span> {selectedClient.phone}</p>
             <p><span className="text-abyssal-text-primary font-medium">Email:</span> {selectedClient.email}</p>
-            <p>
-              <span className="text-abyssal-text-primary font-medium">Saldo Pendiente:</span>{" "}
-              <span className={selectedClient.outstanding_balance > 0 ? "text-abyssal-red" : "text-abyssal-green"}>
-                {formatCurrency(selectedClient.outstanding_balance)}
-              </span>
-            </p>
-            <p><span className="text-abyssal-text-primary font-medium">Límite de Crédito:</span> {formatCurrency(selectedClient.credit_limit)}</p>
-            <Button className="w-full mt-2" onClick={() => { setAdjustBalance(String(selectedClient.outstanding_balance)); setAdjustOpen(true) }}>
-              Ajustar Saldo
-            </Button>
+            <p><span className="text-abyssal-text-primary font-medium">Límite de Crédito:</span> ${selectedClient.credit_limit.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</p>
           </div>
         )}
       </Dialog>
 
-      <Dialog open={adjustOpen} onClose={() => setAdjustOpen(false)} title="Ajustar Saldo" showClose>
-        <div className="space-y-3">
-          <Input
-            type="number"
-            step="0.01"
-            placeholder="Nuevo saldo"
-            value={adjustBalance}
-            onChange={(e) => setAdjustBalance(e.target.value)}
-          />
-          <Button className="w-full" onClick={handleAdjustBalance} disabled={adjusting} loading={adjusting}>
-            {adjusting ? "" : "Guardar"}
-          </Button>
-        </div>
-      </Dialog>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )
