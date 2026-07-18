@@ -11,7 +11,7 @@ export function Skeleton({ className, variant = "rectangular", width, height }: 
   return (
     <div
       className={cn(
-        "animate-pulse bg-abyssal-surface-high/60 rounded-xl",
+        "animate-pulse bg-abyssal-surface-high/50 rounded-xl",
         variant === "circular" && "rounded-full",
         className
       )}

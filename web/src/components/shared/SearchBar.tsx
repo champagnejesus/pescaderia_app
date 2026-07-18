@@ -17,7 +17,7 @@ export function SearchBar({ value, onChange, placeholder = "Buscar...", classNam
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="bg-abyssal-surface-high/60 glass-subtle rounded-xl px-4 py-3 pl-11 w-full text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline/40 focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 placeholder:text-abyssal-text-secondary transition-all duration-200"
+        className="bg-abyssal-surface-high/60 glass-subtle rounded-xl px-4 py-3 pl-11 w-full text-[15px] text-abyssal-text-primary outline-none focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 placeholder:text-abyssal-text-secondary transition-all duration-200"
       />
     </div>
   )

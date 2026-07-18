@@ -10,7 +10,7 @@ const buttonVariants = cva(
         primary:
           "bg-abyssal-primary text-white shadow-[0_2px_8px_rgba(94,92,230,0.35)] hover:shadow-[0_4px_16px_rgba(94,92,230,0.45)] hover:brightness-110",
         secondary:
-          "bg-white/10 text-abyssal-text-primary border border-abyssal-outline/50 backdrop-blur-sm hover:bg-white/20 hover:border-abyssal-outline shadow-sm",
+          "bg-white/10 text-abyssal-text-primary backdrop-blur-sm hover:bg-white/20 shadow-sm",
         ghost:
           "bg-transparent text-abyssal-primary hover:bg-abyssal-primary/10 active:bg-abyssal-primary/15",
       },

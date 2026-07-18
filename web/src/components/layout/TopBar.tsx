@@ -9,7 +9,7 @@ interface TopBarProps {
 export function TopBar({ title, leftAction, rightAction }: TopBarProps) {
   return (
     <header className="sticky top-0 z-30">
-      <div className="absolute inset-0 bg-abyssal-surface glass-subtle border-b border-abyssal-outline/30" />
+      <div className="absolute inset-0 bg-abyssal-surface glass-subtle" />
       <div className="relative max-w-[480px] mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-[40px]">
           {leftAction}

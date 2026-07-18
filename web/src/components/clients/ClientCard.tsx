@@ -24,7 +24,7 @@ export function ClientCard({ client, onPress }: ClientCardProps) {
   return (
     <button
       onClick={() => onPress(client.id)}
-      className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl border border-abyssal-outline/20 w-full text-left transition-all duration-200 active:scale-[0.98]"
+      className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl w-full text-left transition-all duration-200 active:scale-[0.98]"
     >
       <div className="w-11 h-11 rounded-full bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary font-semibold text-[15px] shrink-0">
         {client.initials}

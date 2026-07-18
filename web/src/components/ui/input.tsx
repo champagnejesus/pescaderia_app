@@ -10,8 +10,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ className, error, ...p
     <input
       ref={ref}
       className={cn(
-        "bg-abyssal-surface-high glass-subtle rounded-xl px-4 py-3.5 text-[15px] text-abyssal-text-primary w-full outline-none border border-abyssal-outline/40 focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 placeholder:text-abyssal-text-secondary transition-all duration-200",
-        error && "border-abyssal-red/60 focus:border-abyssal-red focus:ring-abyssal-red/10",
+        "bg-abyssal-surface-high glass-subtle rounded-xl px-4 py-3.5 text-[15px] text-abyssal-text-primary w-full outline-none focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 placeholder:text-abyssal-text-secondary transition-all duration-200",
+        error && "border border-abyssal-red/60 focus:border-abyssal-red focus:ring-abyssal-red/10",
         className
       )}
       {...props}

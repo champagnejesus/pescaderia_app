@@ -117,7 +117,7 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="text-[11px] font-semibold tracking-wide uppercase text-abyssal-text-secondary bg-abyssal-surface-high/50 glass-subtle rounded-full px-4 py-1.5 border border-abyssal-outline/20">
+        <p className="text-[11px] font-semibold tracking-wide uppercase text-abyssal-text-secondary bg-abyssal-surface-high/50 glass-subtle rounded-full px-4 py-1.5">
           Abyssal ERP v1.0
         </p>
       </div>

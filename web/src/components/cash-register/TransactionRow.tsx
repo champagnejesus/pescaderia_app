@@ -23,7 +23,7 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
   const amountColor = isIncome ? "text-abyssal-green" : "text-abyssal-red"
 
   return (
-    <div className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl border border-abyssal-outline/20">
+    <div className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl">
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isIncome ? "bg-abyssal-green/12" : "bg-abyssal-red/12"}`}>
         <Icon className={`w-5 h-5 ${amountColor}`} />
       </div>

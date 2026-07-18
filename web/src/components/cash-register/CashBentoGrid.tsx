@@ -35,7 +35,7 @@ export function CashBentoGrid({ data }: CashBentoGridProps) {
   return (
     <div className="grid grid-cols-2 gap-3">
       {cells.map((cell) => (
-        <div key={cell.key} className="bg-abyssal-surface glass rounded-2xl border border-abyssal-outline/20 p-4">
+        <div key={cell.key} className="bg-abyssal-surface glass rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <cell.icon className={`w-[18px] h-[18px] ${cell.color}`} />
             <span className="text-[12px] text-abyssal-text-secondary font-medium">{cell.label}</span>

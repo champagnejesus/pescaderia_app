@@ -33,7 +33,7 @@ export function OrderCard({ order, onPress }: OrderCardProps) {
   return (
     <button
       onClick={() => onPress(order.id)}
-      className="bg-abyssal-surface glass rounded-2xl border border-abyssal-outline/20 p-3.5 flex items-center justify-between w-full text-left transition-all duration-200 active:scale-[0.98]"
+      className="bg-abyssal-surface glass rounded-2xl p-3.5 flex items-center justify-between w-full text-left transition-all duration-200 active:scale-[0.98]"
     >
       <div className="min-w-0 flex-1">
         <p className="text-[15px] text-abyssal-text-primary font-medium truncate">

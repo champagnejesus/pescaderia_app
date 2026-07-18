@@ -18,7 +18,7 @@ export function SuccessOverlay({ open, order, onView, onClose }: SuccessOverlayP
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center px-6">
-      <div className="bg-abyssal-surface glass rounded-3xl border border-abyssal-outline/20 p-8 flex flex-col items-center max-w-sm w-full">
+      <div className="bg-abyssal-surface glass rounded-3xl p-8 flex flex-col items-center max-w-sm w-full">
         <div className="w-20 h-20 rounded-full bg-abyssal-green/15 flex items-center justify-center mb-5">
           <Check className="w-10 h-10 text-abyssal-green" />
         </div>

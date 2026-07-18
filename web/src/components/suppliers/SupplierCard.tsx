@@ -24,7 +24,7 @@ export function SupplierCard({ supplier, onPress }: SupplierCardProps) {
   return (
     <button
       onClick={() => onPress(supplier.id)}
-      className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl border border-abyssal-outline/20 w-full text-left transition-all duration-200 active:scale-[0.98]"
+      className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl w-full text-left transition-all duration-200 active:scale-[0.98]"
     >
       {supplier.image_url ? (
         <img src={supplier.image_url} alt={supplier.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />

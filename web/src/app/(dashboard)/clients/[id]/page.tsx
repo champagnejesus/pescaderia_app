@@ -102,13 +102,13 @@ export default function ClientDetail() {
         </section>
 
         <section className="grid grid-cols-3 gap-3 animate-fade-in" style={{ animationDelay: "50ms" }}>
-          <a href={phoneUrl} className="flex flex-col items-center justify-center bg-abyssal-surface rounded-abyssal-md p-4 gap-2 border border-abyssal-outline/30 hover:bg-abyssal-surface-high transition-all active:scale-95">
+          <a href={phoneUrl} className="flex flex-col items-center justify-center bg-abyssal-surface glass rounded-2xl p-4 gap-2 hover:bg-abyssal-surface-high transition-all active:scale-95">
             <div className="w-10 h-10 rounded-full bg-abyssal-green-bg flex items-center justify-center text-abyssal-green">
               <Phone className="w-5 h-5" />
             </div>
             <span className="text-label-small text-abyssal-text-secondary">Llamar</span>
           </a>
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center bg-abyssal-surface rounded-abyssal-md p-4 gap-2 border border-abyssal-outline/30 hover:bg-abyssal-surface-high transition-all active:scale-95">
+          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center bg-abyssal-surface glass rounded-2xl p-4 gap-2 hover:bg-abyssal-surface-high transition-all active:scale-95">
             <div className="w-10 h-10 rounded-full bg-[#25D366]/20 flex items-center justify-center text-[#25D366]">
               <MessageCircle className="w-5 h-5" />
             </div>
@@ -124,7 +124,7 @@ export default function ClientDetail() {
 
         <section className="animate-fade-in" style={{ animationDelay: "100ms" }}>
           <h2 className="text-label-small text-abyssal-text-secondary uppercase tracking-wider mb-3 px-1">Información de Contacto</h2>
-          <div className="bg-abyssal-surface rounded-abyssal-md overflow-hidden border border-abyssal-outline/30">
+          <div className="bg-abyssal-surface glass rounded-2xl overflow-hidden">
             {[
               { icon: Phone, label: "Teléfono", value: client.phone || "No disponible" },
               { icon: Mail, label: "Email", value: client.email || "No disponible" },
@@ -152,9 +152,9 @@ export default function ClientDetail() {
           <div className="space-y-2">
             {ordersLoading ? (
               Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="bg-abyssal-surface rounded-abyssal-sm p-4 flex items-center justify-between border border-abyssal-outline/30">
+                <div key={i} className="bg-abyssal-surface rounded-2xl p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <Skeleton className="w-12 h-12 rounded-abyssal-sm" />
+                    <Skeleton className="w-12 h-12 rounded-xl" />
                     <div className="space-y-2">
                       <Skeleton className="w-24 h-4" />
                       <Skeleton className="w-16 h-3" />
@@ -167,12 +167,12 @@ export default function ClientDetail() {
                 </div>
               ))
             ) : ordersError ? (
-              <div className="bg-abyssal-surface rounded-abyssal-md p-6 text-center border border-abyssal-outline/30">
+              <div className="bg-abyssal-surface glass rounded-2xl p-6 text-center">
                 <AlertCircle className="w-10 h-10 text-abyssal-red mx-auto mb-2" />
                 <p className="text-body-medium text-abyssal-red">{ordersError}</p>
               </div>
             ) : orders.length === 0 ? (
-              <div className="bg-abyssal-surface rounded-abyssal-md p-6 text-center border border-abyssal-outline/30">
+              <div className="bg-abyssal-surface glass rounded-2xl p-6 text-center">
                 <Inbox className="w-10 h-10 text-abyssal-text-secondary mx-auto mb-2" />
                 <p className="text-body-medium text-abyssal-text-secondary">Sin pedidos recientes</p>
               </div>
@@ -181,7 +181,7 @@ export default function ClientDetail() {
                 <Link
                   key={order.id}
                   href={`/orders/${order.id}`}
-                  className="flex items-center justify-between p-4 bg-abyssal-surface rounded-abyssal-sm border border-abyssal-outline/30 transition-all hover:bg-abyssal-surface-high active:scale-[0.99]"
+                  className="flex items-center justify-between p-4 bg-abyssal-surface glass rounded-2xl transition-all hover:bg-abyssal-surface-high active:scale-[0.99]"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-abyssal-sm bg-abyssal-surface-high flex items-center justify-center">
@@ -208,10 +208,10 @@ export default function ClientDetail() {
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full h-40 rounded-abyssal-md overflow-hidden border border-abyssal-outline/30 relative block bg-abyssal-surface hover:bg-abyssal-surface-high transition-all active:scale-[0.99]"
+            className="w-full h-40 rounded-2xl overflow-hidden relative block bg-abyssal-surface hover:bg-abyssal-surface-high transition-all active:scale-[0.99]"
           >
             <div className="absolute inset-0 bg-gradient-to-t from-abyssal-bg to-transparent opacity-60 z-10" />
-            <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-abyssal-surface/80 backdrop-blur-md px-3 py-1.5 rounded-abyssal-full border border-abyssal-outline/30 z-20">
+            <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-abyssal-surface/80 backdrop-blur-md px-3 py-1.5 rounded-full z-20">
               <MapPin className="w-4 h-4 text-abyssal-primary" />
               <span className="text-label-small text-abyssal-text-primary">Ver en mapa</span>
             </div>
