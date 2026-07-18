@@ -24,14 +24,14 @@ CardHeader.displayName = "CardHeader"
 
 const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("text-[17px] font-semibold text-abyssal-text-primary", className)} {...props} />
+    <h3 ref={ref} className={cn("text-title-medium text-abyssal-text-primary", className)} {...props} />
   )
 )
 CardTitle.displayName = "CardTitle"
 
 const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("text-[15px] text-abyssal-text-secondary", className)} {...props} />
+    <div ref={ref} className={cn("text-body-medium text-abyssal-text-secondary", className)} {...props} />
   )
 )
 CardContent.displayName = "CardContent"

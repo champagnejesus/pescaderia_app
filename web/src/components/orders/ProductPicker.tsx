@@ -2,7 +2,6 @@
 import { Plus, Minus } from "lucide-react"
 import { SearchBar } from "@/components/shared/SearchBar"
 import { cn } from "@/lib/utils"
-import { formatCurrency } from "@/lib/formatters"
 
 interface Product {
   id: number
@@ -28,12 +27,16 @@ interface ProductPickerProps {
   searchValue: string
 }
 
+function formatCurrency(n: number) {
+  return `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
+}
+
 export function ProductPicker({ products, selected, onAdd, onUpdateQty, onSearch, searchValue }: ProductPickerProps) {
   const selectedIds = new Set(selected.map((s) => s.product_id))
 
   return (
     <div>
-      <p className="text-[17px] font-semibold text-abyssal-text-primary mb-2">Productos</p>
+      <p className="text-title-medium text-abyssal-text-primary mb-2">Productos</p>
       <SearchBar value={searchValue} onChange={onSearch} placeholder="Buscar producto..." className="mb-3" />
 
       <div className="space-y-2 max-h-48 overflow-y-auto mb-4">
@@ -42,21 +45,21 @@ export function ProductPicker({ products, selected, onAdd, onUpdateQty, onSearch
           .map((product) => (
             <div
               key={product.id}
-              className="flex items-center justify-between bg-abyssal-surface-high/60 glass-subtle rounded-2xl p-3"
+              className="flex items-center justify-between bg-abyssal-surface-high rounded-abyssal-sm p-3"
             >
               <div className="min-w-0 flex-1">
-                <p className="text-[15px] text-abyssal-text-primary truncate">{product.name}</p>
-                <p className="text-[12px] text-abyssal-text-secondary mt-0.5">
+                <p className="text-body-medium text-abyssal-text-primary truncate">{product.name}</p>
+                <p className="text-label-small text-abyssal-text-secondary">
                   Stock: {product.stock} {product.unit}
                 </p>
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                <span className="text-[15px] text-abyssal-text-primary font-semibold">
+                <span className="text-body-medium text-abyssal-text-primary font-semibold">
                   {formatCurrency(product.price)}
                 </span>
                 <button
                   onClick={() => onAdd(product)}
-                  className="w-8 h-8 rounded-full bg-abyssal-primary text-white flex items-center justify-center hover:opacity-90 transition-opacity active:scale-90"
+                  className="w-8 h-8 rounded-full bg-abyssal-primary text-abyssal-on-primary flex items-center justify-center hover:opacity-90 transition-opacity"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -64,7 +67,7 @@ export function ProductPicker({ products, selected, onAdd, onUpdateQty, onSearch
             </div>
           ))}
         {products.length === 0 && (
-          <p className="text-center text-[15px] text-abyssal-text-secondary py-4">
+          <p className="text-center text-body-medium text-abyssal-text-secondary py-4">
             No se encontraron productos
           </p>
         )}
@@ -72,32 +75,32 @@ export function ProductPicker({ products, selected, onAdd, onUpdateQty, onSearch
 
       {selected.length > 0 && (
         <div>
-          <p className="text-[15px] text-abyssal-text-primary font-medium mb-2">Seleccionados</p>
+          <p className="text-body-medium text-abyssal-text-primary font-medium mb-2">Seleccionados</p>
           <div className="space-y-2">
             {selected.map((item) => (
               <div
                 key={item.product_id}
-                className="flex items-center justify-between bg-abyssal-surface glass rounded-2xl p-3"
+                className="flex items-center justify-between bg-abyssal-surface rounded-abyssal-sm p-3"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-[15px] text-abyssal-text-primary truncate">{item.product_name}</p>
-                  <p className="text-[12px] text-abyssal-text-secondary mt-0.5">
+                  <p className="text-body-medium text-abyssal-text-primary truncate">{item.product_name}</p>
+                  <p className="text-label-small text-abyssal-text-secondary">
                     {formatCurrency(item.unit_price)} c/u
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => onUpdateQty(item.product_id, item.quantity - 1)}
-                    className="w-7 h-7 rounded-full bg-abyssal-surface-high/60 text-abyssal-text-primary flex items-center justify-center hover:opacity-80 transition-opacity active:scale-90"
+                    className="w-7 h-7 rounded-full bg-abyssal-surface-high text-abyssal-text-primary flex items-center justify-center hover:opacity-80 transition-opacity"
                   >
                     <Minus className="w-3.5 h-3.5" />
                   </button>
-                  <span className="text-[15px] text-abyssal-text-primary font-semibold min-w-[20px] text-center">
+                  <span className="text-body-medium text-abyssal-text-primary font-semibold min-w-[20px] text-center">
                     {item.quantity}
                   </span>
                   <button
                     onClick={() => onUpdateQty(item.product_id, item.quantity + 1)}
-                    className="w-7 h-7 rounded-full bg-abyssal-surface-high/60 text-abyssal-text-primary flex items-center justify-center hover:opacity-80 transition-opacity active:scale-90"
+                    className="w-7 h-7 rounded-full bg-abyssal-surface-high text-abyssal-text-primary flex items-center justify-center hover:opacity-80 transition-opacity"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>

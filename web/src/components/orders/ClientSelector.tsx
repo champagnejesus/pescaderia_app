@@ -26,29 +26,24 @@ function getInitials(name: string) {
 export function ClientSelector({ clients, selectedId, onSelect, onSearch, searchValue }: ClientSelectorProps) {
   return (
     <div>
-      <p className="text-[17px] font-semibold text-abyssal-text-primary mb-2">Cliente</p>
+      <p className="text-title-medium text-abyssal-text-primary mb-2">Cliente</p>
       <SearchBar value={searchValue} onChange={onSearch} placeholder="Buscar cliente..." className="mb-3" />
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="flex gap-2 overflow-x-auto pb-2">
         {clients.map((client) => (
           <button
             key={client.id}
             onClick={() => onSelect(client)}
             className={cn(
-              "flex flex-col items-center gap-1 shrink-0 p-2 rounded-2xl transition-all duration-200 active:scale-95",
+              "flex flex-col items-center gap-1 shrink-0 p-2 rounded-abyssal-sm border-2 transition-colors",
               selectedId === client.id
-                ? "bg-abyssal-primary/12"
-                : "hover:bg-abyssal-surface-high/60",
+                ? "border-abyssal-primary bg-abyssal-primary/5"
+                : "border-transparent hover:border-abyssal-outline",
             )}
           >
-            <div className={cn(
-              "w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold",
-              selectedId === client.id
-                ? "bg-abyssal-primary text-white"
-                : "bg-abyssal-primary/15 text-abyssal-primary"
-            )}>
+            <div className="w-10 h-10 rounded-full bg-abyssal-primary-light flex items-center justify-center text-abyssal-primary text-label-small font-bold">
               {getInitials(client.name)}
             </div>
-            <span className="text-[11px] text-abyssal-text-primary text-center max-w-[72px] truncate font-medium">
+            <span className="text-label-small text-abyssal-text-primary text-center max-w-[72px] truncate">
               {client.name}
             </span>
           </button>

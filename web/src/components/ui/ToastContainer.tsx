@@ -23,7 +23,7 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
         <div
           key={toast.id}
           className={cn(
-            "flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border text-[15px] font-medium shadow-lg backdrop-blur-sm animate-fade-in",
+            "flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border text-body-medium font-medium shadow-lg backdrop-blur-sm animate-fade-in",
             typeStyles[toast.type]
           )}
         >

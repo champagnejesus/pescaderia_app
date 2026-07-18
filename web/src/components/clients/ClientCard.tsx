@@ -1,5 +1,3 @@
-import { cn } from "@/lib/utils"
-
 interface ClientCardClient {
   id: number
   name: string
@@ -20,6 +18,9 @@ function formatCurrency(n: number) {
 }
 
 export function ClientCard({ client, onPress }: ClientCardProps) {
+  const balanceColor =
+    client.outstanding_balance > 0 ? "text-abyssal-red" : "text-abyssal-green"
+
   return (
     <button
       onClick={() => onPress(client.id)}
@@ -36,10 +37,7 @@ export function ClientCard({ client, onPress }: ClientCardProps) {
           {client.phone}
         </p>
       </div>
-      <p className={cn(
-        "text-[15px] font-semibold shrink-0",
-        client.outstanding_balance > 0 ? "text-abyssal-red" : "text-abyssal-green",
-      )}>
+      <p className={`text-[15px] font-semibold shrink-0 ${balanceColor}`}>
         {formatCurrency(client.outstanding_balance)}
       </p>
     </button>

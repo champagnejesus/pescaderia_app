@@ -144,8 +144,8 @@ export default function ClientsPage() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Users size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
-            <p className="text-[17px] font-semibold text-abyssal-text-primary mb-2">No hay clientes</p>
-            <p className="text-[15px] text-abyssal-text-secondary mb-4">Agrega tu primer cliente para comenzar</p>
+            <p className="text-title-medium text-abyssal-text-primary mb-2">No hay clientes</p>
+            <p className="text-body-medium text-abyssal-text-secondary mb-4">Agrega tu primer cliente para comenzar</p>
             <Link href="/clients/new">
               <Button variant="primary">Agregar Cliente</Button>
             </Link>
@@ -178,7 +178,7 @@ export default function ClientsPage() {
 
       <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} title={selectedClient?.name} showClose>
         {selectedClient && (
-          <div className="space-y-3 text-[15px] text-abyssal-text-secondary">
+          <div className="space-y-3 text-body-medium text-abyssal-text-secondary">
             <p><span className="text-abyssal-text-primary font-medium">Teléfono:</span> {selectedClient.phone}</p>
             <p><span className="text-abyssal-text-primary font-medium">Email:</span> {selectedClient.email}</p>
             <p>

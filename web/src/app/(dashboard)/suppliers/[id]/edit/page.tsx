@@ -52,24 +52,24 @@ export default function EditSupplierPage() {
 
   return (
     <div className="min-h-screen bg-abyssal-bg">
-      <header className="bg-abyssal-surface/80 glass sticky top-0 z-40 px-4 py-3 flex items-center gap-3">
+      <header className="bg-abyssal-surface/80 backdrop-blur-xl border-b border-abyssal-outline/30 px-4 py-3 flex items-center gap-3 sticky top-0 z-40">
         <button onClick={() => router.back()} className="p-2 -ml-2 rounded-full hover:bg-abyssal-surface-high transition-all active:scale-95">
           <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
-        <h1 className="text-[20px] font-bold text-abyssal-text-primary flex-1">Editar Proveedor</h1>
+        <h1 className="text-title-large text-abyssal-text-primary flex-1">Editar Proveedor</h1>
       </header>
       <form onSubmit={handleSubmit} className="p-4 space-y-4 max-w-[480px] mx-auto">
         {error && (
-          <div className="bg-abyssal-red/15 rounded-xl px-4 py-2.5 text-[15px] text-abyssal-red">{error}</div>
+          <div className="bg-abyssal-red-bg rounded-abyssal-sm px-4 py-2 text-body-medium text-abyssal-red">{error}</div>
         )}
         <div className="space-y-1.5">
-          <label className="text-[12px] text-abyssal-text-secondary">Nombre</label>
+          <label className="text-label-small text-abyssal-text-secondary">Nombre</label>
           <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
         </div>
         <div className="space-y-1.5">
-          <label className="text-[12px] text-abyssal-text-secondary">Categoría</label>
+          <label className="text-label-small text-abyssal-text-secondary">Categoría</label>
           <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}
-            className="w-full bg-abyssal-surface-high/60 glass-subtle rounded-xl px-4 py-3 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline/40 focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 transition-all appearance-none">
+            className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3.5 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 transition-all appearance-none">
             <option value="">Seleccionar categoría</option>
             <option value="PESCADO BLANCO">PESCADO BLANCO</option>
             <option value="MARISCO">MARISCO</option>

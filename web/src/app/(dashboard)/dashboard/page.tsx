@@ -61,14 +61,14 @@ export default function DashboardPage() {
             <Card className="animate-fade-in">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <p className="text-[12px] text-abyssal-text-secondary">Ganancia Bruta</p>
-                  <p className="text-[20px] font-bold text-abyssal-text-primary mt-1">
+                  <p className="text-label-medium text-abyssal-text-secondary">Ganancia Bruta</p>
+                  <p className="text-headline-medium text-abyssal-text-primary font-bold mt-1">
                     {formatCurrency(dashboardData.gross_profit)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {dashboardData.pending_orders > 0 && (
-                    <span className="inline-flex items-center gap-1 bg-abyssal-yellow/15 text-abyssal-yellow rounded-full px-2.5 py-1 text-[12px] font-medium">
+                    <span className="inline-flex items-center gap-1 bg-abyssal-yellow-bg text-abyssal-yellow rounded-abyssal-full px-2.5 py-1 text-label-small">
                       <span className="w-1.5 h-1.5 rounded-full bg-abyssal-yellow animate-subtle-pulse" />
                       {dashboardData.pending_orders} pendiente{dashboardData.pending_orders !== 1 ? "s" : ""}
                     </span>

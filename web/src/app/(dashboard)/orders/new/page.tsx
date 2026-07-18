@@ -152,15 +152,15 @@ export default function NewOrderPage() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.back()}
-          className="p-2 -ml-2 rounded-full hover:bg-abyssal-surface-high transition-all active:scale-95 text-abyssal-text-secondary"
+          className="text-abyssal-text-secondary hover:text-abyssal-text-primary transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h1 className="text-[20px] font-bold text-abyssal-text-primary">{isQuickSale ? "Registrar Venta" : "Nuevo Pedido"}</h1>
+        <h1 className="text-title-large text-abyssal-text-primary">{isQuickSale ? "Registrar Venta" : "Nuevo Pedido"}</h1>
       </div>
 
       {clientsError ? (
-        <p className="text-[15px] text-abyssal-red">{clientsError}</p>
+        <p className="text-body-medium text-abyssal-red">{clientsError}</p>
       ) : clientsLoading ? (
         <div className="space-y-2">
           <Skeleton className="h-10 w-48" />
@@ -180,7 +180,7 @@ export default function NewOrderPage() {
             searchValue={clientSearchQuery}
           />
           {isQuickSale && selectedClient && (
-            <p className="text-[12px] text-abyssal-text-secondary mt-1 ml-1">
+            <p className="text-label-small text-abyssal-text-secondary mt-1 ml-1">
               Venta directa &mdash; puedes cambiar el cliente si es necesario
             </p>
           )}
@@ -188,7 +188,7 @@ export default function NewOrderPage() {
       )}
 
       {productsError ? (
-        <p className="text-[15px] text-abyssal-red">{productsError}</p>
+        <p className="text-body-medium text-abyssal-red">{productsError}</p>
       ) : productsLoading ? (
         <div className="space-y-2">
           <Skeleton className="h-10 w-full" />
@@ -211,12 +211,12 @@ export default function NewOrderPage() {
 
       {!isQuickSale && (
         <div>
-          <p className="text-[17px] font-semibold text-abyssal-text-primary mb-2">Fecha de Entrega</p>
+          <p className="text-title-medium text-abyssal-text-primary mb-2">Fecha de Entrega</p>
           <input
             type="date"
             value={deliveryDate}
             onChange={(e) => setDeliveryDate(e.target.value)}
-            className="bg-abyssal-surface-high/60 glass-subtle rounded-xl px-4 py-3 text-[15px] text-abyssal-text-primary w-full outline-none border border-abyssal-outline/40 focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 transition-all"
+            className="bg-abyssal-surface-high rounded-abyssal-sm px-4 py-3 text-abyssal-text-primary w-full outline-none border border-abyssal-outline focus:border-abyssal-primary transition-colors"
           />
         </div>
       )}

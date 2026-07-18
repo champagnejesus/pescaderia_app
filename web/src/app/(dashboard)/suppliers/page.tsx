@@ -107,8 +107,8 @@ export default function SuppliersPage() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Truck size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
-            <p className="text-[17px] font-semibold text-abyssal-text-primary mb-2">No hay proveedores</p>
-            <p className="text-[15px] text-abyssal-text-secondary mb-4">Agrega tu primer proveedor para comenzar</p>
+            <p className="text-title-medium text-abyssal-text-primary mb-2">No hay proveedores</p>
+            <p className="text-body-medium text-abyssal-text-secondary mb-4">Agrega tu primer proveedor para comenzar</p>
             <Button variant="primary" onClick={() => setAddOpen(true)}>Agregar Proveedor</Button>
           </div>
         ) : (
@@ -137,7 +137,7 @@ export default function SuppliersPage() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full bg-abyssal-surface-high/60 glass-subtle rounded-xl px-4 py-3.5 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline/40 focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 transition-all appearance-none"
+            className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3.5 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 transition-all appearance-none"
           >
             <option value="">Seleccionar categoría</option>
             <option value="PESCADO BLANCO">PESCADO BLANCO</option>
@@ -152,7 +152,7 @@ export default function SuppliersPage() {
       </Dialog>
       <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} title={selectedSupplier?.name} showClose>
         {selectedSupplier && (
-          <div className="space-y-3 text-[15px] text-abyssal-text-secondary">
+          <div className="space-y-3 text-body-medium text-abyssal-text-secondary">
             <p><span className="text-abyssal-text-primary font-medium">Categoría:</span> {selectedSupplier.category}</p>
             <p><span className="text-abyssal-text-primary font-medium">Estado:</span> {selectedSupplier.status}</p>
             <p><span className="text-abyssal-text-primary font-medium">Pago Pendiente:</span>{" "}
