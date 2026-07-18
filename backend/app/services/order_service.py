@@ -1,14 +1,24 @@
 import random
+from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from app.models.order import Order, OrderItem
 from app.models.product import Product
+from app.models.transaction import Transaction
+
+PAYMENT_TYPE_MAP = {
+    "EFECTIVO": "Efectivo",
+    "TARJETA": "Tarjeta",
+    "TRANSFERENCIA": "Transfer",
+    "TRANSFER": "Transfer",
+}
 
 async def create_order(db: AsyncSession, data: dict) -> Order:
     order_number = f"ORD-{random.randint(1000, 9999)}"
     items_data = data.pop("items", [])
     total_value = sum(i["subtotal"] for i in items_data)
+    payment_method = data.get("payment_method", "Efectivo")
     order = Order(order_number=order_number, total_value=total_value, items_count=len(items_data), **data)
     db.add(order)
     await db.flush()
@@ -18,6 +28,15 @@ async def create_order(db: AsyncSession, data: dict) -> Order:
         product = await db.get(Product, item_data["product_id"])
         if product:
             product.stock = max(0.0, product.stock - item_data["quantity"])
+    now = datetime.now(timezone.utc)
+    tx = Transaction(
+        title=f"Venta: {data.get('client_name', 'Mostrador')}",
+        time=now.strftime("%H:%M"),
+        type=PAYMENT_TYPE_MAP.get(payment_method.upper(), "Efectivo"),
+        amount=total_value,
+        status="PAGADO",
+    )
+    db.add(tx)
     await db.flush()
     await db.refresh(order, ["items"])
     return order

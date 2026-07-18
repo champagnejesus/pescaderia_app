@@ -49,15 +49,20 @@ export default function NewOrderPage() {
   const [productsLoading, setProductsLoading] = useState(true)
   const [clientsError, setClientsError] = useState<string | null>(null)
   const [productsError, setProductsError] = useState<string | null>(null)
+  const isQuickSale = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("quickSale") === "true"
 
   useEffect(() => {
     api.get<Client[]>("/clients")
-      .then(({ data }) => { setClients(data); setClientsLoading(false) })
+      .then(({ data }) => {
+        setClients(data)
+        if (isQuickSale && data.length > 0) setSelectedClient(data[0])
+        setClientsLoading(false)
+      })
       .catch(() => { setClientsError("Error al cargar clientes"); setClientsLoading(false) })
     api.get<Product[]>("/products")
       .then(({ data }) => { setAllProducts(data); setProductsLoading(false) })
       .catch(() => { setProductsError("Error al cargar productos"); setProductsLoading(false) })
-  }, [])
+  }, [isQuickSale])
 
   const filteredClients = clients.filter((c) =>
     c.name.toLowerCase().includes(clientSearchQuery.toLowerCase()),
@@ -151,10 +156,22 @@ export default function NewOrderPage() {
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h1 className="text-title-large text-abyssal-text-primary">Nuevo Pedido</h1>
+        <h1 className="text-title-large text-abyssal-text-primary">{isQuickSale ? "Registrar Venta" : "Nuevo Pedido"}</h1>
       </div>
 
-      {clientsError ? (
+      {isQuickSale ? (
+        selectedClient && (
+          <div className="flex items-center gap-3 p-3 bg-abyssal-surface-high rounded-2xl">
+            <div className="w-10 h-10 rounded-full bg-abyssal-primary-light flex items-center justify-center text-abyssal-primary text-label-small font-bold">
+              {selectedClient.name.split(" ").map((w) => w.charAt(0).toUpperCase()).slice(0, 2).join("")}
+            </div>
+            <div>
+              <p className="text-body-medium text-abyssal-text-primary font-medium">{selectedClient.name}</p>
+              <p className="text-label-small text-abyssal-text-secondary">Venta directa</p>
+            </div>
+          </div>
+        )
+      ) : clientsError ? (
         <p className="text-body-medium text-abyssal-red">{clientsError}</p>
       ) : clientsLoading ? (
         <div className="space-y-2">
@@ -197,15 +214,17 @@ export default function NewOrderPage() {
 
       <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
 
-      <div>
-        <p className="text-title-medium text-abyssal-text-primary mb-2">Fecha de Entrega</p>
-        <input
-          type="date"
-          value={deliveryDate}
-          onChange={(e) => setDeliveryDate(e.target.value)}
-          className="bg-abyssal-surface-high rounded-abyssal-sm px-4 py-3 text-abyssal-text-primary w-full outline-none border border-abyssal-outline focus:border-abyssal-primary transition-colors"
-        />
-      </div>
+      {!isQuickSale && (
+        <div>
+          <p className="text-title-medium text-abyssal-text-primary mb-2">Fecha de Entrega</p>
+          <input
+            type="date"
+            value={deliveryDate}
+            onChange={(e) => setDeliveryDate(e.target.value)}
+            className="bg-abyssal-surface-high rounded-abyssal-sm px-4 py-3 text-abyssal-text-primary w-full outline-none border border-abyssal-outline focus:border-abyssal-primary transition-colors"
+          />
+        </div>
+      )}
 
       <CheckoutSummary
         items={selectedItems}
