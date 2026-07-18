@@ -18,6 +18,7 @@ function formatCurrency(n: number) {
 }
 
 export function ClientCard({ client, onPress }: ClientCardProps) {
+  const initial = client.name.charAt(0).toUpperCase()
   const balanceColor =
     client.outstanding_balance > 0 ? "text-abyssal-red" : "text-abyssal-green"
 
@@ -26,8 +27,8 @@ export function ClientCard({ client, onPress }: ClientCardProps) {
       onClick={() => onPress(client.id)}
       className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl w-full text-left transition-all duration-200 active:scale-[0.98]"
     >
-      <div className="w-11 h-11 rounded-full bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary font-semibold text-[15px] shrink-0">
-        {client.initials}
+      <div className="w-12 h-12 rounded-xl bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary text-[17px] font-bold shrink-0">
+        {initial}
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-[15px] text-abyssal-text-primary font-medium truncate">
