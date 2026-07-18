@@ -14,8 +14,8 @@ class Settings(BaseSettings):
 
     def validate(self):
         if self.secret_key == "change-this-in-production":
-            import warnings
-            warnings.warn("SECRET_KEY is set to default value. Set a strong random key in production.")
+            import logging
+            logging.warning("SECRET_KEY is set to default value. Set a strong random key in production.")
         return self
 
 settings = Settings().validate()

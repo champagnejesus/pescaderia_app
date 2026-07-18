@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.schemas.sync import SyncPullRequest, SyncPullResponse, SyncPushRequest, SyncPushResponse

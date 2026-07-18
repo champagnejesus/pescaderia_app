@@ -12,3 +12,15 @@ def test_token_creation():
     payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
     assert payload["sub"] == "1"
     assert payload["email"] == "test@test.com"
+
+def test_refresh_token_creation_and_decode():
+    from app.services.auth_service import create_refresh_token, decode_token
+    token = create_refresh_token({"sub": "1", "email": "test@test.com"})
+    payload = decode_token(token)
+    assert payload is not None
+    assert payload["sub"] == "1"
+    assert payload["type"] == "refresh"
+
+def test_decode_invalid_token():
+    from app.services.auth_service import decode_token
+    assert decode_token("invalid-token") is None
