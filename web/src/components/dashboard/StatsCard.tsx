@@ -12,7 +12,7 @@ interface StatsCardProps {
 
 export function StatsCard({ icon, label, value, sparklineData }: StatsCardProps) {
   return (
-    <div className={cn("bg-abyssal-surface rounded-abyssal-md p-4 shadow-abyssal-sm flex items-center gap-4")}>
+    <div className={cn("bg-abyssal-surface rounded-abyssal-md p-4 shadow-abyssal-sm flex items-center gap-4 hover:shadow-md transition-all duration-200")}>
       <div className="w-10 h-10 rounded-full bg-abyssal-primary/10 flex items-center justify-center text-abyssal-primary shrink-0">
         {icon}
       </div>

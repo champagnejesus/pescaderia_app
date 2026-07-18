@@ -140,8 +140,7 @@ export default function ClientsPage() {
         <Plus className="w-6 h-6" />
       </button>
 
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)}>
-        <h2 className="text-title-medium text-abyssal-text-primary mb-4">Agregar Cliente</h2>
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Agregar Cliente" showClose>
         <div className="space-y-3">
           <Input placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
           <Input placeholder="Teléfono" value={phone} onChange={(e) => setPhone(e.target.value)} />
@@ -150,32 +149,26 @@ export default function ClientsPage() {
         </div>
       </Dialog>
 
-      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)}>
+      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} title={selectedClient?.name} showClose>
         {selectedClient && (
-          <>
-            <h2 className="text-title-medium text-abyssal-text-primary mb-4">
-              {selectedClient.name}
-            </h2>
-            <div className="space-y-3 text-body-medium text-abyssal-text-secondary">
-              <p><span className="text-abyssal-text-primary font-medium">Teléfono:</span> {selectedClient.phone}</p>
-              <p><span className="text-abyssal-text-primary font-medium">Email:</span> {selectedClient.email}</p>
-              <p>
-                <span className="text-abyssal-text-primary font-medium">Saldo Pendiente:</span>{" "}
-                <span className={selectedClient.outstanding_balance > 0 ? "text-abyssal-red" : "text-abyssal-green"}>
-                  ${selectedClient.outstanding_balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
-                </span>
-              </p>
-              <p><span className="text-abyssal-text-primary font-medium">Límite de Crédito:</span> ${selectedClient.credit_limit.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</p>
-            </div>
-            <Button className="w-full mt-4" onClick={() => { setAdjustBalance(String(selectedClient.outstanding_balance)); setAdjustOpen(true) }}>
+          <div className="space-y-3 text-body-medium text-abyssal-text-secondary">
+            <p><span className="text-abyssal-text-primary font-medium">Teléfono:</span> {selectedClient.phone}</p>
+            <p><span className="text-abyssal-text-primary font-medium">Email:</span> {selectedClient.email}</p>
+            <p>
+              <span className="text-abyssal-text-primary font-medium">Saldo Pendiente:</span>{" "}
+              <span className={selectedClient.outstanding_balance > 0 ? "text-abyssal-red" : "text-abyssal-green"}>
+                ${selectedClient.outstanding_balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+              </span>
+            </p>
+            <p><span className="text-abyssal-text-primary font-medium">Límite de Crédito:</span> ${selectedClient.credit_limit.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</p>
+            <Button className="w-full mt-2" onClick={() => { setAdjustBalance(String(selectedClient.outstanding_balance)); setAdjustOpen(true) }}>
               Ajustar Saldo
             </Button>
-          </>
+          </div>
         )}
       </Dialog>
 
-      <Dialog open={adjustOpen} onClose={() => setAdjustOpen(false)}>
-        <h2 className="text-title-medium text-abyssal-text-primary mb-4">Ajustar Saldo</h2>
+      <Dialog open={adjustOpen} onClose={() => setAdjustOpen(false)} title="Ajustar Saldo" showClose>
         <div className="space-y-3">
           <Input
             type="number"
@@ -184,8 +177,8 @@ export default function ClientsPage() {
             value={adjustBalance}
             onChange={(e) => setAdjustBalance(e.target.value)}
           />
-          <Button className="w-full" onClick={handleAdjustBalance} disabled={adjusting}>
-            {adjusting ? "Guardando..." : "Guardar"}
+          <Button className="w-full" onClick={handleAdjustBalance} disabled={adjusting} loading={adjusting}>
+            {adjusting ? "" : "Guardar"}
           </Button>
         </div>
       </Dialog>

@@ -104,30 +104,24 @@ export default function SuppliersPage() {
         <Plus className="w-6 h-6" />
       </button>
 
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)}>
-        <h2 className="text-title-medium text-abyssal-text-primary mb-4">Agregar Proveedor</h2>
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Agregar Proveedor" showClose>
         <div className="space-y-3">
           <Input placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
           <Input placeholder="Categoría" value={category} onChange={(e) => setCategory(e.target.value)} />
           <Button className="w-full" onClick={handleAdd}>Guardar</Button>
         </div>
       </Dialog>
-      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)}>
+      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} title={selectedSupplier?.name} showClose>
         {selectedSupplier && (
-          <>
-            <h2 className="text-title-medium text-abyssal-text-primary mb-4">
-              {selectedSupplier.name}
-            </h2>
-            <div className="space-y-3 text-body-medium text-abyssal-text-secondary">
-              <p><span className="text-abyssal-text-primary font-medium">Categoría:</span> {selectedSupplier.category}</p>
-              <p><span className="text-abyssal-text-primary font-medium">Estado:</span> {selectedSupplier.status}</p>
-              <p><span className="text-abyssal-text-primary font-medium">Pago Pendiente:</span>{" "}
-                <span className="text-abyssal-red">
-                  ${selectedSupplier.pending_payment.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
-                </span>
-              </p>
-            </div>
-          </>
+          <div className="space-y-3 text-body-medium text-abyssal-text-secondary">
+            <p><span className="text-abyssal-text-primary font-medium">Categoría:</span> {selectedSupplier.category}</p>
+            <p><span className="text-abyssal-text-primary font-medium">Estado:</span> {selectedSupplier.status}</p>
+            <p><span className="text-abyssal-text-primary font-medium">Pago Pendiente:</span>{" "}
+              <span className="text-abyssal-red">
+                ${selectedSupplier.pending_payment.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+              </span>
+            </p>
+          </div>
         )}
       </Dialog>
     </>

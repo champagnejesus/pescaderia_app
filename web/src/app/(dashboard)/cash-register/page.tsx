@@ -6,6 +6,7 @@ import { DaySummaryCard } from "@/components/cash-register/DaySummaryCard"
 import { CashBentoGrid } from "@/components/cash-register/CashBentoGrid"
 import { TransactionRow } from "@/components/cash-register/TransactionRow"
 import { PinModal } from "@/components/cash-register/PinModal"
+import { Button } from "@/components/ui/button"
 import api from "@/lib/api"
 
 interface DailySummaryResponse {
@@ -67,11 +68,13 @@ export default function CashRegisterPage() {
   return (
     <>
       <TopBar title="Cierre de Caja" />
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-4">
         {loading ? (
           <>
             <Skeleton className="h-24" />
             <div className="grid grid-cols-2 gap-3">
+              <Skeleton className="h-20" />
+              <Skeleton className="h-20" />
               <Skeleton className="h-20" />
               <Skeleton className="h-20" />
             </div>
@@ -81,39 +84,38 @@ export default function CashRegisterPage() {
           <>
             {summary && (
               <>
-                <div className="bg-abyssal-surface rounded-abyssal-md p-4 shadow-abyssal-sm animate-fade-in">
+                <div className="animate-fade-in">
                   <DaySummaryCard totalSales={summary.total_sales} />
                 </div>
-                <CashBentoGrid data={summary} />
+                <div className="animate-fade-in" style={{ animationDelay: "50ms" }}>
+                  <CashBentoGrid data={summary} />
+                </div>
               </>
             )}
-            <div className="space-y-2">
+            <div className="space-y-3 animate-fade-in" style={{ animationDelay: "100ms" }}>
               <p className="text-title-medium text-abyssal-text-primary">Transacciones de Hoy</p>
               {transactions.length === 0 ? (
-                <p className="text-center text-body-medium text-abyssal-text-secondary py-4">
-                  No hay transacciones hoy
-                </p>
+                <div className="bg-abyssal-surface rounded-abyssal-md p-8 text-center">
+                  <p className="text-body-medium text-abyssal-text-secondary">No hay transacciones hoy</p>
+                </div>
               ) : (
-                transactions.map((tx) => (
-                  <TransactionRow key={tx.id} transaction={tx} />
-                ))
+                <div className="space-y-2">
+                  {transactions.map((tx) => (
+                    <TransactionRow key={tx.id} transaction={tx} />
+                  ))}
+                </div>
               )}
             </div>
-            <button
+            <Button
+              variant="primary"
+              size="lg"
+              className="w-full"
               onClick={() => setPinOpen(true)}
+              loading={closing}
               disabled={closing}
-              className="w-full bg-abyssal-primary text-abyssal-on-primary rounded-abyssal-md py-3 text-body-medium font-medium transition-all duration-200 hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
             >
-              {closing ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  Cerrando...
-                </span>
-              ) : "Cerrar Día"}
-            </button>
+              {closing ? "" : "Cerrar Día"}
+            </Button>
           </>
         )}
       </div>

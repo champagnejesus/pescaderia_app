@@ -20,4 +20,11 @@ async def get_db():
 
 async def migrate_add_column(table: str, column: str, definition: str):
     async with engine.begin() as conn:
-        await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column} {definition}"))
+        dialect = engine.url.get_backend_name()
+        if dialect == "sqlite":
+            try:
+                await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} {definition}"))
+            except Exception:
+                pass  # Column already exists in SQLite
+        else:
+            await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column} {definition}"))

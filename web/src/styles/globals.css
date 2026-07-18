@@ -1,5 +1,31 @@
 @tailwind base; @tailwind components; @tailwind utilities;
 
+@layer base {
+  *:focus-visible {
+    outline: 2px solid var(--abyssal-primary);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  ::selection {
+    background-color: rgba(94, 92, 230, 0.3);
+    color: inherit;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.6);
+    cursor: pointer;
+  }
+
+  .dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -37,11 +63,18 @@
   animation: subtlePulse 2s ease-in-out infinite;
 }
 
-/* Spin */
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* Scale bounce for buttons */
+@keyframes pressScale {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.97); }
+  100% { transform: scale(1); }
 }
-.animate-spin {
-  animation: spin 1s linear infinite;
+
+/* Hide scrollbar on filter containers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

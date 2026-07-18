@@ -1,7 +1,8 @@
 "use client"
 import { useState } from "react"
 import { Dialog } from "@/components/ui/dialog"
-import { X, Delete } from "lucide-react"
+import { Delete } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface PinModalProps {
   open: boolean
@@ -32,45 +33,32 @@ export function PinModal({ open, onClose, onConfirm }: PinModalProps) {
     onClose()
   }
 
-  const digits = [
-    "1", "2", "3",
-    "4", "5", "6",
-    "7", "8", "9",
-    "", "0", "",
-  ]
+  const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", ""]
 
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-title-medium text-abyssal-text-primary">Ingrese PIN de Seguridad</h2>
-        <button onClick={handleClose} className="text-abyssal-text-secondary hover:text-abyssal-text-primary">
-          <X className="w-5 h-5" />
-        </button>
-      </div>
-
+    <Dialog open={open} onClose={handleClose} title="Ingrese PIN de Seguridad" showClose>
       <div className="flex justify-center gap-3 mb-6">
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
-            className={`w-4 h-4 rounded-full border-2 transition-colors ${
+            className={cn(
+              "w-4 h-4 rounded-full border-2 transition-all duration-200",
               pin.length > i
-                ? "bg-abyssal-primary border-abyssal-primary"
+                ? "bg-abyssal-primary border-abyssal-primary scale-110"
                 : "border-abyssal-outline"
-            }`}
+            )}
           />
         ))}
       </div>
 
       <div className="grid grid-cols-3 gap-3 max-w-[240px] mx-auto">
         {digits.map((d, i) => {
-          if (d === "") {
-            return <div key={i} />
-          }
+          if (d === "") return <div key={i} />
           return (
             <button
               key={i}
               onClick={() => handleDigit(d)}
-              className="h-14 rounded-abyssal-sm bg-abyssal-surface-high text-title-large text-abyssal-text-primary font-bold hover:bg-abyssal-surface transition-colors"
+              className="h-14 rounded-abyssal-sm bg-abyssal-surface-high text-title-large text-abyssal-text-primary font-bold hover:bg-abyssal-surface transition-all active:scale-95"
             >
               {d}
             </button>
@@ -78,7 +66,7 @@ export function PinModal({ open, onClose, onConfirm }: PinModalProps) {
         })}
         <button
           onClick={handleDelete}
-          className="h-14 rounded-abyssal-sm bg-abyssal-surface-high flex items-center justify-center text-abyssal-text-secondary hover:bg-abyssal-surface transition-colors"
+          className="h-14 rounded-abyssal-sm bg-abyssal-surface-high flex items-center justify-center text-abyssal-text-secondary hover:bg-abyssal-surface transition-all active:scale-95"
         >
           <Delete className="w-5 h-5" />
         </button>
@@ -87,7 +75,10 @@ export function PinModal({ open, onClose, onConfirm }: PinModalProps) {
       <button
         onClick={handleConfirm}
         disabled={pin.length < 4}
-        className="w-full mt-4 bg-abyssal-primary text-abyssal-on-primary rounded-abyssal-sm py-3 text-body-medium font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+        className={cn(
+          "w-full mt-4 bg-abyssal-primary text-abyssal-on-primary rounded-abyssal-sm py-3 text-body-medium font-medium transition-all",
+          pin.length === 4 ? "hover:opacity-90 active:scale-[0.98]" : "opacity-50 cursor-not-allowed"
+        )}
       >
         Confirmar
       </button>

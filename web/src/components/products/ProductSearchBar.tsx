@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { SearchBar } from "@/components/shared/SearchBar"
 
 interface ProductSearchBarProps {
@@ -9,10 +9,11 @@ interface ProductSearchBarProps {
 
 export function ProductSearchBar({ value: externalValue, onChange }: ProductSearchBarProps) {
   const [value, setValue] = useState(externalValue)
+  const timerRef = useRef<ReturnType<typeof setTimeout>>()
 
   useEffect(() => {
-    const timer = setTimeout(() => onChange(value), 300)
-    return () => clearTimeout(timer)
+    timerRef.current = setTimeout(() => onChange(value), 300)
+    return () => clearTimeout(timerRef.current)
   }, [value])
 
   useEffect(() => { setValue(externalValue) }, [externalValue])

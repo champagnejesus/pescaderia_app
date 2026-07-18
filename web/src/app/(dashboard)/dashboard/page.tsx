@@ -13,6 +13,10 @@ import { useTransactions } from "@/hooks/useTransactions"
 import { TopBar } from "@/components/layout/TopBar"
 import { useRouter } from "next/navigation"
 
+function formatCurrency(n: number) {
+  return `$${(n ?? 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const { lowStockCount, loading: productsLoading } = useProducts()
@@ -54,15 +58,15 @@ export default function DashboardPage() {
           </>
         ) : (
           <>
-            <Card className="p-4 animate-fade-in">
-              <div className="flex items-center justify-between mb-2">
+            <Card className="animate-fade-in">
+              <div className="flex items-start justify-between mb-2">
                 <div>
                   <p className="text-label-medium text-abyssal-text-secondary">Ganancia Bruta</p>
-                  <p className="text-headline-medium text-abyssal-text-primary font-bold">
-                    ${(dashboardData.gross_profit ?? 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                  <p className="text-headline-medium text-abyssal-text-primary font-bold mt-1">
+                    {formatCurrency(dashboardData.gross_profit)}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   {dashboardData.pending_orders > 0 && (
                     <span className="inline-flex items-center gap-1 bg-abyssal-yellow-bg text-abyssal-yellow rounded-abyssal-full px-2.5 py-1 text-label-small">
                       <span className="w-1.5 h-1.5 rounded-full bg-abyssal-yellow animate-subtle-pulse" />

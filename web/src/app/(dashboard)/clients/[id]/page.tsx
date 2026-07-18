@@ -1,6 +1,10 @@
 "use client"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import { ArrowLeft, Phone, MessageCircle, ShoppingCart, Mail, MapPin, Package, AlertCircle, Inbox } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { StatusBadge } from "@/components/shared/StatusBadge"
+import { cn } from "@/lib/utils"
 import { useClient } from "@/hooks/useClient"
 import { useClientOrders } from "@/hooks/useClientOrders"
 
@@ -14,24 +18,10 @@ function formatDate(dateStr: string | null) {
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  
   if (diffDays === 0) return "Hoy"
   if (diffDays === 1) return "Ayer"
   if (diffDays < 7) return `Hace ${diffDays} días`
   return date.toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" })
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    ENTREGADO: "bg-[#09bf49]/20 text-[#47e266]",
-    PENDIENTE: "bg-[#caa900]/20 text-[#eac400]",
-    CANCELADO: "bg-[#ffb4ab]/20 text-[#ffb4ab]",
-  }
-  return (
-    <span className={`${styles[status] || styles.PENDIENTE} text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider`}>
-      {status}
-    </span>
-  )
 }
 
 export default function ClientDetail() {
@@ -43,18 +33,31 @@ export default function ClientDetail() {
 
   if (clientLoading) {
     return (
-      <div className="min-h-screen bg-[#121212] flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#c2c1ff] border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-abyssal-bg flex flex-col">
+        <div className="bg-abyssal-surface px-4 py-3 flex items-center gap-3 border-b border-abyssal-outline/50">
+          <Skeleton className="w-5 h-5 rounded" />
+          <Skeleton className="h-5 w-48" />
+        </div>
+        <div className="p-4 space-y-4">
+          <Skeleton className="h-[180px] rounded-[3rem]" />
+          <div className="grid grid-cols-3 gap-3">
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+          </div>
+          <Skeleton className="h-32" />
+          <Skeleton className="h-48" />
+        </div>
       </div>
     )
   }
 
   if (clientError || !client) {
     return (
-      <div className="min-h-screen bg-[#121212] flex flex-col items-center justify-center gap-4 text-[#e4e1ed]">
-        <span className="material-symbols-outlined text-[#ffb4ab] text-5xl">error</span>
-        <p className="text-[17px]">{clientError || "Cliente no encontrado"}</p>
-        <Link href="/clients" className="text-[#c2c1ff] text-[15px]">Volver a clientes</Link>
+      <div className="min-h-screen bg-abyssal-bg flex flex-col items-center justify-center gap-4 p-4">
+        <AlertCircle className="w-12 h-12 text-abyssal-red" />
+        <p className="text-title-medium text-abyssal-text-primary text-center">{clientError || "Cliente no encontrado"}</p>
+        <Link href="/clients" className="text-body-medium text-abyssal-primary">Volver a clientes</Link>
       </div>
     )
   }
@@ -65,159 +68,132 @@ export default function ClientDetail() {
   const newOrderUrl = `/orders/new?client_id=${client.id}`
 
   return (
-    <div className="min-h-screen bg-[#121212] font-['Inter'] text-[#e4e1ed] selection:bg-[#c2c1ff]/30 pb-[100px]">
-      <style dangerouslySetInnerHTML={{__html: `
-        .ios-blur {
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        .active-scale:active {
-            transform: scale(0.96);
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-      `}} />
-
-      {/* Top App Bar */}
-      <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[400px] z-50 bg-[#13131b]/80 ios-blur border-b border-[#464554]/30 h-[64px] flex items-center justify-between px-[20px]">
-        <Link href="/clients" className="active-scale text-[#c2c1ff] flex items-center">
-          <span className="material-symbols-outlined" style={{ fontSize: "28px" }}>chevron_left</span>
-        </Link>
-        <h1 className="text-[20px] leading-[25px] font-semibold text-[#e4e1ed] truncate px-4">{client.name}</h1>
-        <button 
+    <div className="min-h-screen bg-abyssal-bg">
+      <header className="bg-abyssal-surface/80 backdrop-blur-xl border-b border-abyssal-outline/30 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+        <button onClick={() => router.back()} className="p-2 -ml-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-colors active:scale-95">
+          <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
+        </button>
+        <h1 className="text-title-large text-abyssal-text-primary truncate px-2 text-center flex-1">{client.name}</h1>
+        <button
           onClick={() => router.push(`/clients/${client.id}/edit`)}
-          className="active-scale text-[#c2c1ff] text-[17px] leading-[22px] font-semibold"
+          className="text-body-medium text-abyssal-primary font-semibold hover:opacity-80 transition-opacity active:scale-95"
         >
           Editar
         </button>
       </header>
 
-      {/* Main Content Canvas */}
-      <main className="pt-[84px] pb-[20px] max-w-[400px] mx-auto px-[20px] flex flex-col gap-[12px]">
-        {/* Saldo Destacado (Bento Card) */}
-        <section className="relative overflow-hidden bg-[#5e5ce6] rounded-[3rem] p-6 flex flex-col justify-between h-[180px] shadow-2xl">
-          <div className="z-10">
-            <span className="text-[11px] leading-[13px] tracking-[0.05em] font-semibold text-white/70 uppercase">Saldo Pendiente</span>
-            <div className="text-[34px] leading-[41px] tracking-[-0.02em] font-bold text-white mt-1">{formatCurrency(client.outstanding_balance)}</div>
+      <main className="max-w-[480px] mx-auto p-4 pb-24 space-y-4">
+        <section className="relative overflow-hidden bg-abyssal-primary rounded-[2rem] p-6 flex flex-col justify-between min-h-[180px] shadow-abyssal-lg animate-fade-in">
+          <div className="relative z-10">
+            <span className="text-label-small text-white/70">Saldo Pendiente</span>
+            <p className="text-display-large text-white font-bold mt-1">{formatCurrency(client.outstanding_balance)}</p>
           </div>
-          <div className="z-10 flex justify-between items-end">
-            <div className="flex flex-col">
-              <span className="text-[11px] leading-[13px] tracking-[0.05em] font-semibold text-white/60">Límite de crédito</span>
-              <span className="text-[15px] leading-[20px] font-normal text-white">{formatCurrency(client.credit_limit)}</span>
+          <div className="relative z-10 flex justify-between items-end">
+            <div>
+              <span className="text-label-small text-white/60">Límite de crédito</span>
+              <p className="text-body-large text-white">{formatCurrency(client.credit_limit)}</p>
             </div>
-            <button className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-4 py-2 rounded-full text-[17px] leading-[22px] font-semibold active-scale">
+            <button className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-5 py-2 rounded-abyssal-full text-body-medium font-semibold transition-all active:scale-95">
               Pagar
             </button>
           </div>
-          {/* Decorative background element */}
-          <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-[#47e266]/20 rounded-full blur-2xl"></div>
+          <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-abyssal-green/20 rounded-full blur-2xl" />
         </section>
 
-        {/* Action Buttons Grid */}
-        <section className="grid grid-cols-3 gap-3">
-          <a href={phoneUrl} className="flex flex-col items-center justify-center bg-[#1f1f27] rounded-lg p-4 gap-2 active-scale border border-[#464554]/30">
-            <div className="w-10 h-10 rounded-full bg-[#09bf49]/20 flex items-center justify-center text-[#47e266]">
-              <span className="material-symbols-outlined">call</span>
+        <section className="grid grid-cols-3 gap-3 animate-fade-in" style={{ animationDelay: "50ms" }}>
+          <a href={phoneUrl} className="flex flex-col items-center justify-center bg-abyssal-surface rounded-abyssal-md p-4 gap-2 border border-abyssal-outline/30 hover:bg-abyssal-surface-high transition-all active:scale-95">
+            <div className="w-10 h-10 rounded-full bg-abyssal-green-bg flex items-center justify-center text-abyssal-green">
+              <Phone className="w-5 h-5" />
             </div>
-            <span className="text-[11px] leading-[13px] tracking-[0.05em] font-semibold text-[#c7c4d7]">Llamar</span>
+            <span className="text-label-small text-abyssal-text-secondary">Llamar</span>
           </a>
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center bg-[#1f1f27] rounded-lg p-4 gap-2 active-scale border border-[#464554]/30">
+          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center bg-abyssal-surface rounded-abyssal-md p-4 gap-2 border border-abyssal-outline/30 hover:bg-abyssal-surface-high transition-all active:scale-95">
             <div className="w-10 h-10 rounded-full bg-[#25D366]/20 flex items-center justify-center text-[#25D366]">
-              <span className="material-symbols-outlined">chat</span>
+              <MessageCircle className="w-5 h-5" />
             </div>
-            <span className="text-[11px] leading-[13px] tracking-[0.05em] font-semibold text-[#c7c4d7]">WhatsApp</span>
+            <span className="text-label-small text-abyssal-text-secondary">WhatsApp</span>
           </a>
-          <Link href={newOrderUrl} className="flex flex-col items-center justify-center bg-[#5e5ce6] rounded-lg p-4 gap-2 active-scale">
+          <Link href={newOrderUrl} className="flex flex-col items-center justify-center bg-abyssal-primary rounded-abyssal-md p-4 gap-2 hover:opacity-90 transition-all active:scale-95">
             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
-              <span className="material-symbols-outlined">add_shopping_cart</span>
+              <ShoppingCart className="w-5 h-5" />
             </div>
-            <span className="text-[11px] leading-[13px] tracking-[0.05em] font-semibold text-white/90">Pedido</span>
+            <span className="text-label-small text-white/90">Pedido</span>
           </Link>
         </section>
 
-        {/* Información de Contacto */}
-        <section className="flex flex-col gap-3 mt-4">
-          <h2 className="text-[11px] leading-[13px] tracking-[0.05em] font-semibold text-[#918fa0] uppercase px-1">Información de Contacto</h2>
-          <div className="bg-[#1f1f27] rounded-xl overflow-hidden border border-[#464554]/30">
-            {/* Row 1: Teléfono */}
-            <div className="flex items-center p-4 gap-4 border-b border-[#464554]/20 active:bg-white/5 transition-colors">
-              <span className="material-symbols-outlined text-[#c2c1ff]">phone_iphone</span>
-              <div className="flex flex-col">
-                <span className="text-[11px] leading-[13px] tracking-[0.05em] font-semibold text-[#918fa0]">Teléfono</span>
-                <span className="text-[15px] leading-[20px] font-normal">{client.phone || "No disponible"}</span>
+        <section className="animate-fade-in" style={{ animationDelay: "100ms" }}>
+          <h2 className="text-label-small text-abyssal-text-secondary uppercase tracking-wider mb-3 px-1">Información de Contacto</h2>
+          <div className="bg-abyssal-surface rounded-abyssal-md overflow-hidden border border-abyssal-outline/30">
+            {[
+              { icon: Phone, label: "Teléfono", value: client.phone || "No disponible" },
+              { icon: Mail, label: "Email", value: client.email || "No disponible" },
+              { icon: MapPin, label: "Dirección", value: client.address || "No disponible" },
+            ].map((item, i) => (
+              <div key={i} className={cn(
+                "flex items-center p-4 gap-4 transition-colors hover:bg-abyssal-surface-high",
+                i < 2 && "border-b border-abyssal-outline/20"
+              )}>
+                <item.icon className="w-5 h-5 text-abyssal-primary shrink-0" />
+                <div>
+                  <p className="text-label-small text-abyssal-text-secondary">{item.label}</p>
+                  <p className="text-body-medium text-abyssal-text-primary">{item.value}</p>
+                </div>
               </div>
-            </div>
-            {/* Row 2: Email */}
-            <div className="flex items-center p-4 gap-4 border-b border-[#464554]/20 active:bg-white/5 transition-colors">
-              <span className="material-symbols-outlined text-[#c2c1ff]">mail</span>
-              <div className="flex flex-col">
-                <span className="text-[11px] leading-[13px] tracking-[0.05em] font-semibold text-[#918fa0]">Email</span>
-                <span className="text-[15px] leading-[20px] font-normal">{client.email || "No disponible"}</span>
-              </div>
-            </div>
-            {/* Row 3: Dirección */}
-            <div className="flex items-center p-4 gap-4 active:bg-white/5 transition-colors">
-              <span className="material-symbols-outlined text-[#c2c1ff]">location_on</span>
-              <div className="flex flex-col">
-                <span className="text-[11px] leading-[13px] tracking-[0.05em] font-semibold text-[#918fa0]">Dirección</span>
-                <span className="text-[15px] leading-[20px] font-normal">{client.address || "No disponible"}</span>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* Últimos Pedidos */}
-        <section className="flex flex-col gap-3 mt-4">
-          <div className="flex justify-between items-center px-1">
-            <h2 className="text-[11px] leading-[13px] tracking-[0.05em] font-semibold text-[#918fa0] uppercase">Últimos Pedidos</h2>
-            <Link href={`/orders?client_id=${client.id}`} className="text-[13px] leading-[18px] font-normal text-[#c2c1ff]">Ver todos</Link>
+        <section className="animate-fade-in" style={{ animationDelay: "150ms" }}>
+          <div className="flex justify-between items-center mb-3 px-1">
+            <h2 className="text-label-small text-abyssal-text-secondary uppercase tracking-wider">Últimos Pedidos</h2>
+            <Link href={`/orders?client_id=${client.id}`} className="text-body-medium text-abyssal-primary">Ver todos</Link>
           </div>
-          <div className="flex flex-col gap-3">
+          <div className="space-y-2">
             {ordersLoading ? (
-              // Skeleton loading
               Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="bg-[#2a2932] rounded-lg p-4 flex items-center justify-between border border-[#464554]/30 animate-pulse">
+                <div key={i} className="bg-abyssal-surface rounded-abyssal-sm p-4 flex items-center justify-between border border-abyssal-outline/30">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-[#34343d]" />
-                    <div className="flex flex-col gap-2">
-                      <div className="w-24 h-4 bg-[#34343d] rounded" />
-                      <div className="w-16 h-3 bg-[#34343d] rounded" />
+                    <Skeleton className="w-12 h-12 rounded-abyssal-sm" />
+                    <div className="space-y-2">
+                      <Skeleton className="w-24 h-4" />
+                      <Skeleton className="w-16 h-3" />
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="w-16 h-4 bg-[#34343d] rounded" />
-                    <div className="w-12 h-4 bg-[#34343d] rounded-full" />
+                  <div className="space-y-2 text-right">
+                    <Skeleton className="w-16 h-4" />
+                    <Skeleton className="w-12 h-4 rounded-abyssal-full" />
                   </div>
                 </div>
               ))
             ) : ordersError ? (
-              <div className="bg-[#2a2932] rounded-lg p-6 text-center border border-[#464554]/30">
-                <span className="material-symbols-outlined text-[#ffb4ab] text-4xl">error</span>
-                <p className="text-[15px] text-[#ffb4ab] mt-2">{ordersError}</p>
+              <div className="bg-abyssal-surface rounded-abyssal-md p-6 text-center border border-abyssal-outline/30">
+                <AlertCircle className="w-10 h-10 text-abyssal-red mx-auto mb-2" />
+                <p className="text-body-medium text-abyssal-red">{ordersError}</p>
               </div>
             ) : orders.length === 0 ? (
-              <div className="bg-[#2a2932] rounded-lg p-6 text-center border border-[#464554]/30">
-                <span className="material-symbols-outlined text-[#918fa0] text-4xl">inbox</span>
-                <p className="text-[15px] text-[#918fa0] mt-2">Sin pedidos recientes</p>
+              <div className="bg-abyssal-surface rounded-abyssal-md p-6 text-center border border-abyssal-outline/30">
+                <Inbox className="w-10 h-10 text-abyssal-text-secondary mx-auto mb-2" />
+                <p className="text-body-medium text-abyssal-text-secondary">Sin pedidos recientes</p>
               </div>
             ) : (
               orders.map((order) => (
                 <Link
                   key={order.id}
                   href={`/orders/${order.id}`}
-                  className="bg-[#2a2932] rounded-lg p-4 flex items-center justify-between border border-[#464554]/30 active-scale"
+                  className="flex items-center justify-between p-4 bg-abyssal-surface rounded-abyssal-sm border border-abyssal-outline/30 transition-all hover:bg-abyssal-surface-high active:scale-[0.99]"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-[#34343d] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#918fa0]">inventory_2</span>
+                    <div className="w-12 h-12 rounded-abyssal-sm bg-abyssal-surface-high flex items-center justify-center">
+                      <Package className="w-6 h-6 text-abyssal-text-secondary" />
                     </div>
-                    <div className="flex flex-col">
-                      <span className="text-[17px] leading-[22px] font-semibold">Orden #{order.order_number}</span>
-                      <span className="text-[13px] leading-[18px] font-normal text-[#918fa0]">{formatDate(order.created_at)}</span>
+                    <div>
+                      <p className="text-body-medium text-abyssal-text-primary font-semibold">Orden #{order.order_number}</p>
+                      <p className="text-label-small text-abyssal-text-secondary">{formatDate(order.created_at)}</p>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
-                    <span className="text-[17px] leading-[22px] font-semibold">{formatCurrency(order.total_value)}</span>
+                    <p className="text-body-medium text-abyssal-text-primary font-semibold">{formatCurrency(order.total_value)}</p>
                     <StatusBadge status={order.status} />
                   </div>
                 </Link>
@@ -226,21 +202,22 @@ export default function ClientDetail() {
           </div>
         </section>
 
-        {/* Map Section */}
-        <section className="flex flex-col gap-3 mt-4">
-          <h2 className="text-[11px] leading-[13px] tracking-[0.05em] font-semibold text-[#918fa0] uppercase px-1">Ruta de Entrega</h2>
-          <a 
+        <section className="animate-fade-in" style={{ animationDelay: "200ms" }}>
+          <h2 className="text-label-small text-abyssal-text-secondary uppercase tracking-wider mb-3 px-1">Ruta de Entrega</h2>
+          <a
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full h-40 rounded-xl overflow-hidden border border-[#464554]/30 relative active-scale bg-[#1f1f27] flex items-center justify-center"
+            className="w-full h-40 rounded-abyssal-md overflow-hidden border border-abyssal-outline/30 relative block bg-abyssal-surface hover:bg-abyssal-surface-high transition-all active:scale-[0.99]"
           >
-            <div className="absolute inset-0 bg-gradient-to-t from-[#13131b] to-transparent opacity-60 z-10"></div>
-            <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-[#1f1f27]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#464554]/30 z-20">
-              <span className="material-symbols-outlined text-[#c2c1ff] text-sm">navigation</span>
-              <span className="text-[13px] leading-[18px] font-normal text-[#e4e1ed]">Ver en mapa</span>
+            <div className="absolute inset-0 bg-gradient-to-t from-abyssal-bg to-transparent opacity-60 z-10" />
+            <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-abyssal-surface/80 backdrop-blur-md px-3 py-1.5 rounded-abyssal-full border border-abyssal-outline/30 z-20">
+              <MapPin className="w-4 h-4 text-abyssal-primary" />
+              <span className="text-label-small text-abyssal-text-primary">Ver en mapa</span>
             </div>
-            <span className="material-symbols-outlined text-[#918fa0] text-5xl z-10">map</span>
+            <div className="flex items-center justify-center h-full">
+              <MapPin className="w-12 h-12 text-abyssal-text-secondary" />
+            </div>
           </a>
         </section>
       </main>

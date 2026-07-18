@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { TopBar } from "@/components/layout/TopBar"
-import { BottomNav } from "@/components/layout/BottomNav"
 
 interface OrderItem {
   product_id: number
@@ -112,17 +111,13 @@ export default function OrderDetailPage() {
 
   return (
     <>
-      <TopBar
-        title={`Pedido #${order.order_number}`}
-        rightAction={
-          <button
-            onClick={() => router.back()}
-            className="p-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all duration-200 active:scale-95"
-          >
-            <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
-          </button>
-        }
-      />
+      <header className="bg-abyssal-surface/80 backdrop-blur-xl border-b border-abyssal-outline/30 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+        <button onClick={() => router.back()} className="p-2 -ml-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all active:scale-95">
+          <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
+        </button>
+        <h1 className="text-title-large text-abyssal-text-primary">Pedido #{order.order_number}</h1>
+        <div className="w-9" />
+      </header>
 
       <div className="p-4 space-y-4 pb-24">
         <div className="bg-abyssal-surface rounded-abyssal-md p-4 shadow-abyssal-sm animate-fade-in">
@@ -209,7 +204,6 @@ export default function OrderDetailPage() {
           </div>
         )}
       </div>
-      <BottomNav />
     </>
   )
 }

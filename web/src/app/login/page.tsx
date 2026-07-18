@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import { Fish, Mail, Lock, Store, User, Phone } from "lucide-react"
+import { FilterChip } from "@/components/shared/FilterChip"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
@@ -25,41 +26,28 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-abyssal-bg flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-abyssal-primary/5 to-transparent pointer-events-none" />
 
-      <div className="w-full max-w-sm flex flex-col items-center gap-4 relative z-10">
-        <Fish size={64} className="text-abyssal-primary animate-fade-in" />
+      <div className="w-full max-w-sm flex flex-col items-center gap-5 relative z-10">
+        <div className="w-16 h-16 rounded-abyssal-xl bg-abyssal-primary/10 flex items-center justify-center animate-fade-in">
+          <Fish size={36} className="text-abyssal-primary" />
+        </div>
 
-        <div className="text-center animate-fade-in">
+        <div className="text-center animate-fade-in" style={{ animationDelay: "50ms" }}>
           <h1 className="text-headline-medium text-abyssal-text-primary">Bienvenido</h1>
-          <p className="text-body-medium text-abyssal-text-secondary">Inicia sesión o regístrate</p>
+          <p className="text-body-medium text-abyssal-text-secondary mt-1">Inicia sesión o regístrate</p>
         </div>
 
-        <div className="flex items-center gap-1 bg-abyssal-surface-high rounded-abyssal-full p-1 animate-fade-in">
-          <button
-            type="button"
-            onClick={() => setIsRegister(false)}
-            className={`px-4 py-2 rounded-abyssal-full text-body-medium transition-all duration-200 ${
-              !isRegister ? "bg-abyssal-primary text-abyssal-on-primary shadow-sm" : "text-abyssal-text-secondary hover:text-abyssal-text-primary"
-            }`}
-          >
-            Iniciar sesión
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsRegister(true)}
-            className={`px-4 py-2 rounded-abyssal-full text-body-medium transition-all duration-200 ${
-              isRegister ? "bg-abyssal-primary text-abyssal-on-primary shadow-sm" : "text-abyssal-text-secondary hover:text-abyssal-text-primary"
-            }`}
-          >
-            Registrarse
-          </button>
+        <div className="flex gap-1 animate-fade-in" style={{ animationDelay: "100ms" }}>
+          <FilterChip label="Iniciar sesión" selected={!isRegister} onClick={() => setIsRegister(false)} />
+          <FilterChip label="Registrarse" selected={isRegister} onClick={() => setIsRegister(true)} />
         </div>
 
-        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3 animate-fade-in">
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3 animate-fade-in" style={{ animationDelay: "150ms" }}>
           {isRegister && (
             <>
               <div className="relative">
-                <Store size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary" />
+                <Store size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary pointer-events-none" />
                 <Input
                   placeholder="Nombre del negocio"
                   value={businessName}
@@ -69,7 +57,7 @@ export default function LoginPage() {
                 />
               </div>
               <div className="relative">
-                <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary" />
+                <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary pointer-events-none" />
                 <Input
                   placeholder="Nombre del propietario"
                   value={ownerName}
@@ -79,7 +67,7 @@ export default function LoginPage() {
                 />
               </div>
               <div className="relative">
-                <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary" />
+                <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary pointer-events-none" />
                 <Input
                   placeholder="Teléfono (opcional)"
                   value={phone}
@@ -91,7 +79,7 @@ export default function LoginPage() {
           )}
 
           <div className="relative">
-            <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary" />
+            <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary pointer-events-none" />
             <Input
               type="email"
               placeholder="Correo electrónico"
@@ -103,7 +91,7 @@ export default function LoginPage() {
           </div>
 
           <div className="relative">
-            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary" />
+            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary pointer-events-none" />
             <Input
               type="password"
               placeholder="Contraseña"
@@ -114,20 +102,24 @@ export default function LoginPage() {
             />
           </div>
 
-          {error && <p className="text-body-medium text-abyssal-red text-center">{error}</p>}
+          {error && (
+            <div className="bg-abyssal-red-bg rounded-abyssal-sm px-4 py-2 text-body-medium text-abyssal-red text-center">
+              {error}
+            </div>
+          )}
 
           <Button
             type="submit"
             variant="primary"
             size="lg"
             loading={loading}
-            className="w-full rounded-abyssal-sm"
+            className="w-full"
           >
             {loading ? "" : isRegister ? "Registrarse" : "Ingresar"}
           </Button>
         </form>
 
-        <p className="text-body-medium text-abyssal-text-secondary text-center mt-4 bg-abyssal-surface-high rounded-abyssal-full px-4 py-1.5">
+        <p className="text-label-small text-abyssal-text-secondary bg-abyssal-surface-high rounded-abyssal-full px-4 py-1.5">
           Abyssal ERP v1.0
         </p>
       </div>

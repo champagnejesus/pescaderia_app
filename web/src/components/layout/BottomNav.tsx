@@ -26,7 +26,7 @@ export function BottomNav() {
               key={href}
               href={href}
               className={cn(
-                "flex flex-col items-center gap-1 py-1 px-3 rounded-abyssal-sm transition-all duration-200 relative",
+                "flex flex-col items-center gap-1 py-1 px-3 rounded-abyssal-sm transition-all duration-200 relative active:scale-95",
                 active ? "text-abyssal-primary" : "text-abyssal-text-secondary hover:text-abyssal-text-primary",
               )}
             >

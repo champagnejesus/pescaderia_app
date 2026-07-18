@@ -24,6 +24,7 @@ const config: Config = {
         "headline-medium": ["24px", { lineHeight: "30px", fontWeight: "600", letterSpacing: "-0.2px" }],
         "title-large": ["20px", { lineHeight: "25px", fontWeight: "600" }],
         "title-medium": ["17px", { lineHeight: "22px", fontWeight: "600" }],
+        "label-medium": ["13px", { lineHeight: "18px", fontWeight: "500" }],
         "body-large": ["15px", { lineHeight: "20px", fontWeight: "400" }],
         "body-medium": ["13px", { lineHeight: "18px", fontWeight: "400" }],
         "label-small": ["11px", { lineHeight: "13px", fontWeight: "700", letterSpacing: "0.5px" }],
