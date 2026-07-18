@@ -1,7 +1,8 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, ShoppingCart } from "lucide-react"
+import { ArrowLeft, ShoppingCart, Receipt } from "lucide-react"
+import Link from "next/link"
 import api from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -206,6 +207,12 @@ export default function OrderDetailPage() {
             </Button>
           </div>
         )}
+        <Link href={`/orders/${order.id}/invoice`}>
+          <Button variant="ghost" size="md" className="w-full gap-2">
+            <Receipt className="w-4 h-4" />
+            Ver Recibo
+          </Button>
+        </Link>
       </div>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
