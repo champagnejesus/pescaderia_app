@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { ArrowUpCircle, ArrowDownCircle, Banknote, CreditCard, Truck } from "lucide-react"
 import type { Transaction } from "@/lib/types"
 
@@ -12,7 +13,7 @@ const typeIcons: Record<string, typeof Banknote> = {
   Transferencia: Truck,
 }
 
-export function TransactionRow({ transaction }: TransactionRowProps) {
+function TransactionRowComponent({ transaction }: TransactionRowProps) {
   const isIncome = transaction.amount > 0
   const isExpense = transaction.amount < 0
   const iconColor = isIncome ? "text-abyssal-green" : "text-abyssal-red"
@@ -21,7 +22,7 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
   const Icon = isExpense ? ArrowDownCircle : TypeIcon || ArrowUpCircle
 
   return (
-    <div className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl">
+    <div className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl contain-render">
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${bgColor}`}>
         <Icon className={`w-5 h-5 ${iconColor}`} />
       </div>
@@ -49,3 +50,5 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
     </div>
   )
 }
+
+export const TransactionRow = memo(TransactionRowComponent)

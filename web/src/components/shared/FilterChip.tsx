@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { cn } from "@/lib/utils"
 
 interface FilterChipProps {
@@ -6,7 +7,7 @@ interface FilterChipProps {
   onClick: () => void
 }
 
-export function FilterChip({ label, selected, onClick }: FilterChipProps) {
+function FilterChipComponent({ label, selected, onClick }: FilterChipProps) {
   return (
     <button
       onClick={onClick}
@@ -21,3 +22,5 @@ export function FilterChip({ label, selected, onClick }: FilterChipProps) {
     </button>
   )
 }
+
+export const FilterChip = memo(FilterChipComponent)

@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { Banknote, CreditCard, ShoppingCart, Scale } from "lucide-react"
 import type { DailySummary } from "@/lib/types"
 
@@ -44,11 +45,11 @@ const cells = [
   },
 ]
 
-export function CashBentoGrid({ data }: CashBentoGridProps) {
+function CashBentoGridComponent({ data }: CashBentoGridProps) {
   return (
     <div className="grid grid-cols-2 gap-3">
       {cells.map((cell) => (
-        <div key={cell.key} className="bg-abyssal-surface glass rounded-2xl p-4">
+        <div key={cell.key} className="bg-abyssal-surface glass rounded-2xl p-4 contain-render">
           <div className="flex items-center gap-2 mb-2">
             <cell.icon className={`w-[18px] h-[18px] ${cell.color}`} />
             <span className="text-[12px] text-abyssal-text-secondary font-medium">{cell.label}</span>
@@ -61,3 +62,5 @@ export function CashBentoGrid({ data }: CashBentoGridProps) {
     </div>
   )
 }
+
+export const CashBentoGrid = memo(CashBentoGridComponent)

@@ -1,12 +1,14 @@
+import { memo } from "react"
+
 interface DaySummaryCardProps {
   totalSales: number
   netTotal: number
   transactionCount: number
 }
 
-export function DaySummaryCard({ totalSales, netTotal, transactionCount }: DaySummaryCardProps) {
+function DaySummaryCardComponent({ totalSales, netTotal, transactionCount }: DaySummaryCardProps) {
   return (
-    <div className="bg-abyssal-surface glass rounded-3xl p-6 text-center">
+    <div className="bg-abyssal-surface glass rounded-3xl p-6 text-center contain-render">
       <p className="text-[34px] font-bold text-abyssal-primary tracking-[-0.5px]">
         ${totalSales.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
       </p>
@@ -22,3 +24,5 @@ export function DaySummaryCard({ totalSales, netTotal, transactionCount }: DaySu
     </div>
   )
 }
+
+export const DaySummaryCard = memo(DaySummaryCardComponent)

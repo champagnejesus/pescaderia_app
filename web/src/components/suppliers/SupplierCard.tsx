@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 
 interface SupplierCardSupplier {
@@ -18,13 +19,13 @@ function formatCurrency(n: number) {
   return `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
 }
 
-export function SupplierCard({ supplier, onPress }: SupplierCardProps) {
+function SupplierCardComponent({ supplier, onPress }: SupplierCardProps) {
   const initial = supplier.name.charAt(0).toUpperCase()
 
   return (
     <button
       onClick={() => onPress(supplier.id)}
-      className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl w-full text-left transition-all duration-200 active:scale-[0.98]"
+      className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl w-full text-left transition-all duration-200 active:scale-[0.98] contain-render"
     >
       {supplier.image_url ? (
         <img src={supplier.image_url} alt={supplier.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
@@ -50,3 +51,5 @@ export function SupplierCard({ supplier, onPress }: SupplierCardProps) {
     </button>
   )
 }
+
+export const SupplierCard = memo(SupplierCardComponent)

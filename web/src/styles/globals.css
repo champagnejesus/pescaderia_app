@@ -79,13 +79,18 @@
   display: none;
 }
 
-/* Site background image */
-.bg-site {
+/* Site background image container (separate from scroll layer) */
+#bg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
   background-image: url('/fondo.png');
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
   background-repeat: no-repeat;
+}
+
+.bg-site {
   position: relative;
 }
 
@@ -113,6 +118,11 @@
 .glass-subtle {
   backdrop-filter: blur(12px) saturate(1.4);
   -webkit-backdrop-filter: blur(12px) saturate(1.4);
+}
+
+/* Contain rendering to individual elements */
+.contain-render {
+  contain: layout style paint;
 }
 
 /* iOS separator */

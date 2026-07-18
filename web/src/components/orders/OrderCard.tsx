@@ -1,4 +1,5 @@
 "use client"
+import { memo } from "react"
 import { cn } from "@/lib/utils"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 
@@ -29,11 +30,11 @@ function formatCurrency(n: number) {
   return `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
 }
 
-export function OrderCard({ order, onPress }: OrderCardProps) {
+function OrderCardComponent({ order, onPress }: OrderCardProps) {
   return (
     <button
       onClick={() => onPress(order.id)}
-      className="bg-abyssal-surface glass rounded-2xl p-3.5 flex items-center justify-between w-full text-left transition-all duration-200 active:scale-[0.98]"
+      className="bg-abyssal-surface glass rounded-2xl p-3.5 flex items-center justify-between w-full text-left transition-all duration-200 active:scale-[0.98] contain-render"
     >
       <div className="min-w-0 flex-1">
         <p className="text-[15px] text-abyssal-text-primary font-medium truncate">
@@ -52,3 +53,5 @@ export function OrderCard({ order, onPress }: OrderCardProps) {
     </button>
   )
 }
+
+export const OrderCard = memo(OrderCardComponent)
