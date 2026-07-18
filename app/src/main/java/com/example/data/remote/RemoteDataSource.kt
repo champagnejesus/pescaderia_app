@@ -6,10 +6,20 @@ import com.example.data.Product
 import com.example.data.Supplier
 import com.example.data.Transaction
 import com.example.data.remote.dto.DailySummaryResponse
+import com.example.data.remote.dto.LoginRequest
 import com.example.data.remote.dto.toEntity
 import com.example.data.remote.dto.toResponse
 
 class RemoteDataSource(private val api: ApiService) {
+
+    suspend fun login(username: String, password: String): String? {
+        return try {
+            val response = api.login(LoginRequest(email = username, password = password))
+            response.accessToken
+        } catch (_: Exception) {
+            null
+        }
+    }
 
     suspend fun fetchProducts(
         search: String = "",

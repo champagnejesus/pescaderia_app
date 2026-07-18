@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.AppConfig
 import com.example.data.Client
 import com.example.data.Order
 import com.example.data.Product
@@ -55,8 +56,8 @@ fun LoginScreen(
     viewModel: ErpViewModel,
     onLoginSuccess: () -> Unit
 ) {
-    var username by remember { mutableStateOf("admin_peces") }
-    var password by remember { mutableStateOf("admin123") }
+    var username by remember { mutableStateOf(AppConfig.DEFAULT_USERNAME) }
+    var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     val loginError by viewModel.loginError.collectAsState()
 
@@ -120,7 +121,7 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it },
-                    placeholder = { Text("admin_peces") },
+                    placeholder = { Text(AppConfig.DEFAULT_USERNAME) },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -201,6 +202,8 @@ fun LoginScreen(
                 onClick = {
                     if (viewModel.login(username, password)) {
                         onLoginSuccess()
+                    } else {
+                        viewModel.attemptRemoteLogin(username, password)
                     }
                 },
                 modifier = Modifier
@@ -2460,6 +2463,9 @@ fun CierreDeCajaScreen(
     val transactions by viewModel.transactions.collectAsState()
     var showPinModal by remember { mutableStateOf(false) }
     var pinValue by remember { mutableStateOf("") }
+    var showChangePinDialog by remember { mutableStateOf(false) }
+    var newPinValue by remember { mutableStateOf("") }
+    var confirmPinValue by remember { mutableStateOf("") }
     var shiftClosed by remember { mutableStateOf(false) }
     var showExpenseDialog by remember { mutableStateOf(false) }
     var expenseTitle by remember { mutableStateOf("") }
@@ -2723,8 +2729,97 @@ fun CierreDeCajaScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Change PIN link
+            TextButton(
+                onClick = {
+                    newPinValue = ""
+                    confirmPinValue = ""
+                    showChangePinDialog = true
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Icon(Icons.Default.Lock, contentDescription = null, tint = AbyssalTextSecondary, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Cambiar PIN", color = AbyssalTextSecondary, style = MaterialTheme.typography.bodyMedium)
+            }
+
             Spacer(modifier = Modifier.height(48.dp))
         }
+    }
+
+    // PIN Change Dialog
+    if (showChangePinDialog) {
+        AlertDialog(
+            onDismissRequest = { showChangePinDialog = false },
+            title = {
+                Text(
+                    "Cambiar PIN de Seguridad",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = AbyssalTextPrimary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            text = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text("Ingresa el nuevo PIN de 4 dígitos", style = MaterialTheme.typography.bodyLarge, color = AbyssalTextSecondary)
+                    OutlinedTextField(
+                        value = newPinValue,
+                        onValueChange = { if (it.length <= 4) newPinValue = it },
+                        label = { Text("Nuevo PIN") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.width(160.dp),
+                        textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 20.sp, letterSpacing = 4.sp),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = AbyssalTextPrimary,
+                            unfocusedTextColor = AbyssalTextPrimary
+                        )
+                    )
+                    OutlinedTextField(
+                        value = confirmPinValue,
+                        onValueChange = { if (it.length <= 4) confirmPinValue = it },
+                        label = { Text("Confirmar PIN") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.width(160.dp),
+                        textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 20.sp, letterSpacing = 4.sp),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = AbyssalTextPrimary,
+                            unfocusedTextColor = AbyssalTextPrimary
+                        )
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (newPinValue.length == 4 && newPinValue == confirmPinValue) {
+                            viewModel.changePin(newPinValue)
+                            scope.launch { snackbarHostState.showSnackbar("PIN actualizado exitosamente") }
+                            showChangePinDialog = false
+                        } else if (newPinValue.length != 4) {
+                            scope.launch { snackbarHostState.showSnackbar("El PIN debe tener 4 dígitos") }
+                        } else {
+                            scope.launch { snackbarHostState.showSnackbar("Los PIN no coinciden") }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = AbyssalPrimary)
+                ) {
+                    Text("Guardar", color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showChangePinDialog = false }) {
+                    Text("Cancelar", color = AbyssalTextSecondary)
+                }
+            },
+            containerColor = AbyssalSurfaceHigh
+        )
     }
 
     // PIN confirmation dialog
@@ -2774,7 +2869,7 @@ fun CierreDeCajaScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        if (pinValue == "1234") {
+                        if (viewModel.verifyPin(pinValue)) {
                             shiftClosed = true
                             scope.launch { snackbarHostState.showSnackbar("Cierre de caja completado exitosamente") }
                         } else {

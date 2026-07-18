@@ -1,9 +1,11 @@
 package com.example.ui
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
+import com.example.AppConfig
 import com.example.data.AppDatabase
 import com.example.data.Client
 import com.example.data.Order
@@ -11,6 +13,8 @@ import com.example.data.Product
 import com.example.data.ErpRepository
 import com.example.data.Supplier
 import com.example.data.Transaction
+import com.example.data.remote.ApiService
+import com.example.data.remote.RemoteDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,6 +35,8 @@ class ErpViewModel(application: Application) : AndroidViewModel(application) {
     ).build()
 
     private val repository = ErpRepository(db.erpDao())
+
+    private val prefs = application.getSharedPreferences(AppConfig.PREFERENCES_FILE, Context.MODE_PRIVATE)
 
     val products: StateFlow<List<Product>> = repository.products
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -70,18 +76,42 @@ class ErpViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun login(username: String, psw: String): Boolean {
-        if (username.lowercase() == "admin_peces" && psw == "admin123") {
+        if (username.lowercase() == AppConfig.DEFAULT_USERNAME && psw == AppConfig.DEFAULT_PASSWORD) {
             _isLoggedIn.value = true
             _loginError.value = null
             return true
-        } else {
-            _loginError.value = "Credenciales incorrectas. Prueba admin_peces / admin123"
-            return false
+        }
+        _loginError.value = "Credenciales incorrectas"
+        return false
+    }
+
+    fun attemptRemoteLogin(username: String, psw: String) {
+        viewModelScope.launch {
+            val remote = RemoteDataSource(ApiService.create())
+            val token = remote.login(username, psw)
+            if (token != null) {
+                _isLoggedIn.value = true
+                _loginError.value = null
+            } else {
+                _loginError.value = "Credenciales incorrectas"
+            }
         }
     }
 
     fun logout() {
         _isLoggedIn.value = false
+    }
+
+    fun getPin(): String {
+        return prefs.getString(AppConfig.PIN_KEY, AppConfig.DEFAULT_PIN) ?: AppConfig.DEFAULT_PIN
+    }
+
+    fun verifyPin(input: String): Boolean {
+        return input == getPin()
+    }
+
+    fun changePin(newPin: String) {
+        prefs.edit().putString(AppConfig.PIN_KEY, newPin).apply()
     }
 
     // Business Logic Actions

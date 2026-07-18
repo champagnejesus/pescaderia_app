@@ -159,19 +159,7 @@ export default function NewOrderPage() {
         <h1 className="text-title-large text-abyssal-text-primary">{isQuickSale ? "Registrar Venta" : "Nuevo Pedido"}</h1>
       </div>
 
-      {isQuickSale ? (
-        selectedClient && (
-          <div className="flex items-center gap-3 p-3 bg-abyssal-surface-high rounded-2xl">
-            <div className="w-10 h-10 rounded-full bg-abyssal-primary-light flex items-center justify-center text-abyssal-primary text-label-small font-bold">
-              {selectedClient.name.split(" ").map((w) => w.charAt(0).toUpperCase()).slice(0, 2).join("")}
-            </div>
-            <div>
-              <p className="text-body-medium text-abyssal-text-primary font-medium">{selectedClient.name}</p>
-              <p className="text-label-small text-abyssal-text-secondary">Venta directa</p>
-            </div>
-          </div>
-        )
-      ) : clientsError ? (
+      {clientsError ? (
         <p className="text-body-medium text-abyssal-red">{clientsError}</p>
       ) : clientsLoading ? (
         <div className="space-y-2">
@@ -183,13 +171,20 @@ export default function NewOrderPage() {
           </div>
         </div>
       ) : (
-        <ClientSelector
-          clients={filteredClients}
-          selectedId={selectedClient?.id ?? null}
-          onSelect={(client) => setSelectedClient(client)}
-          onSearch={setClientSearchQuery}
-          searchValue={clientSearchQuery}
-        />
+        <div>
+          <ClientSelector
+            clients={filteredClients}
+            selectedId={selectedClient?.id ?? null}
+            onSelect={(client) => setSelectedClient(client)}
+            onSearch={setClientSearchQuery}
+            searchValue={clientSearchQuery}
+          />
+          {isQuickSale && selectedClient && (
+            <p className="text-label-small text-abyssal-text-secondary mt-1 ml-1">
+              Venta directa &mdash; puedes cambiar el cliente si es necesario
+            </p>
+          )}
+        </div>
       )}
 
       {productsError ? (
