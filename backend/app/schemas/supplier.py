@@ -21,6 +21,6 @@ class SupplierResponse(BaseModel):
     category: str
     pending_payment: float
     status: str
-    image_url: str
+    image_url: str | None = None
     created_at: datetime | None = None
     class Config: from_attributes = True

@@ -19,7 +19,7 @@ class OrderStatusUpdate(BaseModel):
 
 class OrderItemResponse(BaseModel):
     id: int
-    product_id: int
+    product_id: int | None = None
     quantity: float
     unit_price: float
     subtotal: float

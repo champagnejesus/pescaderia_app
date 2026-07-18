@@ -33,8 +33,8 @@ class ProductResponse(BaseModel):
     stock: float
     unit: str
     price: float
-    image_url: str
-    description: str
+    image_url: str | None = None
+    description: str | None = None
     is_extra_quality: bool
     low_stock_threshold: float
     created_at: datetime | None = None

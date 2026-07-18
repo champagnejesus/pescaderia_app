@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from app.database import engine, Base, migrate_add_column, migrate_client_fk
+from app.database import engine, Base, migrate_add_column, migrate_client_fk, migrate_product_fk
 from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync
 import traceback
 
@@ -15,6 +15,7 @@ async def lifespan(app: FastAPI):
     await migrate_add_column("clients", "initials", "VARCHAR(10) DEFAULT ''")
     await migrate_add_column("clients", "credit_limit", "FLOAT DEFAULT 1500.0")
     await migrate_client_fk()
+    await migrate_product_fk()
     yield
 
 app = FastAPI(title="Abyssal ERP API", version="1.0.0", lifespan=lifespan)
