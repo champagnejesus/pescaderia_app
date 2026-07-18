@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Dialog } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import api from "@/lib/api"
 
@@ -14,6 +15,8 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [error, setError] = useState("")
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [form, setForm] = useState({
     name: "", category: "PESCADO BLANCO", stock: 0, unit: "kg",
     price: 0, description: "", image_url: "", is_extra_quality: false, low_stock_threshold: 5,
@@ -38,6 +41,20 @@ export default function EditProductPage() {
       setError(typeof detail === "string" ? detail : JSON.stringify(detail))
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleDelete() {
+    setDeleting(true)
+    try {
+      await api.delete(`/products/${id}`)
+      router.push("/products")
+    } catch (err: any) {
+      const detail = err.response?.data?.detail || "Error al eliminar producto"
+      setError(typeof detail === "string" ? detail : JSON.stringify(detail))
+      setDeleteOpen(false)
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -126,7 +143,24 @@ export default function EditProductPage() {
         <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full">
           {loading ? "" : "Guardar Cambios"}
         </Button>
+        <Button type="button" variant="ghost" size="lg" className="w-full text-abyssal-red hover:bg-abyssal-red/10" onClick={() => setDeleteOpen(true)}>
+          Eliminar Producto
+        </Button>
       </form>
+
+      <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)} title="Eliminar Producto" showClose>
+        <p className="text-[15px] text-abyssal-text-secondary mb-4">
+          ¿Estás seguro de que deseas eliminar <strong className="text-abyssal-text-primary">{form.name}</strong>? Esta acción no se puede deshacer.
+        </p>
+        <div className="flex gap-3">
+          <Button variant="secondary" size="md" className="flex-1" onClick={() => setDeleteOpen(false)}>
+            Cancelar
+          </Button>
+          <Button variant="primary" size="md" className="flex-1 bg-abyssal-red hover:bg-abyssal-red/90" loading={deleting} onClick={handleDelete}>
+            {deleting ? "" : "Eliminar"}
+          </Button>
+        </div>
+      </Dialog>
     </div>
   )
 }
