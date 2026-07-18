@@ -81,7 +81,7 @@ export default function CashRegisterPage() {
           <>
             {summary && (
               <>
-                <div className="bg-gradient-to-br from-abyssal-primary/10 to-abyssal-surface rounded-abyssal-md p-4 border border-abyssal-primary/20 animate-fade-in">
+                <div className="bg-abyssal-surface rounded-abyssal-md p-4 border border-abyssal-outline/50 animate-fade-in">
                   <DaySummaryCard totalSales={summary.total_sales} />
                 </div>
                 <CashBentoGrid data={summary} />

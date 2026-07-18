@@ -8,9 +8,9 @@ function formatCurrency(n: number) {
 
 export function DaySummaryCard({ totalSales }: DaySummaryCardProps) {
   return (
-    <div className="bg-abyssal-primary text-abyssal-on-primary rounded-abyssal-md p-6 text-center">
-      <p className="text-display-large font-bold">{formatCurrency(totalSales)}</p>
-      <p className="text-body-medium mt-1 opacity-80">Total del Día</p>
+    <div className="bg-abyssal-surface border border-abyssal-outline/50 rounded-abyssal-md p-6 text-center">
+      <p className="text-display-large font-bold text-abyssal-primary">{formatCurrency(totalSales)}</p>
+      <p className="text-body-medium mt-1 text-abyssal-text-secondary">Total del Día</p>
     </div>
   )
 }

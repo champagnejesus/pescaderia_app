@@ -54,7 +54,7 @@ export default function DashboardPage() {
           </>
         ) : (
           <>
-            <Card className="p-4 bg-gradient-to-br from-abyssal-primary/10 to-abyssal-surface border-abyssal-primary/20 animate-fade-in">
+            <Card className="p-4 bg-abyssal-surface border border-abyssal-outline/50 animate-fade-in">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <p className="text-label-medium text-abyssal-text-secondary">Ganancia Bruta</p>

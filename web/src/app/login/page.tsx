@@ -25,7 +25,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-abyssal-bg flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-abyssal-primary/5 via-transparent to-abyssal-primary/10" />
 
       <div className="w-full max-w-sm flex flex-col items-center gap-4 relative z-10">
         <Fish size={64} className="text-abyssal-primary animate-fade-in" />
@@ -128,7 +127,7 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="text-body-medium text-abyssal-text-secondary text-center mt-8 bg-abyssal-surface-high rounded-abyssal-full px-4 py-1.5">
+        <p className="text-body-medium text-abyssal-text-secondary text-center mt-4 bg-abyssal-surface-high rounded-abyssal-full px-4 py-1.5">
           Abyssal ERP v1.0
         </p>
       </div>
