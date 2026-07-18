@@ -28,7 +28,7 @@ class OrderItemResponse(BaseModel):
 class OrderResponse(BaseModel):
     id: int
     order_number: str
-    client_id: int
+    client_id: int | None = None
     client_name: str
     delivery_date: str
     items_count: int

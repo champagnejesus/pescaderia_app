@@ -41,5 +41,6 @@ async def migrate_client_fk():
             try:
                 await conn.execute(text("ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_client_id_fkey"))
                 await conn.execute(text("ALTER TABLE orders ADD CONSTRAINT orders_client_id_fkey FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL"))
-            except Exception:
-                pass
+                print("✓ orders client_id FK migrated to ON DELETE SET NULL")
+            except Exception as e:
+                print(f"⚠ FK migration skipped: {e}")
