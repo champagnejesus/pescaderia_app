@@ -26,9 +26,9 @@ class ClientResponse(BaseModel):
     phone: str | None = None
     email: str | None = None
     address: str | None = None
-    outstanding_balance: float = 0.0
+    outstanding_balance: float | None = None
     initials: str | None = None
-    credit_limit: float = 1500.0
+    credit_limit: float | None = None
     created_at: datetime | None = None
     class Config: from_attributes = True
 

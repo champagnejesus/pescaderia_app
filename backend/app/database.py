@@ -13,10 +13,15 @@ async def get_db():
     async with async_session() as session:
         try:
             yield session
-            await session.commit()
         except Exception:
             await session.rollback()
             raise
+        else:
+            try:
+                await session.commit()
+            except Exception:
+                await session.rollback()
+                raise
 
 async def migrate_add_column(table: str, column: str, definition: str):
     async with engine.begin() as conn:
