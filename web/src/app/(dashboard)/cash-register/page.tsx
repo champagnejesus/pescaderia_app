@@ -6,64 +6,69 @@ import { DaySummaryCard } from "@/components/cash-register/DaySummaryCard"
 import { CashBentoGrid } from "@/components/cash-register/CashBentoGrid"
 import { TransactionRow } from "@/components/cash-register/TransactionRow"
 import { PinModal } from "@/components/cash-register/PinModal"
+import { ExpenseDialog } from "@/components/cash-register/ExpenseDialog"
 import { Button } from "@/components/ui/button"
+import { FilterChip } from "@/components/shared/FilterChip"
+import { ToastContainer } from "@/components/ui/ToastContainer"
+import { useToast } from "@/hooks/useToast"
 import api from "@/lib/api"
-
-interface DailySummaryResponse {
-  total_sales: number
-  total_expenses: number
-  net_total: number
-  cash_total: number
-  card_total: number
-  transaction_count: number
-}
-
-interface Transaction {
-  id: number
-  title: string
-  time: string
-  type: string
-  amount: number
-  status: string
-}
+import type { DailySummary, Transaction } from "@/lib/types"
 
 export default function CashRegisterPage() {
-  const [summary, setSummary] = useState<DailySummaryResponse | null>(null)
+  const [summary, setSummary] = useState<DailySummary | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
   const [pinOpen, setPinOpen] = useState(false)
+  const [expenseOpen, setExpenseOpen] = useState(false)
   const [closing, setClosing] = useState(false)
+  const [selectedFilter, setSelectedFilter] = useState<string | null>(null)
+  const { toasts, addToast, removeToast } = useToast()
 
   const fetch = useCallback(async () => {
     setLoading(true)
+    setError("")
     try {
       const [summaryRes, txRes] = await Promise.all([
-        api.get<DailySummaryResponse>("/transactions/daily-summary"),
+        api.get<DailySummary>("/transactions/daily-summary"),
         api.get<Transaction[]>("/transactions", { params: { limit: 50 } }),
       ])
       setSummary(summaryRes.data)
       setTransactions(txRes.data)
-    } catch (err) {
-      console.error("Error fetching cash register data:", err)
+    } catch {
+      setError("Error al cargar datos de caja")
+      addToast("Error al cargar datos de caja", "error")
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [addToast])
 
   useEffect(() => { fetch() }, [fetch])
+
+  const filteredTransactions = selectedFilter
+    ? transactions.filter((tx) => tx.type === selectedFilter)
+    : transactions
 
   async function handlePinConfirm(pin: string) {
     setClosing(true)
     try {
       await api.post("/transactions/close-day", { pin })
-    } catch (err) {
-      console.error("Error closing day:", err)
-    } finally {
-      setClosing(false)
+      addToast("Cierre de caja completado exitosamente", "success")
       setPinOpen(false)
       fetch()
+    } catch {
+      addToast("Error al cerrar el día. Verifica el PIN.", "error")
+    } finally {
+      setClosing(false)
     }
   }
+
+  const filterOptions = [
+    { label: "Todas", value: null },
+    { label: "Efectivo", value: "Efectivo" },
+    { label: "Tarjeta", value: "Tarjeta" },
+    { label: "Gastos", value: "Gasto" },
+  ]
 
   return (
     <>
@@ -80,32 +85,80 @@ export default function CashRegisterPage() {
             </div>
             <Skeleton className="h-48" />
           </>
+        ) : error && !summary ? (
+          <div className="bg-abyssal-surface glass rounded-3xl p-8 text-center">
+            <p className="text-body-large text-abyssal-red font-medium">{error}</p>
+            <Button variant="secondary" size="md" className="mt-4" onClick={fetch}>
+              Reintentar
+            </Button>
+          </div>
         ) : (
           <>
             {summary && (
               <>
                 <div className="animate-fade-in">
-                  <DaySummaryCard totalSales={summary.total_sales} />
+                  <DaySummaryCard
+                    totalSales={summary.total_sales}
+                    netTotal={summary.net_total}
+                    transactionCount={summary.transaction_count}
+                  />
                 </div>
                 <div className="animate-fade-in" style={{ animationDelay: "50ms" }}>
                   <CashBentoGrid data={summary} />
                 </div>
               </>
             )}
+
             <div className="space-y-3 animate-fade-in" style={{ animationDelay: "100ms" }}>
-              <p className="text-title-medium text-abyssal-text-primary">Transacciones de Hoy</p>
-              {transactions.length === 0 ? (
-                <div className="bg-abyssal-surface rounded-abyssal-md p-8 text-center">
-                  <p className="text-body-medium text-abyssal-text-secondary">No hay transacciones hoy</p>
+              <div className="flex items-center justify-between">
+                <p className="text-title-medium text-abyssal-text-primary">Transacciones</p>
+                {transactions.length > 0 && (
+                  <p className="text-[12px] text-abyssal-text-secondary">
+                    {filteredTransactions.length} de {transactions.length}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {filterOptions.map((opt) => (
+                  <FilterChip
+                    key={opt.label}
+                    label={opt.label}
+                    selected={selectedFilter === opt.value}
+                    onClick={() => setSelectedFilter(opt.value)}
+                  />
+                ))}
+              </div>
+
+              {filteredTransactions.length === 0 ? (
+                <div className="bg-abyssal-surface glass rounded-2xl p-8 text-center">
+                  <p className="text-body-medium text-abyssal-text-secondary">
+                    {selectedFilter
+                      ? `No hay transacciones de tipo "${selectedFilter}"`
+                      : "No hay transacciones hoy"}
+                  </p>
+                  <p className="text-[12px] text-abyssal-text-secondary mt-1">
+                    {selectedFilter ? "Prueba cambiando el filtro" : "Realiza una venta para verlo aquí"}
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {transactions.map((tx) => (
+                  {filteredTransactions.map((tx) => (
                     <TransactionRow key={tx.id} transaction={tx} />
                   ))}
                 </div>
               )}
             </div>
+
+            <Button
+              variant="ghost"
+              size="lg"
+              className="w-full border border-abyssal-outline/40"
+              onClick={() => setExpenseOpen(true)}
+            >
+              + Agregar Gasto
+            </Button>
+
             <Button
               variant="primary"
               size="lg"
@@ -120,7 +173,20 @@ export default function CashRegisterPage() {
         )}
       </div>
 
-      <PinModal open={pinOpen} onClose={() => setPinOpen(false)} onConfirm={handlePinConfirm} />
+      <PinModal
+        open={pinOpen}
+        onClose={() => setPinOpen(false)}
+        onConfirm={handlePinConfirm}
+        summary={summary}
+      />
+
+      <ExpenseDialog
+        open={expenseOpen}
+        onClose={() => setExpenseOpen(false)}
+        onCreated={fetch}
+      />
+
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )
 }

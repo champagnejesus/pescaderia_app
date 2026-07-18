@@ -43,6 +43,9 @@ import com.example.data.Transaction
 import com.example.ui.theme.*
 import java.util.Locale
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 // ----------------------------------------------------
 // 1. LOGIN SCREEN
@@ -2458,285 +2461,273 @@ fun CierreDeCajaScreen(
     var showPinModal by remember { mutableStateOf(false) }
     var pinValue by remember { mutableStateOf("") }
     var shiftClosed by remember { mutableStateOf(false) }
+    var showExpenseDialog by remember { mutableStateOf(false) }
+    var expenseTitle by remember { mutableStateOf("") }
+    var expenseAmount by remember { mutableStateOf("") }
+    var selectedFilter by remember { mutableStateOf<String?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     val totalSales = transactions.filter { it.amount > 0 }.sumOf { it.amount }
     val totalExpenses = transactions.filter { it.amount < 0 }.sumOf { it.amount }
     val netTotal = totalSales + totalExpenses
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AbyssalBackground)
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-    ) {
-        // Top App Bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(AbyssalSurfaceHigh),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.AccountCircle, contentDescription = null, tint = AbyssalPrimaryLight, modifier = Modifier.fillMaxSize())
-                }
-                Text(
-                    text = "Cierre de Caja",
-                    style = MaterialTheme.typography.displayLarge,
-                    color = AbyssalPrimaryLight
-                )
-            }
-            IconButton(onClick = {}) {
-                Icon(Icons.Default.Notifications, contentDescription = "Alerts", tint = AbyssalTextPrimary)
-            }
-        }
+    val cashTotal = transactions.filter { it.type == "Efectivo" && it.amount > 0 }.sumOf { it.amount }
+    val cardTotal = transactions.filter { it.type == "Tarjeta" && it.amount > 0 }.sumOf { it.amount }
+    val transferTotal = transactions.filter { it.type == "Transfer" && it.amount > 0 }.sumOf { it.amount }
+    val expenseTotal = abs(totalExpenses)
+    val accountTotal = cashTotal + cardTotal + transferTotal
+    val difference = totalSales - accountTotal
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Total day Header Card
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
-                .background(AbyssalSurface)
-                .border(1.dp, AbyssalOutline, RoundedCornerShape(24.dp))
-                .padding(24.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("VENTAS TOTALES DEL DÍA", style = MaterialTheme.typography.labelSmall, color = AbyssalTextSecondary)
-                Text(
-                    text = "$${String.format(Locale.getDefault(), "%.2f", netTotal)}",
-                    style = MaterialTheme.typography.displayLarge,
-                    color = AbyssalTextPrimary,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(AbyssalGreenBg)
-                        .padding(horizontal = 10.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(Icons.Default.TrendingUp, contentDescription = null, tint = AbyssalGreen, modifier = Modifier.size(14.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("+12.4% vs Ayer", style = MaterialTheme.typography.labelSmall, color = AbyssalGreen)
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Grid Bento Stats (4 cells)
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(AbyssalSurface)
-                    .border(1.dp, AbyssalOutline, RoundedCornerShape(20.dp))
-                    .padding(16.dp)
-            ) {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.Payments, contentDescription = null, tint = AbyssalGreen)
-                        Text("EFECTIVO", style = MaterialTheme.typography.labelSmall, color = AbyssalTextSecondary, fontSize = 9.sp)
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text("$2,120.00", style = MaterialTheme.typography.titleLarge, color = AbyssalTextPrimary)
-                }
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(AbyssalSurface)
-                    .border(1.dp, AbyssalOutline, RoundedCornerShape(20.dp))
-                    .padding(16.dp)
-            ) {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.CreditCard, contentDescription = null, tint = AbyssalPrimaryLight)
-                        Text("TARJETA", style = MaterialTheme.typography.labelSmall, color = AbyssalTextSecondary, fontSize = 9.sp)
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text("$2,732.50", style = MaterialTheme.typography.titleLarge, color = AbyssalTextPrimary)
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(AbyssalSurface)
-                    .border(1.dp, AbyssalOutline, RoundedCornerShape(20.dp))
-                    .padding(16.dp)
-            ) {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.ShoppingCartCheckout, contentDescription = null, tint = AbyssalRed)
-                        Text("GASTOS", style = MaterialTheme.typography.labelSmall, color = AbyssalTextSecondary, fontSize = 9.sp)
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text("-$450.00", style = MaterialTheme.typography.titleLarge, color = AbyssalRed)
-                }
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(AbyssalPrimaryLight.copy(alpha = 0.05f))
-                    .border(1.dp, AbyssalOutline, RoundedCornerShape(20.dp))
-                    .padding(16.dp)
-            ) {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.Balance, contentDescription = null, tint = AbyssalYellow)
-                        Text("DIFERENCIA", style = MaterialTheme.typography.labelSmall, color = AbyssalTextSecondary, fontSize = 9.sp)
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text("+$0.00", style = MaterialTheme.typography.titleLarge, color = AbyssalYellow)
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Shift transaction logs
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Transacciones del Turno", style = MaterialTheme.typography.titleMedium, color = AbyssalTextPrimary)
-            Text("Ver todo", style = MaterialTheme.typography.bodyMedium, color = AbyssalPrimary)
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            transactions.take(4).forEach { tx ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(AbyssalSurface)
-                        .border(1.dp, AbyssalOutline, RoundedCornerShape(16.dp))
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(AbyssalSurfaceHigh),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = if (tx.amount < 0) Icons.Default.LocalShipping else Icons.Default.Restaurant,
-                                contentDescription = null,
-                                tint = AbyssalTextSecondaryVariant
-                            )
-                        }
-                        Column {
-                            Text(tx.title, style = MaterialTheme.typography.titleMedium, color = AbyssalTextPrimary)
-                            Text("${tx.time} • ${tx.type}", style = MaterialTheme.typography.bodyMedium, color = AbyssalTextSecondary)
-                        }
-                    }
-
-                    Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(
-                            text = if (tx.amount >= 0) "+$${tx.amount}" else "-$${kotlin.math.abs(tx.amount)}",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = if (tx.amount >= 0) AbyssalGreen else AbyssalRed
-                        )
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(if (tx.status == "PAGADO") AbyssalGreenBg else AbyssalRedBg)
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
-                        ) {
-                            Text(tx.status, style = MaterialTheme.typography.labelSmall, color = if (tx.status == "PAGADO") AbyssalGreen else AbyssalRed, fontSize = 8.sp)
-                        }
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Main checkout action
-        Button(
-            onClick = {
-                if (!shiftClosed) {
-                    pinValue = ""
-                    showPinModal = true
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (shiftClosed) AbyssalOutline else AbyssalPrimary
-            )
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                Icon(
-                    imageVector = if (shiftClosed) Icons.Default.CheckCircle else Icons.Default.LockReset,
-                    contentDescription = null,
-                    tint = Color.White
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = if (shiftClosed) "Caja Cerrada Exitosamente" else "Cerrar Caja y Exportar",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(48.dp))
+    val filteredTransactions = if (selectedFilter != null) {
+        transactions.filter { it.type == selectedFilter }
+    } else {
+        transactions
     }
 
+    val formatter = remember {
+        java.text.NumberFormat.getNumberInstance(Locale.getDefault()).apply {
+            minimumFractionDigits = 2
+            maximumFractionDigits = 2
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = AbyssalBackground
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+        ) {
+            // Top App Bar
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Box(
+                        modifier = Modifier.size(40.dp).clip(CircleShape).background(AbyssalSurfaceHigh),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.AccountCircle, contentDescription = null, tint = AbyssalPrimaryLight, modifier = Modifier.fillMaxSize())
+                    }
+                    Text("Cierre de Caja", style = MaterialTheme.typography.displayLarge, color = AbyssalPrimaryLight)
+                }
+                IconButton(onClick = {}) {
+                    Icon(Icons.Default.Notifications, contentDescription = "Alerts", tint = AbyssalTextPrimary)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Total day Header Card
+            Box(
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(AbyssalSurface)
+                    .border(1.dp, AbyssalOutline, RoundedCornerShape(24.dp)).padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("VENTAS TOTALES DEL DÍA", style = MaterialTheme.typography.labelSmall, color = AbyssalTextSecondary)
+                    Text(
+                        text = "$${formatter.format(netTotal)}",
+                        style = MaterialTheme.typography.displayLarge,
+                        color = AbyssalTextPrimary,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("${transactions.size} transacciones hoy", style = MaterialTheme.typography.labelSmall, color = AbyssalTextSecondary)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Grid Bento Stats (2x2)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    icon = Icons.Default.Payments,
+                    label = "EFECTIVO",
+                    value = "$${formatter.format(cashTotal)}",
+                    valueColor = AbyssalGreen,
+                    iconTint = AbyssalGreen
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    icon = Icons.Default.CreditCard,
+                    label = "TARJETA",
+                    value = "$${formatter.format(cardTotal)}",
+                    valueColor = AbyssalPrimaryLight,
+                    iconTint = AbyssalPrimaryLight
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    icon = Icons.Default.ShoppingCartCheckout,
+                    label = "GASTOS",
+                    value = "-$${formatter.format(expenseTotal)}",
+                    valueColor = AbyssalRed,
+                    iconTint = AbyssalRed
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    icon = Icons.Default.Balance,
+                    label = "DIFERENCIA",
+                    value = "${if (difference >= 0) "+" else "-"}$${formatter.format(abs(difference))}",
+                    valueColor = if (difference == 0.0) AbyssalTextSecondary else AbyssalYellow,
+                    iconTint = AbyssalYellow,
+                    backgroundColor = if (difference == 0.0) AbyssalSurface else AbyssalYellow.copy(alpha = 0.05f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Filter chips
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = selectedFilter == null,
+                    onClick = { selectedFilter = null },
+                    label = { Text("Todas", fontSize = 12.sp) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = AbyssalPrimary,
+                        selectedLabelColor = Color.White
+                    )
+                )
+                FilterChip(
+                    selected = selectedFilter == "Efectivo",
+                    onClick = { selectedFilter = "Efectivo" },
+                    label = { Text("Efectivo", fontSize = 12.sp) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = AbyssalPrimary,
+                        selectedLabelColor = Color.White
+                    )
+                )
+                FilterChip(
+                    selected = selectedFilter == "Tarjeta",
+                    onClick = { selectedFilter = "Tarjeta" },
+                    label = { Text("Tarjeta", fontSize = 12.sp) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = AbyssalPrimary,
+                        selectedLabelColor = Color.White
+                    )
+                )
+                FilterChip(
+                    selected = selectedFilter == "Gasto",
+                    onClick = { selectedFilter = "Gasto" },
+                    label = { Text("Gastos", fontSize = 12.sp) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = AbyssalPrimary,
+                        selectedLabelColor = Color.White
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Transaction logs header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    if (selectedFilter != null) "Transacciones ($selectedFilter)" else "Transacciones",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = AbyssalTextPrimary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            if (filteredTransactions.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Default.ReceiptLong, contentDescription = null, tint = AbyssalTextSecondary.copy(alpha = 0.5f), modifier = Modifier.size(48.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text("No hay transacciones", style = MaterialTheme.typography.bodyLarge, color = AbyssalTextSecondary)
+                        Text(
+                            if (selectedFilter != null) "Prueba cambiando el filtro" else "Realiza una venta para verlo aquí",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = AbyssalTextSecondary.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    filteredTransactions.take(20).forEach { tx ->
+                        TransactionCard(tx = tx, formatter = formatter)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Quick action: Add expense
+            OutlinedButton(
+                onClick = {
+                    expenseTitle = ""
+                    expenseAmount = ""
+                    showExpenseDialog = true
+                },
+                modifier = Modifier.fillMaxWidth().height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, AbyssalOutline.copy(alpha = 0.6f)),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = AbyssalTextSecondary)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null, tint = AbyssalRed.copy(alpha = 0.7f))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Agregar Gasto", color = AbyssalTextSecondary)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Main checkout action
+            Button(
+                onClick = {
+                    if (!shiftClosed) {
+                        pinValue = ""
+                        showPinModal = true
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (shiftClosed) AbyssalOutline else AbyssalPrimary
+                )
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                    Icon(
+                        imageVector = if (shiftClosed) Icons.Default.CheckCircle else Icons.Default.LockReset,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = if (shiftClosed) "Caja Cerrada Exitosamente" else "Cerrar Caja y Exportar",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.White
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(48.dp))
+        }
+    }
+
+    // PIN confirmation dialog
     if (showPinModal) {
         AlertDialog(
             onDismissRequest = { showPinModal = false },
@@ -2757,6 +2748,12 @@ fun CierreDeCajaScreen(
                         color = AbyssalTextSecondary,
                         textAlign = TextAlign.Center
                     )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Ventas: $${formatter.format(totalSales)}", style = MaterialTheme.typography.titleMedium, color = AbyssalGreen)
+                        Text("Gastos: -$${formatter.format(expenseTotal)}", style = MaterialTheme.typography.titleMedium, color = AbyssalRed)
+                        Text("Neto: $${formatter.format(netTotal)}", style = MaterialTheme.typography.titleMedium, color = AbyssalTextPrimary)
+                    }
                     Spacer(modifier = Modifier.height(20.dp))
                     OutlinedTextField(
                         value = pinValue,
@@ -2779,6 +2776,9 @@ fun CierreDeCajaScreen(
                     onClick = {
                         if (pinValue == "1234") {
                             shiftClosed = true
+                            scope.launch { snackbarHostState.showSnackbar("Cierre de caja completado exitosamente") }
+                        } else {
+                            scope.launch { snackbarHostState.showSnackbar("PIN incorrecto") }
                         }
                         showPinModal = false
                     },
@@ -2794,5 +2794,168 @@ fun CierreDeCajaScreen(
             },
             containerColor = AbyssalSurfaceHigh
         )
+    }
+
+    // Add Expense Dialog
+    if (showExpenseDialog) {
+        AlertDialog(
+            onDismissRequest = { showExpenseDialog = false },
+            title = {
+                Text(
+                    "Registrar Gasto",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = AbyssalTextPrimary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text("Ingresa los detalles del gasto", style = MaterialTheme.typography.bodyLarge, color = AbyssalTextSecondary)
+                    OutlinedTextField(
+                        value = expenseTitle,
+                        onValueChange = { expenseTitle = it },
+                        label = { Text("Concepto") },
+                        placeholder = { Text("ej. Compra de hielo") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = AbyssalTextPrimary,
+                            unfocusedTextColor = AbyssalTextPrimary,
+                            focusedBorderColor = AbyssalPrimary,
+                            unfocusedBorderColor = AbyssalOutline
+                        )
+                    )
+                    OutlinedTextField(
+                        value = expenseAmount,
+                        onValueChange = { if (it.all { c -> c.isDigit() || c == '.' }) expenseAmount = it },
+                        label = { Text("Monto") },
+                        placeholder = { Text("0.00") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        prefix = { Text("$", color = AbyssalTextSecondary) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = AbyssalTextPrimary,
+                            unfocusedTextColor = AbyssalTextPrimary,
+                            focusedBorderColor = AbyssalPrimary,
+                            unfocusedBorderColor = AbyssalOutline
+                        )
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val amount = expenseAmount.toDoubleOrNull()
+                        if (expenseTitle.isNotBlank() && amount != null && amount > 0) {
+                            viewModel.addExpense(expenseTitle, amount)
+                            showExpenseDialog = false
+                            scope.launch { snackbarHostState.showSnackbar("Gasto registrado: $expenseTitle") }
+                        }
+                    },
+                    enabled = expenseTitle.isNotBlank() && (expenseAmount.toDoubleOrNull() ?: 0.0) > 0,
+                    colors = ButtonDefaults.buttonColors(containerColor = AbyssalRed)
+                ) {
+                    Text("Registrar Gasto", color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExpenseDialog = false }) {
+                    Text("Cancelar", color = AbyssalTextSecondary)
+                }
+            },
+            containerColor = AbyssalSurfaceHigh
+        )
+    }
+}
+
+@Composable
+private fun StatCard(
+    modifier: Modifier,
+    icon: ImageVector,
+    label: String,
+    value: String,
+    valueColor: Color,
+    iconTint: Color,
+    backgroundColor: Color = AbyssalSurface
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(backgroundColor)
+            .border(1.dp, AbyssalOutline, RoundedCornerShape(20.dp))
+            .padding(16.dp)
+    ) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(icon, contentDescription = null, tint = iconTint)
+                Text(label, style = MaterialTheme.typography.labelSmall, color = AbyssalTextSecondary, fontSize = 9.sp)
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(value, style = MaterialTheme.typography.titleLarge, color = valueColor)
+        }
+    }
+}
+
+@Composable
+private fun TransactionCard(
+    tx: Transaction,
+    formatter: java.text.NumberFormat
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(AbyssalSurface)
+            .border(1.dp, AbyssalOutline, RoundedCornerShape(16.dp))
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier.size(40.dp).clip(CircleShape).background(AbyssalSurfaceHigh),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = when {
+                        tx.amount < 0 -> Icons.Default.LocalShipping
+                        tx.type == "Efectivo" -> Icons.Default.Payments
+                        tx.type == "Tarjeta" -> Icons.Default.CreditCard
+                        else -> Icons.Default.Restaurant
+                    },
+                    contentDescription = null,
+                    tint = AbyssalTextSecondaryVariant
+                )
+            }
+            Column {
+                Text(tx.title, style = MaterialTheme.typography.titleMedium, color = AbyssalTextPrimary)
+                Text("${tx.time} • ${tx.type}", style = MaterialTheme.typography.bodyMedium, color = AbyssalTextSecondary)
+            }
+        }
+
+        Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = if (tx.amount >= 0) "+$${formatter.format(tx.amount)}" else "-$${formatter.format(abs(tx.amount))}",
+                style = MaterialTheme.typography.titleMedium,
+                color = if (tx.amount >= 0) AbyssalGreen else AbyssalRed
+            )
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(if (tx.status == "PAGADO") AbyssalGreenBg else AbyssalRedBg)
+                    .padding(horizontal = 6.dp, vertical = 2.dp)
+            ) {
+                Text(tx.status, style = MaterialTheme.typography.labelSmall, color = if (tx.status == "PAGADO") AbyssalGreen else AbyssalRed, fontSize = 8.sp)
+            }
+        }
     }
 }

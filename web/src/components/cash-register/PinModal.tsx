@@ -3,14 +3,16 @@ import { useState } from "react"
 import { Dialog } from "@/components/ui/dialog"
 import { Delete } from "lucide-react"
 import { cn } from "@/lib/utils"
+import type { DailySummary } from "@/lib/types"
 
 interface PinModalProps {
   open: boolean
   onClose: () => void
   onConfirm: (pin: string) => void
+  summary: DailySummary | null
 }
 
-export function PinModal({ open, onClose, onConfirm }: PinModalProps) {
+export function PinModal({ open, onClose, onConfirm, summary }: PinModalProps) {
   const [pin, setPin] = useState("")
 
   function handleDigit(d: string) {
@@ -36,8 +38,35 @@ export function PinModal({ open, onClose, onConfirm }: PinModalProps) {
   const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", ""]
 
   return (
-    <Dialog open={open} onClose={handleClose} title="Ingrese PIN de Seguridad" showClose>
-      <div className="flex justify-center gap-3.5 mb-8">
+    <Dialog open={open} onClose={handleClose} title="Confirmar Cierre" showClose>
+      {summary && (
+        <div className="flex justify-center gap-4 mb-5 text-center">
+          <div>
+            <p className="text-[11px] text-abyssal-text-secondary font-medium">Ventas</p>
+            <p className="text-[15px] font-semibold text-abyssal-green">
+              ${summary.total_sales.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+          <div className="w-px bg-abyssal-outline/30" />
+          <div>
+            <p className="text-[11px] text-abyssal-text-secondary font-medium">Gastos</p>
+            <p className="text-[15px] font-semibold text-abyssal-red">
+              -${Math.abs(summary.total_expenses).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+          <div className="w-px bg-abyssal-outline/30" />
+          <div>
+            <p className="text-[11px] text-abyssal-text-secondary font-medium">Neto</p>
+            <p className="text-[15px] font-semibold text-abyssal-text-primary">
+              ${summary.net_total.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+        </div>
+      )}
+
+      <p className="text-[13px] text-abyssal-text-secondary text-center mb-5">Ingresa el PIN de seguridad</p>
+
+      <div className="flex justify-center gap-3.5 mb-7">
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}

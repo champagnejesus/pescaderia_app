@@ -1,37 +1,50 @@
-import { Banknote, CreditCard, ShoppingCart, Wallet } from "lucide-react"
-
-interface DailySummaryResponse {
-  total_sales: number
-  total_expenses: number
-  net_total: number
-  cash_total: number
-  card_total: number
-  transaction_count: number
-}
+import { Banknote, CreditCard, ShoppingCart, Scale } from "lucide-react"
+import type { DailySummary } from "@/lib/types"
 
 interface CashBentoGridProps {
-  data: DailySummaryResponse
+  data: DailySummary
 }
 
-function formatCurrency(n: number) {
-  return `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
+function fmt(n: number) {
+  return `$${Math.abs(n).toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
 }
 
 const cells = [
-  { key: "cash", label: "Efectivo", icon: Banknote, color: "text-abyssal-green" },
-  { key: "card", label: "Tarjeta", icon: CreditCard, color: "text-abyssal-primary" },
-  { key: "expenses", label: "Gastos", icon: ShoppingCart, color: "text-abyssal-red" },
-  { key: "net", label: "Balance Neto", icon: Wallet, color: "text-abyssal-text-primary" },
+  {
+    key: "cash",
+    label: "Efectivo",
+    icon: Banknote,
+    getValue: (d: DailySummary) => fmt(d.cash_total),
+    color: "text-abyssal-green",
+  },
+  {
+    key: "card",
+    label: "Tarjeta",
+    icon: CreditCard,
+    getValue: (d: DailySummary) => fmt(d.card_total),
+    color: "text-abyssal-primary",
+  },
+  {
+    key: "expenses",
+    label: "Gastos",
+    icon: ShoppingCart,
+    getValue: (d: DailySummary) => `-${fmt(d.total_expenses)}`,
+    color: "text-abyssal-red",
+  },
+  {
+    key: "diff",
+    label: "Diferencia",
+    icon: Scale,
+    getValue: (d: DailySummary) => {
+      const accounted = d.cash_total + d.card_total
+      const diff = d.total_sales - accounted
+      return `${diff >= 0 ? "+" : "-"}${fmt(diff)}`
+    },
+    color: "text-abyssal-text-primary",
+  },
 ]
 
 export function CashBentoGrid({ data }: CashBentoGridProps) {
-  const values: Record<string, number> = {
-    cash: data.cash_total,
-    card: data.card_total,
-    expenses: data.total_expenses,
-    net: data.net_total,
-  }
-
   return (
     <div className="grid grid-cols-2 gap-3">
       {cells.map((cell) => (
@@ -41,7 +54,7 @@ export function CashBentoGrid({ data }: CashBentoGridProps) {
             <span className="text-[12px] text-abyssal-text-secondary font-medium">{cell.label}</span>
           </div>
           <p className={`text-[17px] font-semibold ${cell.color}`}>
-            {formatCurrency(values[cell.key])}
+            {cell.getValue(data)}
           </p>
         </div>
       ))}
