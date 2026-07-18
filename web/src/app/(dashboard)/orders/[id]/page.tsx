@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { TopBar } from "@/components/layout/TopBar"
+import { ToastContainer } from "@/components/ui/ToastContainer"
+import { useToast } from "@/hooks/useToast"
 
 interface OrderItem {
   product_id: number
@@ -61,6 +63,7 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [submitting, setSubmitting] = useState(false)
+  const { toasts, addToast, removeToast } = useToast()
 
   useEffect(() => {
     api.get<OrderDetail>(`/orders/${id}`)
@@ -75,7 +78,7 @@ export default function OrderDetailPage() {
       const { data } = await api.patch(`/orders/${id}/status`, { status: newStatus })
       setOrder(data)
     } catch {
-      alert("Error al actualizar el estado")
+      addToast("Error al actualizar el estado", "error")
     } finally {
       setSubmitting(false)
     }
@@ -204,6 +207,7 @@ export default function OrderDetailPage() {
           </div>
         )}
       </div>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )
 }

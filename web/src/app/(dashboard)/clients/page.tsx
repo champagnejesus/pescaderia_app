@@ -1,9 +1,13 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus, Users } from "lucide-react"
+import { Download, Plus, Users } from "lucide-react"
 import Link from "next/link"
 import { TopBar } from "@/components/layout/TopBar"
-import { SearchBar } from "@/components/shared/SearchBar"
+import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
+import { formatCurrency } from "@/lib/formatters"
+import { exportCSV } from "@/lib/export"
+import { useToast } from "@/hooks/useToast"
+import { ToastContainer } from "@/components/ui/ToastContainer"
 import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,6 +41,8 @@ export default function ClientsPage() {
   const [adjustOpen, setAdjustOpen] = useState(false)
   const [adjustBalance, setAdjustBalance] = useState("")
   const [adjusting, setAdjusting] = useState(false)
+
+  const { toasts, addToast, removeToast } = useToast()
 
   const fetch = useCallback(async () => {
     setLoading(true)
@@ -102,13 +108,33 @@ export default function ClientsPage() {
 
   return (
     <>
-      <TopBar title="Clientes" />
+      <TopBar
+        title="Clientes"
+        rightAction={
+          <div className="flex items-center gap-1">
+            <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
+            <button
+              onClick={() => {
+                if (clients.length === 0) { addToast("No hay datos para exportar", "error"); return }
+                exportCSV(clients, "clientes", {
+                  name: "Nombre", phone: "Teléfono", email: "Email",
+                  outstanding_balance: "Saldo Pendiente", credit_limit: "Límite de Crédito"
+                })
+                addToast("Clientes exportados", "success")
+              }}
+              className="p-2 rounded-full hover:bg-abyssal-surface-high transition-colors active:scale-95"
+              aria-label="Exportar clientes"
+            >
+              <Download className="w-5 h-5 text-abyssal-text-secondary" />
+            </button>
+          </div>
+        }
+      />
       <div className="p-4 space-y-3">
         <ClientStats
           totalClients={clients.length}
           totalBalance={clients.reduce((sum, c) => sum + c.outstanding_balance, 0)}
         />
-        <SearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -135,6 +161,7 @@ export default function ClientsPage() {
 
       <button
         onClick={() => setAddOpen(true)}
+        aria-label="Agregar cliente"
         className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 z-30"
       >
         <Plus className="w-6 h-6" />
@@ -157,10 +184,10 @@ export default function ClientsPage() {
             <p>
               <span className="text-abyssal-text-primary font-medium">Saldo Pendiente:</span>{" "}
               <span className={selectedClient.outstanding_balance > 0 ? "text-abyssal-red" : "text-abyssal-green"}>
-                ${selectedClient.outstanding_balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                {formatCurrency(selectedClient.outstanding_balance)}
               </span>
             </p>
-            <p><span className="text-abyssal-text-primary font-medium">Límite de Crédito:</span> ${selectedClient.credit_limit.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</p>
+            <p><span className="text-abyssal-text-primary font-medium">Límite de Crédito:</span> {formatCurrency(selectedClient.credit_limit)}</p>
             <Button className="w-full mt-2" onClick={() => { setAdjustBalance(String(selectedClient.outstanding_balance)); setAdjustOpen(true) }}>
               Ajustar Saldo
             </Button>
@@ -182,6 +209,7 @@ export default function ClientsPage() {
           </Button>
         </div>
       </Dialog>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )
 }

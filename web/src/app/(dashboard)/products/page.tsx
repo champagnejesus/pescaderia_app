@@ -6,7 +6,7 @@ import Link from "next/link"
 import { TopBar } from "@/components/layout/TopBar"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ProductSearchBar } from "@/components/products/ProductSearchBar"
+import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
 import { CategoryFilter } from "@/components/products/CategoryFilter"
 import { ProductCard } from "@/components/products/ProductCard"
 import { useProducts } from "@/hooks/useProducts"
@@ -26,9 +26,8 @@ export default function ProductsPage() {
 
   return (
     <>
-      <TopBar title="Productos" />
+      <TopBar title="Productos" rightAction={<CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar productos..." />} />
       <div className="p-4 space-y-3">
-        <ProductSearchBar value={search} onChange={setSearch} />
         <CategoryFilter categories={categories} selected={category} onSelect={setCategory} />
         {loading ? (
           <div className="space-y-2">
@@ -60,6 +59,7 @@ export default function ProductsPage() {
       <Link
         href="/products/new"
         className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 z-30"
+        aria-label="Agregar producto"
       >
         <Plus className="w-6 h-6" />
       </Link>

@@ -1,14 +1,19 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus, Truck } from "lucide-react"
+import { Plus, Truck, Download } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
-import { SearchBar } from "@/components/shared/SearchBar"
+import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
 import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { SupplierCard } from "@/components/suppliers/SupplierCard"
+import { formatCurrency } from "@/lib/formatters"
+import { exportCSV } from "@/lib/export"
+import { useToast } from "@/hooks/useToast"
+import { ToastContainer } from "@/components/ui/ToastContainer"
 import api from "@/lib/api"
 
 interface Supplier {
@@ -21,6 +26,7 @@ interface Supplier {
 }
 
 export default function SuppliersPage() {
+  const router = useRouter()
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -29,6 +35,7 @@ export default function SuppliersPage() {
   const [category, setCategory] = useState("")
   const [detailOpen, setDetailOpen] = useState(false)
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
+  const { toasts, addToast, removeToast } = useToast()
 
   const fetch = useCallback(async () => {
     setLoading(true)
@@ -69,9 +76,28 @@ export default function SuppliersPage() {
 
   return (
     <>
-      <TopBar title="Proveedores" />
+      <TopBar
+        title="Proveedores"
+        rightAction={
+          <div className="flex items-center gap-1">
+            <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar proveedor..." />
+            <button
+              onClick={() => {
+                if (suppliers.length === 0) { addToast("No hay datos para exportar", "error"); return }
+                exportCSV(suppliers.map(s => ({ ...s, pending_payment: s.pending_payment })), "proveedores", {
+                  name: "Nombre", category: "Categoría", status: "Estado", pending_payment: "Pago Pendiente"
+                })
+                addToast("Proveedores exportados", "success")
+              }}
+              className="p-2 rounded-full hover:bg-abyssal-surface-high transition-colors active:scale-95"
+              aria-label="Exportar proveedores"
+            >
+              <Download className="w-5 h-5 text-abyssal-text-secondary" />
+            </button>
+          </div>
+        }
+      />
       <div className="p-4 space-y-3">
-        <SearchBar value={search} onChange={setSearch} placeholder="Buscar proveedor..." />
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -99,6 +125,7 @@ export default function SuppliersPage() {
 
       <button
         onClick={() => setAddOpen(true)}
+        aria-label="Agregar proveedor"
         className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 z-30"
       >
         <Plus className="w-6 h-6" />
@@ -107,7 +134,19 @@ export default function SuppliersPage() {
       <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Agregar Proveedor" showClose>
         <div className="space-y-3">
           <Input placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
-          <Input placeholder="Categoría" value={category} onChange={(e) => setCategory(e.target.value)} />
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3.5 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 transition-all appearance-none"
+          >
+            <option value="">Seleccionar categoría</option>
+            <option value="PESCADO BLANCO">PESCADO BLANCO</option>
+            <option value="MARISCO">MARISCO</option>
+            <option value="CONGELADOS">CONGELADOS</option>
+            <option value="EMPAQUES">EMPAQUES</option>
+            <option value="TRANSPORTE">TRANSPORTE</option>
+            <option value="OTRO">OTRO</option>
+          </select>
           <Button className="w-full" onClick={handleAdd}>Guardar</Button>
         </div>
       </Dialog>
@@ -118,12 +157,13 @@ export default function SuppliersPage() {
             <p><span className="text-abyssal-text-primary font-medium">Estado:</span> {selectedSupplier.status}</p>
             <p><span className="text-abyssal-text-primary font-medium">Pago Pendiente:</span>{" "}
               <span className="text-abyssal-red">
-                ${selectedSupplier.pending_payment.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                {formatCurrency(selectedSupplier.pending_payment)}
               </span>
             </p>
           </div>
         )}
       </Dialog>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )
 }

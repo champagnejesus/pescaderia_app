@@ -8,6 +8,9 @@ import { ProductPicker } from "@/components/orders/ProductPicker"
 import { PaymentMethodSelector } from "@/components/orders/PaymentMethodSelector"
 import { CheckoutSummary } from "@/components/orders/CheckoutSummary"
 import { SuccessOverlay } from "@/components/orders/SuccessOverlay"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ToastContainer } from "@/components/ui/ToastContainer"
+import { useToast } from "@/hooks/useToast"
 
 interface Client {
   id: number
@@ -31,6 +34,7 @@ interface SelectedItem {
 
 export default function NewOrderPage() {
   const router = useRouter()
+  const { toasts, addToast, removeToast } = useToast()
   const [clients, setClients] = useState<Client[]>([])
   const [allProducts, setAllProducts] = useState<Product[]>([])
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
@@ -64,6 +68,12 @@ export default function NewOrderPage() {
   )
 
   const handleAddProduct = useCallback((product: Product) => {
+    const existing = selectedItems.find((s) => s.product_id === product.id)
+    const currentQty = existing ? existing.quantity : 0
+    if (currentQty >= product.stock) {
+      addToast(`Stock insuficiente para ${product.name} (disponible: ${product.stock} ${product.unit})`, "error")
+      return
+    }
     setSelectedItems((prev) => {
       const existing = prev.find((s) => s.product_id === product.id)
       if (existing) {
@@ -79,17 +89,22 @@ export default function NewOrderPage() {
       }
       return [...prev, newItem]
     })
-  }, [])
+  }, [selectedItems, addToast])
 
   const handleUpdateQty = useCallback((productId: number, qty: number) => {
     if (qty <= 0) {
       setSelectedItems((prev) => prev.filter((s) => s.product_id !== productId))
       return
     }
+    const product = allProducts.find((p) => p.id === productId)
+    if (product && qty > product.stock) {
+      addToast(`Stock insuficiente (máximo: ${product.stock} ${product.unit})`, "error")
+      return
+    }
     setSelectedItems((prev) =>
       prev.map((s) => (s.product_id === productId ? { ...s, quantity: qty } : s)),
     )
-  }, [])
+  }, [allProducts, addToast])
 
   const handleSubmit = async () => {
     if (!selectedClient || selectedItems.length === 0) return
@@ -110,7 +125,7 @@ export default function NewOrderPage() {
       })
       setSuccessOrder({ id: data?.id, order_number: data?.order_number || "N/A" })
     } catch {
-      alert("Error al crear el pedido. Intente de nuevo.")
+      addToast("Error al crear el pedido. Intente de nuevo.", "error")
     } finally {
       setSubmitting(false)
     }
@@ -142,7 +157,14 @@ export default function NewOrderPage() {
       {clientsError ? (
         <p className="text-body-medium text-abyssal-red">{clientsError}</p>
       ) : clientsLoading ? (
-        <p className="text-body-medium text-abyssal-text-secondary">Cargando clientes...</p>
+        <div className="space-y-2">
+          <Skeleton className="h-10 w-48" />
+          <div className="flex gap-2">
+            <Skeleton className="w-16 h-16 rounded-full" />
+            <Skeleton className="w-16 h-16 rounded-full" />
+            <Skeleton className="w-16 h-16 rounded-full" />
+          </div>
+        </div>
       ) : (
         <ClientSelector
           clients={filteredClients}
@@ -155,7 +177,12 @@ export default function NewOrderPage() {
       {productsError ? (
         <p className="text-body-medium text-abyssal-red">{productsError}</p>
       ) : productsLoading ? (
-        <p className="text-body-medium text-abyssal-text-secondary">Cargando productos...</p>
+        <div className="space-y-2">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+        </div>
       ) : (
         <ProductPicker
           products={filteredProducts}
@@ -184,6 +211,8 @@ export default function NewOrderPage() {
         onSubmit={handleSubmit}
         loading={submitting}
       />
+
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   )
 }

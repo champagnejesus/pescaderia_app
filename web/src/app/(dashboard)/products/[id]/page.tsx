@@ -8,6 +8,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { StockBadge } from "@/components/products/StockBadge"
+import { useToast } from "@/hooks/useToast"
+import { ToastContainer } from "@/components/ui/ToastContainer"
 
 interface Product {
   id: number
@@ -31,6 +33,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [adjustQty, setAdjustQty] = useState(0)
   const [adjusting, setAdjusting] = useState(false)
+  const { toasts, addToast, removeToast } = useToast()
 
   useEffect(() => {
     api.get<Product>("/products/" + id).then((res) => setProduct(res.data)).catch(() => setProduct(null)).finally(() => setLoading(false))
@@ -166,7 +169,7 @@ export default function ProductDetailPage() {
                   setAdjustQty(0)
                 } catch (e: any) {
                   const msg = e.response?.data?.detail || e.message || "Error al actualizar stock"
-                  alert(msg)
+                  addToast(msg, "error")
                 } finally {
                   setAdjusting(false)
                 }
@@ -175,6 +178,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   )
 }

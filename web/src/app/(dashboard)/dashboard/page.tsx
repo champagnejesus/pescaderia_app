@@ -12,10 +12,9 @@ import { useOrders } from "@/hooks/useOrders"
 import { useTransactions } from "@/hooks/useTransactions"
 import { TopBar } from "@/components/layout/TopBar"
 import { useRouter } from "next/navigation"
-
-function formatCurrency(n: number) {
-  return `$${(n ?? 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
-}
+import { formatCurrency } from "@/lib/formatters"
+import { ToastContainer } from "@/components/ui/ToastContainer"
+import { useToast } from "@/hooks/useToast"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -24,6 +23,7 @@ export default function DashboardPage() {
   const { data: summary, loading: txsLoading } = useTransactions()
 
   const loading = productsLoading || ordersLoading || txsLoading
+  const { toasts, addToast, removeToast } = useToast()
 
   const dashboardData = {
     gross_profit: summary?.net_total ?? 0,
@@ -92,7 +92,7 @@ export default function DashboardPage() {
                   Nuevo Pedido
                 </Button>
               </Link>
-              <Link href="/cash-register" className="flex-1">
+              <Link href="/orders/new?quickSale=true" className="flex-1">
                 <Button variant="secondary" size="lg" className="w-full gap-2">
                   <ShoppingCart size={18} />
                   Nueva Venta
@@ -102,6 +102,7 @@ export default function DashboardPage() {
           </>
         )}
       </div>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )
 }
