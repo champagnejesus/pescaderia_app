@@ -6,7 +6,7 @@ class Order(Base):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True, index=True)
     order_number = Column(String(50), unique=True, nullable=False, index=True)
-    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    client_id = Column(Integer, ForeignKey("clients.id", ondelete="SET NULL"), nullable=True)
     client_name = Column(String(255), nullable=False)
     delivery_date = Column(String(100))
     items_count = Column(Integer, default=0)

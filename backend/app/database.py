@@ -25,11 +25,21 @@ async def get_db():
 
 async def migrate_add_column(table: str, column: str, definition: str):
     async with engine.begin() as conn:
-        dialect = engine.url.get_backend_name()
+        dialect = engine.dialect.name
         if dialect == "sqlite":
             try:
                 await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} {definition}"))
             except Exception:
-                pass  # Column already exists in SQLite
+                pass
         else:
             await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column} {definition}"))
+
+async def migrate_client_fk():
+    async with engine.begin() as conn:
+        dialect = engine.dialect.name
+        if dialect != "sqlite":
+            try:
+                await conn.execute(text("ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_client_id_fkey"))
+                await conn.execute(text("ALTER TABLE orders ADD CONSTRAINT orders_client_id_fkey FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL"))
+            except Exception:
+                pass

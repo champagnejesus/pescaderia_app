@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from app.models.client import Client
 from app.models.order import Order
 
@@ -31,6 +31,7 @@ async def update_client(db: AsyncSession, client_id: int, data: dict) -> Client 
 async def delete_client(db: AsyncSession, client_id: int) -> bool:
     client = await db.get(Client, client_id)
     if not client: return False
+    await db.execute(update(Order).where(Order.client_id == client_id).values(client_id=None))
     await db.delete(client)
     await db.flush()
     return True
