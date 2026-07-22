@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { Fish, Mail, Lock, Store, User, Phone } from "lucide-react"
+import { Fish, Mail, Lock, Store, User, Phone, Eye, EyeOff } from "lucide-react"
 import { FilterChip } from "@/components/shared/FilterChip"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [isRegister, setIsRegister] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [businessName, setBusinessName] = useState("")
   const [ownerName, setOwnerName] = useState("")
   const [phone, setPhone] = useState("")
@@ -91,13 +92,21 @@ export default function LoginPage() {
           <div className="relative">
             <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-abyssal-text-secondary pointer-events-none" />
             <Input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pl-11"
+              className="pl-11 pr-11"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-abyssal-text-secondary hover:text-abyssal-text-primary transition-colors"
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
 
           {error && (
