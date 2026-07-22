@@ -1,6 +1,0 @@
-{
-  "name": "Abyssal ERP",
-  "description": "Sistema de Gestión y Logística para Distribución de Pescados y Mariscos",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
