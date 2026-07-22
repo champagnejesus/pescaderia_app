@@ -9,7 +9,9 @@ api.interceptors.response.use((r) => { retryCount = 0; return r }, async (err) =
   if (err.response?.status === 401) { localStorage.removeItem("abyssal-token"); window.location.href = "/login"; return Promise.reject(err) }
   const isNetworkError = !err.response && err.code !== "ERR_CANCELED"
   const isServerError = err.response?.status >= 500
-  if ((isNetworkError || isServerError) && retryCount < 3) {
+  const method = err.config?.method?.toLowerCase()
+  const isIdempotent = method === "get" || method === "head" || method === "options"
+  if ((isNetworkError || isServerError) && isIdempotent && retryCount < 3) {
     retryCount++
     await new Promise((r) => setTimeout(r, Math.min(1000 * Math.pow(2, retryCount), 8000)))
     return api(err.config)

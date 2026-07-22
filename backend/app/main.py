@@ -109,66 +109,68 @@ async def migrate(conn):
         if name not in tables:
             await conn.execute(text(sql))
 
-    # --- Recreate orders if client_id has wrong NOT NULL ---
+    # --- Ensure orders.client_id is nullable (safe ALTER for SQLite) ---
     if "orders" in tables:
         info = await conn.run_sync(lambda sync_conn:
             sync_conn.execute(text('PRAGMA table_info("orders")')).fetchall()
         )
         client_id_col = next((r for r in info if r[1] == "client_id"), None)
+        # column[3] is the notnull flag — if it's 1 (NOT NULL), the old schema is in place
         if client_id_col and client_id_col[3]:
-            await conn.execute(text("PRAGMA foreign_keys = OFF"))
-            await conn.execute(text("DROP TABLE IF EXISTS orders"))
-            await conn.execute(text("""
-                CREATE TABLE orders (
-                    id INTEGER NOT NULL, order_number VARCHAR(50) NOT NULL UNIQUE,
-                    client_id INTEGER, client_name VARCHAR(255) NOT NULL,
-                    delivery_date VARCHAR(100), items_count INTEGER DEFAULT 0,
-                    status VARCHAR(50) DEFAULT 'PENDIENTE',
-                    payment_method VARCHAR(50) DEFAULT 'Efectivo',
-                    payment_status VARCHAR(50) DEFAULT 'PENDIENTE',
-                    total_value FLOAT NOT NULL,
-                    created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
-                    delivered_at DATETIME,
-                    PRIMARY KEY (id),
-                    FOREIGN KEY(client_id) REFERENCES clients(id) ON DELETE SET NULL
-                )
-            """))
-            await conn.execute(text("PRAGMA foreign_keys = ON"))
+            try:
+                # SQLite can't ALTER constraints, so recreate only if the schema is old
+                await conn.execute(text("PRAGMA foreign_keys = OFF"))
+                await conn.execute(text("""
+                    CREATE TABLE orders_new (
+                        id INTEGER NOT NULL, order_number VARCHAR(50) NOT NULL UNIQUE,
+                        client_id INTEGER, client_name VARCHAR(255) NOT NULL,
+                        delivery_date VARCHAR(100), items_count INTEGER DEFAULT 0,
+                        status VARCHAR(50) DEFAULT 'PENDIENTE',
+                        payment_method VARCHAR(50) DEFAULT 'Efectivo',
+                        payment_status VARCHAR(50) DEFAULT 'PENDIENTE',
+                        total_value FLOAT NOT NULL,
+                        created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+                        delivered_at DATETIME,
+                        PRIMARY KEY (id),
+                        FOREIGN KEY(client_id) REFERENCES clients(id) ON DELETE SET NULL
+                    )
+                """))
+                await conn.execute(text("""
+                    INSERT INTO orders_new SELECT * FROM orders
+                """))
+                await conn.execute(text("DROP TABLE orders"))
+                await conn.execute(text("ALTER TABLE orders_new RENAME TO orders"))
+                await conn.execute(text("PRAGMA foreign_keys = ON"))
+            except Exception:
+                await conn.execute(text("PRAGMA foreign_keys = ON"))
 
-    # --- Clean up old transactions created for credit sales (pre-fix) ---
-    if "orders" in tables and "transactions" in tables:
-        try:
-            result = await conn.execute(text("""
-                DELETE FROM transactions WHERE id IN (
-                    SELECT t.id FROM transactions t
-                    JOIN orders o ON t.amount = o.total_value AND t.title = o.client_name
-                    WHERE o.payment_status IN ('PENDIENTE', 'PAGO PARCIAL')
-                    AND t.type IN ('Efectivo', 'Tarjeta', 'Transfer')
-                )
-            """))
-        except Exception:
-            pass
-
-    # --- Recreate order_items if product_id has wrong NOT NULL ---
+    # --- Ensure order_items.product_id is nullable (safe ALTER for SQLite) ---
     if "order_items" in tables:
         info = await conn.run_sync(lambda sync_conn:
             sync_conn.execute(text('PRAGMA table_info("order_items")')).fetchall()
         )
         product_id_col = next((r for r in info if r[1] == "product_id"), None)
         if product_id_col and product_id_col[3]:
-            await conn.execute(text("PRAGMA foreign_keys = OFF"))
-            await conn.execute(text("DROP TABLE IF EXISTS order_items"))
-            await conn.execute(text("""
-                CREATE TABLE order_items (
-                    id INTEGER NOT NULL, order_id INTEGER NOT NULL,
-                    product_id INTEGER, presentation VARCHAR(50) DEFAULT 'Unidad',
-                    quantity FLOAT NOT NULL, unit_price FLOAT NOT NULL, subtotal FLOAT NOT NULL,
-                    PRIMARY KEY (id),
-                    FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,
-                    FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE SET NULL
-                )
-            """))
-            await conn.execute(text("PRAGMA foreign_keys = ON"))
+            try:
+                await conn.execute(text("PRAGMA foreign_keys = OFF"))
+                await conn.execute(text("""
+                    CREATE TABLE order_items_new (
+                        id INTEGER NOT NULL, order_id INTEGER NOT NULL,
+                        product_id INTEGER, presentation VARCHAR(50) DEFAULT 'Unidad',
+                        quantity FLOAT NOT NULL, unit_price FLOAT NOT NULL, subtotal FLOAT NOT NULL,
+                        PRIMARY KEY (id),
+                        FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,
+                        FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE SET NULL
+                    )
+                """))
+                await conn.execute(text("""
+                    INSERT INTO order_items_new SELECT * FROM order_items
+                """))
+                await conn.execute(text("DROP TABLE order_items"))
+                await conn.execute(text("ALTER TABLE order_items_new RENAME TO order_items"))
+                await conn.execute(text("PRAGMA foreign_keys = ON"))
+            except Exception:
+                await conn.execute(text("PRAGMA foreign_keys = ON"))
 
 
 @asynccontextmanager

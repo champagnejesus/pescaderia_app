@@ -30,7 +30,10 @@ async def create_order(db: AsyncSession, data: dict) -> Order:
     for item_data in items_data:
         item = OrderItem(order_id=order.id, **item_data)
         db.add(item)
-        product = await db.get(Product, item_data["product_id"])
+        result = await db.execute(
+            select(Product).where(Product.id == item_data["product_id"]).with_for_update()
+        )
+        product = result.scalar_one_or_none()
         if product:
             if product.stock < item_data["quantity"]:
                 raise ValueError(f"Insufficient stock for {product.name}: available {product.stock}, requested {item_data['quantity']}")

@@ -149,11 +149,23 @@ async def pay_receivable(client_id: int, data: AccountPaymentRequest, db: AsyncS
     if data.amount > client.outstanding_balance:
         raise HTTPException(400, "El pago excede el saldo pendiente")
     client.outstanding_balance -= data.amount
-    if client.outstanding_balance == 0:
-        await db.execute(
-            update(Order).where(Order.client_id == client_id, Order.payment_status != "PAGADO")
-            .values(payment_status="PAGADO")
-        )
+    # Mark orders as paid in FIFO order up to the payment amount
+    remaining = data.amount
+    unpaid = await db.execute(
+        select(Order).where(
+            Order.client_id == client_id,
+            Order.payment_status != "PAGADO"
+        ).order_by(Order.created_at.asc())
+    )
+    for order in unpaid.scalars().all():
+        if remaining <= 0:
+            break
+        if remaining >= order.total_value:
+            remaining -= order.total_value
+            order.payment_status = "PAGADO"
+        else:
+            order.payment_status = "PAGO PARCIAL"
+            break
     tx = Transaction(
         title=f"Pago de {client.name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),
         type="Cobro", amount=data.amount,

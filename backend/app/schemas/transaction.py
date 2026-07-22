@@ -26,3 +26,6 @@ class DailySummaryResponse(BaseModel):
     card_total: float
     transaction_count: int
     total_collections: float = 0.0
+
+class CloseDayRequest(BaseModel):
+    pin: str

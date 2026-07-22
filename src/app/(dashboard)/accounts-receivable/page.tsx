@@ -24,8 +24,12 @@ function getDaysSince(date: string): number {
 function getOverdueDays(entries: AccountEntry[]): number {
   const unpaid = entries.filter((e) => e.status !== "PAGADO")
   if (unpaid.length === 0) return 0
-  const oldest = unpaid.reduce((a, b) => (new Date(a.date) < new Date(b.date) ? a : b))
-  return getDaysSince(oldest.date)
+  const oldest = unpaid.reduce((a, b) => {
+    const da = a.date ? new Date(a.date).getTime() : 0
+    const db = b.date ? new Date(b.date).getTime() : 0
+    return da < db ? a : b
+  })
+  return oldest.date ? getDaysSince(oldest.date) : 0
 }
 
 function getProgress(entries: AccountEntry[]): { paid: number; total: number } {
