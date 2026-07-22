@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.product import Product
 from app.models.client import Client
-from app.models.order import Order, OrderItem
+from app.models.order import Order
 
 async def export_products_csv(db: AsyncSession, business_id: int) -> str:
     result = await db.execute(select(Product).order_by(Product.name))

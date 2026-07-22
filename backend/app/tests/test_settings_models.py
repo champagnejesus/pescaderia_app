@@ -1,6 +1,5 @@
 import pytest
 from sqlalchemy import select
-from app.database import Base
 from app.models.category import Category
 from app.models.unit import Unit
 from app.models.payment_method import PaymentMethod
