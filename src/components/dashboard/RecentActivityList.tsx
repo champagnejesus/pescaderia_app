@@ -1,7 +1,7 @@
 "use client"
 import { cn } from "@/lib/utils"
 import { StatusBadge } from "@/components/shared/StatusBadge"
-import { ShoppingCart, Package, DollarSign, HandCoins, TrendingDown } from "lucide-react"
+import { ShoppingCart, Package, DollarSign, HandCoins, TrendingDown, Repeat } from "lucide-react"
 
 interface ActivityItem {
   id: string
@@ -22,10 +22,11 @@ interface RecentActivityListProps {
 
 const TYPE_META: Record<string, { icon: React.ReactNode; label: string; bg: string; iconColor: string }> = {
   pedido: { icon: <ShoppingCart size={16} />, label: "Pedido", bg: "bg-abyssal-primary/10", iconColor: "text-abyssal-primary" },
-  compra: { icon: <Package size={16} />, label: "Compra", bg: "bg-abyssal-blue/10", iconColor: "text-abyssal-blue" },
+  compra: { icon: <Package size={16} />, label: "Compra", bg: "bg-abyssal-surface-high", iconColor: "text-abyssal-primary" },
   pago: { icon: <DollarSign size={16} />, label: "Pago", bg: "bg-abyssal-green/10", iconColor: "text-abyssal-green" },
   cobro: { icon: <HandCoins size={16} />, label: "Cobro", bg: "bg-abyssal-yellow/10", iconColor: "text-abyssal-yellow" },
   gasto: { icon: <TrendingDown size={16} />, label: "Gasto", bg: "bg-abyssal-red/10", iconColor: "text-abyssal-red" },
+  transferencia: { icon: <Repeat size={16} />, label: "Transferencia", bg: "bg-abyssal-primary/10", iconColor: "text-abyssal-primary" },
 }
 
 function formatDate(dateStr: string | null) {

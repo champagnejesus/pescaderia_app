@@ -48,11 +48,13 @@ async def recent_activity(db: AsyncSession = Depends(get_db)):
         ))
 
     txs_result = await db.execute(
-        select(Transaction).order_by(Transaction.created_at.desc()).limit(10)
+        select(Transaction).order_by(Transaction.created_at.desc()).limit(25)
     )
     for t in txs_result.scalars().all():
         if t.type == "Cobro":
             item_type = "cobro"
+        elif t.type == "Transfer":
+            item_type = "transferencia"
         elif t.amount < 0:
             item_type = "gasto"
         else:
