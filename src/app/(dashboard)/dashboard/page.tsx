@@ -1,11 +1,12 @@
 "use client"
+import { useState, useEffect } from "react"
 import { TrendingUp, Plus, ShoppingCart } from "lucide-react"
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BentoGrid } from "@/components/dashboard/BentoGrid"
-import { RecentOrdersList } from "@/components/dashboard/RecentOrdersList"
+import { RecentActivityList } from "@/components/dashboard/RecentActivityList"
 import { useProducts } from "@/hooks/useProducts"
 import { useOrders } from "@/hooks/useOrders"
 import { useTransactions } from "@/hooks/useTransactions"
@@ -14,15 +15,37 @@ import { useRouter } from "next/navigation"
 import { formatCurrency } from "@/lib/formatters"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import { useToast } from "@/hooks/useToast"
+import api from "@/lib/api"
+
+interface ActivityItem {
+  id: string
+  type: string
+  title: string
+  description: string
+  reference_id: number
+  reference: string
+  amount: number
+  status: string
+  created_at: string | null
+}
 
 export default function DashboardPage() {
   const router = useRouter()
+  const [activity, setActivity] = useState<ActivityItem[]>([])
+  const [activityLoading, setActivityLoading] = useState(true)
   const { lowStockCount, loading: productsLoading } = useProducts()
   const { data: orders, loading: ordersLoading } = useOrders()
   const { data: summary, loading: txsLoading } = useTransactions()
 
   const loading = productsLoading || ordersLoading || txsLoading
   const { toasts, addToast, removeToast } = useToast()
+
+  useEffect(() => {
+    api.get<ActivityItem[]>("/activity/recent")
+      .then((res) => setActivity(res.data))
+      .catch(() => {})
+      .finally(() => setActivityLoading(false))
+  }, [])
 
   const dashboardData = {
     gross_profit: summary?.net_total ?? 0,
@@ -34,6 +57,11 @@ export default function DashboardPage() {
     low_stock_count: lowStockCount,
     total_clients: 0,
     total_suppliers: 0,
+  }
+
+  function handleActivityPress(item: ActivityItem) {
+    if (item.type === "pedido") router.push(`/orders/${item.reference_id}`)
+    else if (item.type === "compra") router.push(`/purchases/${item.reference_id}`)
   }
 
   return (
@@ -77,7 +105,11 @@ export default function DashboardPage() {
 
             <BentoGrid data={dashboardData} />
 
-            <RecentOrdersList orders={orders} onPress={(id) => router.push(`/orders/${id}`)} />
+            {activityLoading ? (
+              <Skeleton className="h-48" />
+            ) : (
+              <RecentActivityList items={activity} onPress={handleActivityPress} />
+            )}
 
             <div className="flex gap-3">
               <Link href="/orders/new" className="flex-1">

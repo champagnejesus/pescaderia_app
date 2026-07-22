@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from app.database import engine, Base
-from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts
+from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity
 from app.config import settings
 from app.middleware.rate_limit import RateLimitMiddleware
 
@@ -45,6 +45,8 @@ async def migrate(conn):
         ("order_items", "presentation", "VARCHAR(50) DEFAULT 'Unidad'"),
         ("clients", "initials", "VARCHAR(10) DEFAULT ''"),
         ("clients", "credit_limit", "FLOAT DEFAULT 1500.0"),
+        ("purchases", "notes", "VARCHAR(500) DEFAULT ''"),
+        ("purchase_items", "product_name", "VARCHAR(255) DEFAULT ''"),
     ]
     for table, col, definition in col_migrations:
         if table not in tables:
@@ -204,6 +206,7 @@ app.include_router(sync.router, prefix="/api/v1/sync", tags=["Sync"])
 app.include_router(purchases.router, prefix="/api/v1/purchases", tags=["Purchases"])
 app.include_router(inventory.router, prefix="/api/v1/inventory", tags=["Inventory"])
 app.include_router(accounts.router, prefix="/api/v1/accounts", tags=["Accounts"])
+app.include_router(activity.router, prefix="/api/v1/activity", tags=["Activity"])
 
 @app.get("/health")
 async def health():
