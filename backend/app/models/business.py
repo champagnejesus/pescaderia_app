@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, func
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, func
 from app.database import Base
 
 class BusinessConfig(Base):
@@ -10,4 +10,6 @@ class BusinessConfig(Base):
     password_hash = Column(String(255), nullable=False)
     phone = Column(String(50))
     address = Column(String(500))
+    close_day_pin = Column(String(255), nullable=True)
+    require_pin = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
