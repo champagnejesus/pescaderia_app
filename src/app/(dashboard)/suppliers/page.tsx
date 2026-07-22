@@ -154,7 +154,7 @@ export default function SuppliersPage() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3.5 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 transition-all appearance-none"
+            className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3.5 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 transition-all appearance-none"
           >
             <option value="">Seleccionar categoría</option>
             <option value="PESCADO BLANCO">PESCADO BLANCO</option>

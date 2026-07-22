@@ -32,8 +32,8 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="hidden lg:flex lg:flex-col fixed left-0 top-0 h-screen w-64 z-40 bg-abyssal-surface glass border-r border-abyssal-outline/30">
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-abyssal-outline/20">
+    <aside className="hidden lg:flex lg:flex-col fixed left-0 top-0 h-screen w-64 z-40 bg-abyssal-surface glass border-r border-abyssal-primary/20">
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-abyssal-primary/20">
         <div className="w-8 h-8 rounded-lg bg-abyssal-primary flex items-center justify-center text-white font-bold text-sm">
           A
         </div>
@@ -66,7 +66,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="px-3 py-4 border-t border-abyssal-outline/20">
+      <div className="px-3 py-4 border-t border-abyssal-primary/20">
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium text-abyssal-text-secondary hover:bg-abyssal-surface-high hover:text-abyssal-red transition-all duration-200 w-full"

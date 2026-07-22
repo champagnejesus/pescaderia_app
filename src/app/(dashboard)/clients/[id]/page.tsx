@@ -34,7 +34,7 @@ export default function ClientDetail() {
   if (clientLoading) {
     return (
       <div className="min-h-screen bg-abyssal-bg flex flex-col">
-        <div className="bg-abyssal-surface px-4 py-3 flex items-center gap-3 border-b border-abyssal-outline/50">
+        <div className="bg-abyssal-surface px-4 py-3 flex items-center gap-3 border-b border-abyssal-primary/20">
           <Skeleton className="w-5 h-5 rounded" />
           <Skeleton className="h-5 w-48" />
         </div>
@@ -69,7 +69,7 @@ export default function ClientDetail() {
 
   return (
     <div className="min-h-screen bg-abyssal-bg">
-      <header className="bg-abyssal-surface/80 backdrop-blur-xl border-b border-abyssal-outline/30 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+      <header className="bg-abyssal-surface/80 backdrop-blur-xl border-b border-abyssal-primary/20 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
         <button onClick={() => router.back()} className="p-2 -ml-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-colors active:scale-95">
           <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
@@ -114,7 +114,7 @@ export default function ClientDetail() {
             ].map((item, i) => (
               <div key={i} className={cn(
                 "flex items-center p-4 gap-4 transition-colors hover:bg-abyssal-surface-high",
-                i < 2 && "border-b border-abyssal-outline/20"
+                i < 2 && "border-b border-abyssal-primary/20"
               )}>
                 <item.icon className="w-5 h-5 text-abyssal-primary shrink-0" />
                 <div>

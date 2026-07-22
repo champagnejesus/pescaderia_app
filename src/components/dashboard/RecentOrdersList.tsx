@@ -42,7 +42,7 @@ export function RecentOrdersList({ orders, onPress }: RecentOrdersListProps) {
             onClick={() => onPress?.(order.id)}
             className={cn(
               "flex items-center justify-between p-3 w-full text-left transition-colors hover:bg-abyssal-surface-high",
-              i < recent.length - 1 && "border-b border-abyssal-outline",
+              i < recent.length - 1 && "border-b border-abyssal-primary/20",
             )}
           >
             <div className="min-w-0 flex-1">

@@ -115,7 +115,7 @@ export default function OrderDetailPage() {
 
   return (
     <>
-      <header className="bg-abyssal-surface/80 backdrop-blur-xl border-b border-abyssal-outline/30 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+      <header className="bg-abyssal-surface/80 backdrop-blur-xl border-b border-abyssal-primary/20 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
         <button onClick={() => router.back()} className="p-2 -ml-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all active:scale-95">
           <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
@@ -180,7 +180,7 @@ export default function OrderDetailPage() {
             <span className="text-abyssal-text-secondary">IVA (10%)</span>
             <span className="text-abyssal-text-primary">{formatCurrency(tax)}</span>
           </div>
-          <div className="flex justify-between text-title-medium pt-2 border-t border-abyssal-outline/50">
+          <div className="flex justify-between text-title-medium pt-2 border-t border-abyssal-primary/20">
             <span className="text-abyssal-text-primary">Total</span>
             <span className="text-abyssal-text-primary font-bold">{formatCurrency(order.total_value)}</span>
           </div>
