@@ -151,7 +151,7 @@ async def pay_receivable(client_id: int, data: AccountPaymentRequest, db: AsyncS
     client.outstanding_balance -= data.amount
     tx = Transaction(
         title=f"Pago de {client.name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),
-        type=data.method, amount=data.amount,
+        type="Cobro", amount=data.amount,
     )
     db.add(tx)
     await db.flush()

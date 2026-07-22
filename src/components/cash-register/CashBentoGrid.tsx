@@ -1,5 +1,5 @@
 import { memo } from "react"
-import { Banknote, CreditCard, ShoppingCart, Scale } from "lucide-react"
+import { Banknote, CreditCard, ShoppingCart, Scale, HandCoins } from "lucide-react"
 import type { DailySummary } from "@/lib/types"
 
 interface CashBentoGridProps {
@@ -33,15 +33,11 @@ const cells = [
     color: "text-abyssal-red",
   },
   {
-    key: "diff",
-    label: "Diferencia",
-    icon: Scale,
-    getValue: (d: DailySummary) => {
-      const accounted = d.cash_total + d.card_total
-      const diff = d.total_sales - accounted
-      return `${diff >= 0 ? "+" : "-"}${fmt(diff)}`
-    },
-    color: "text-abyssal-text-primary",
+    key: "collections",
+    label: "Cobros",
+    icon: HandCoins,
+    getValue: (d: DailySummary) => fmt(d.total_collections || 0),
+    color: "text-abyssal-yellow",
   },
 ]
 

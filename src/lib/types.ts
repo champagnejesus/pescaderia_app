@@ -39,6 +39,7 @@ export interface DailySummary {
   cash_total: number
   card_total: number
   transaction_count: number
+  total_collections?: number
 }
 
 export interface Transaction {

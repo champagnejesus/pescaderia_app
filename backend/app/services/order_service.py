@@ -7,8 +7,6 @@ from app.models.order import Order, OrderItem
 from app.models.product import Product
 from app.models.client import Client
 from app.models.transaction import Transaction
-from app.models.manual_entry import ManualEntry
-
 PAYMENT_TYPE_MAP = {
     "EFECTIVO": "Efectivo",
     "TARJETA": "Tarjeta",
@@ -49,18 +47,11 @@ async def create_order(db: AsyncSession, data: dict) -> Order:
         )
         db.add(tx)
     else:
-        # Credit sale: track debt via ManualEntry and client outstanding_balance
+        # Credit sale: track via client outstanding_balance
         if client_id:
             client = await db.get(Client, client_id)
             if client:
                 client.outstanding_balance = (client.outstanding_balance or 0) + total_value
-        entry = ManualEntry(
-            account_type="receivable", debtor_id=client_id or 0,
-            debtor_name=data.get('client_name', 'Mostrador'),
-            description=f"Venta a crédito - {order_number}",
-            amount=total_value, pending_amount=total_value,
-        )
-        db.add(entry)
     await db.flush()
     await db.refresh(order, ["items"])
     return order

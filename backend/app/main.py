@@ -133,6 +133,20 @@ async def migrate(conn):
             """))
             await conn.execute(text("PRAGMA foreign_keys = ON"))
 
+    # --- Clean up old transactions created for credit sales (pre-fix) ---
+    if "orders" in tables and "transactions" in tables:
+        try:
+            result = await conn.execute(text("""
+                DELETE FROM transactions WHERE id IN (
+                    SELECT t.id FROM transactions t
+                    JOIN orders o ON t.amount = o.total_value AND t.title = o.client_name
+                    WHERE o.payment_status IN ('PENDIENTE', 'PAGO PARCIAL')
+                    AND t.type IN ('Efectivo', 'Tarjeta', 'Transfer')
+                )
+            """))
+        except Exception:
+            pass
+
     # --- Recreate order_items if product_id has wrong NOT NULL ---
     if "order_items" in tables:
         info = await conn.run_sync(lambda sync_conn:

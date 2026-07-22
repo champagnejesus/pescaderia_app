@@ -25,3 +25,4 @@ class DailySummaryResponse(BaseModel):
     cash_total: float
     card_total: float
     transaction_count: int
+    total_collections: float = 0.0
