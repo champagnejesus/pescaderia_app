@@ -161,3 +161,47 @@ export interface AccountDebtor {
   total_pending: number
   entries: AccountEntry[]
 }
+
+export interface BusinessProfile {
+  id: number
+  business_name: string
+  owner_name: string
+  email: string
+  phone: string | null
+  address: string | null
+  require_pin: boolean
+  has_pin: boolean
+}
+
+export interface Category {
+  id: number
+  name: string
+}
+
+export interface Unit {
+  id: number
+  name: string
+  abbreviation: string
+}
+
+export interface PaymentMethod {
+  id: number
+  name: string
+  is_active: boolean
+  sort_order: number
+}
+
+export interface TaxConfig {
+  id: number
+  is_enabled: boolean
+  name: string
+  rate: number
+  included_in_price: boolean
+}
+
+export interface InvoicePrefs {
+  id: number
+  footer_text: string
+  show_tax_breakdown: boolean
+  default_payment_method_id: number | null
+}
