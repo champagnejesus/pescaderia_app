@@ -54,7 +54,7 @@ export function RecentActivityList({ items, onPress }: RecentActivityListProps) 
   return (
     <div>
       <h3 className="text-title-medium text-abyssal-text-primary mb-3">Actividad Reciente</h3>
-      <div className="bg-abyssal-surface rounded-abyssal-md shadow-abyssal-sm overflow-hidden">
+      <div className="bg-abyssal-surface rounded-abyssal-md shadow-abyssal-sm max-h-[372px] overflow-y-auto">
         {items.map((item, i) => {
           const meta = TYPE_META[item.type] || TYPE_META.pago
           return (
