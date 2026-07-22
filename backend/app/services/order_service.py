@@ -38,7 +38,7 @@ async def create_order(db: AsyncSession, data: dict) -> Order:
             product.stock -= item_data["quantity"]
     now = datetime.now(timezone.utc)
     tx = Transaction(
-        title="Venta",
+        title=data.get('client_name', 'Mostrador'),
         time=now.strftime("%H:%M"),
         type=PAYMENT_TYPE_MAP.get(payment_method.upper(), "Efectivo"),
         amount=total_value,
