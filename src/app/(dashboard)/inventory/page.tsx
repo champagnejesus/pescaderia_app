@@ -222,7 +222,7 @@ export default function InventoryPage() {
                       <td className="py-3 px-2 text-[14px] text-abyssal-text-primary text-right">{formatCurrency(item.price_compra)}</td>
                       <td className="py-3 px-2 text-[14px] text-abyssal-text-primary text-right">{formatCurrency(item.price_venta)}</td>
                       <td className="py-3 px-2 text-center">
-                        <StatusBadge status={item.status === "Stock Bajo" ? "PENDIENTE" : item.status === "Disponible" ? "ENTREGADO" : "PAGADO"} />
+                        <StatusBadge status={item.status === "Stock Bajo" ? "STOCK BAJO" : "DISPONIBLE"} />
                       </td>
                     </tr>
                   ))}
@@ -242,7 +242,7 @@ export default function InventoryPage() {
                       {item.status === "Stock Bajo" && <AlertCircle size={14} className="text-abyssal-red shrink-0" />}
                       <p className="text-[15px] text-abyssal-text-primary font-medium truncate">{item.product_name}</p>
                     </div>
-                    <StatusBadge status={item.status === "Stock Bajo" ? "PENDIENTE" : "ENTREGADO"} />
+                    <StatusBadge status={item.status === "Stock Bajo" ? "STOCK BAJO" : "DISPONIBLE"} />
                   </div>
                   <div className="flex items-center gap-2 mb-2">
                     <div className="flex-1 h-1.5 bg-abyssal-surface-high rounded-full overflow-hidden">

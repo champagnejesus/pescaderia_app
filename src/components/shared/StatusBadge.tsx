@@ -11,6 +11,8 @@ const statusStyles: Record<string, string> = {
   PAGADO: "bg-abyssal-green-bg text-abyssal-green",
   "PAGO PARCIAL": "bg-abyssal-primary/12 text-abyssal-primary",
   ANULADO: "bg-abyssal-red-bg text-abyssal-red",
+  "STOCK BAJO": "bg-abyssal-yellow-bg text-abyssal-yellow animate-subtle-pulse",
+  DISPONIBLE: "bg-abyssal-green-bg text-abyssal-green",
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
