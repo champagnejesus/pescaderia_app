@@ -51,7 +51,7 @@ export function CheckoutSummary({ items, paymentMethod, paymentStatus, onSubmit,
         ))}
       </div>
 
-      <div className="border-t border-abyssal-outline pt-2 space-y-1">
+      <div className="border-t border-abyssal-outline/20 pt-2 space-y-1">
         <div className="flex justify-between text-body-medium">
           <span className="text-abyssal-text-secondary">Subtotal</span>
           <span className="text-abyssal-text-primary">{formatCurrency(subtotal)}</span>
@@ -60,13 +60,13 @@ export function CheckoutSummary({ items, paymentMethod, paymentStatus, onSubmit,
           <span className="text-abyssal-text-secondary">IVA (10%)</span>
           <span className="text-abyssal-text-primary">{formatCurrency(tax)}</span>
         </div>
-        <div className="flex justify-between text-title-medium pt-1 border-t border-abyssal-outline">
+        <div className="flex justify-between text-title-medium pt-1 border-t border-abyssal-outline/20">
           <span className="text-abyssal-text-primary">Total</span>
           <span className="text-abyssal-text-primary font-bold">{formatCurrency(total)}</span>
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-1 border-t border-abyssal-outline/50">
+      <div className="flex items-center justify-between pt-1 border-t border-abyssal-outline/20">
         <div className="text-body-medium text-abyssal-text-secondary space-y-0.5">
           <p>{paymentMethod}</p>
           <p className="text-label-small">{statusLabels[paymentStatus] || paymentStatus}</p>
