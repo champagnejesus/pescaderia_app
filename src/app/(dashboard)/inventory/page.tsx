@@ -129,7 +129,7 @@ export default function InventoryPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar producto o categoría..."
-              className="w-full bg-abyssal-surface-high text-abyssal-text-primary rounded-xl py-2.5 pl-9 pr-9 text-[14px] outline-none ring-1 ring-abyssal-outline/20 focus:ring-abyssal-primary transition-all placeholder:text-abyssal-text-secondary/60"
+              className="w-full bg-abyssal-surface-high text-abyssal-text-primary rounded-xl py-2.5 pl-9 pr-9 text-[14px] outline-none ring-1 ring-abyssal-primary/20 focus:ring-abyssal-primary transition-all placeholder:text-abyssal-text-secondary/60"
             />
             {search && (
               <button onClick={() => { setSearch(""); searchRef.current?.focus() }} className="absolute right-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary hover:text-abyssal-text-primary">
@@ -139,7 +139,7 @@ export default function InventoryPage() {
           </div>
           <button
             onClick={() => setSortBy((s) => s === "name" ? "stock" : "name")}
-            className="bg-abyssal-surface-high text-abyssal-text-secondary rounded-xl px-3 py-2.5 text-[13px] whitespace-nowrap hover:text-abyssal-text-primary transition-colors ring-1 ring-abyssal-outline/20"
+            className="bg-abyssal-surface-high text-abyssal-text-secondary rounded-xl px-3 py-2.5 text-[13px] whitespace-nowrap hover:text-abyssal-text-primary transition-colors ring-1 ring-abyssal-primary/20"
           >
             {sortBy === "name" ? "A-Z" : "Stock"}
           </button>
@@ -188,7 +188,7 @@ export default function InventoryPage() {
             <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="text-label-small text-abyssal-text-secondary border-b border-abyssal-outline/20">
+                  <tr className="text-label-small text-abyssal-text-secondary border-b border-abyssal-primary/20">
                     <th className="py-3 px-2 font-medium">Producto</th>
                     <th className="py-3 px-2 font-medium">Categoría</th>
                     <th className="py-3 px-2 font-medium text-right">Existencias</th>
@@ -202,7 +202,7 @@ export default function InventoryPage() {
                     <tr
                       key={item.product_id}
                       onClick={() => openMovements(item)}
-                      className="border-b border-abyssal-outline/10 hover:bg-abyssal-surface-high/50 cursor-pointer transition-colors"
+                      className="border-b border-abyssal-primary/20 hover:bg-abyssal-surface-high/50 cursor-pointer transition-colors"
                     >
                       <td className="py-3 px-2">
                         <div className="flex items-center gap-2">
@@ -304,7 +304,7 @@ export default function InventoryPage() {
             </>
           )}
 
-          <p className="text-title-medium text-abyssal-text-primary pt-2 border-t border-abyssal-outline/20">Movimientos</p>
+          <p className="text-title-medium text-abyssal-text-primary pt-2 border-t border-abyssal-primary/20">Movimientos</p>
 
           {movementsLoading ? (
             <div className="space-y-2">

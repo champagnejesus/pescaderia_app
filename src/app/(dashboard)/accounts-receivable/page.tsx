@@ -181,7 +181,7 @@ export default function AccountsReceivablePage() {
             placeholder="Buscar cliente..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-9 pr-3 rounded-xl bg-abyssal-surface-high text-[13px] text-abyssal-text-primary placeholder-abyssal-text-secondary outline-none border border-abyssal-outline/20 focus:border-abyssal-primary/40 transition-colors"
+            className="w-full h-10 pl-9 pr-3 rounded-xl bg-abyssal-surface-high text-[13px] text-abyssal-text-primary placeholder-abyssal-text-secondary outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/40 transition-colors"
           />
         </div>
 
@@ -286,7 +286,7 @@ export default function AccountsReceivablePage() {
                     expandedId === debtor.id ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
                   )}
                 >
-                  <div className="border-t border-abyssal-outline/20 mx-4" />
+                  <div className="border-t border-abyssal-primary/20 mx-4" />
                   <div className="p-4 space-y-2">
                     {debtor.entries.length === 0 ? (
                       <p className="text-body-medium text-abyssal-text-secondary text-center py-2">

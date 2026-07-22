@@ -163,7 +163,7 @@ export default function NewPurchasePage() {
               value={supplierSearch}
               onChange={(e) => setSupplierSearch(e.target.value)}
               placeholder="Buscar proveedor..."
-              className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3 pl-11 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline/30 focus:border-abyssal-primary/40 mb-2"
+              className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3 pl-11 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/40 mb-2"
             />
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -203,7 +203,7 @@ export default function NewPurchasePage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar producto..."
-                className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3 pl-11 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline/30 focus:border-abyssal-primary/40"
+                className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3 pl-11 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/40"
               />
             </div>
 
@@ -258,7 +258,7 @@ export default function NewPurchasePage() {
                     <select
                       value={item.presentation}
                       onChange={(e) => handleUpdatePresentation(item.product_id, e.target.value)}
-                      className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline/30 mt-1"
+                      className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-primary/20 mt-1"
                     >
                       {PRESENTATIONS.map((p) => (
                         <option key={p} value={p}>{p}</option>
@@ -273,7 +273,7 @@ export default function NewPurchasePage() {
                       step="0.1"
                       value={item.quantity}
                       onChange={(e) => handleUpdateQty(item.product_id, Number(e.target.value))}
-                      className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline/30 mt-1"
+                      className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-primary/20 mt-1"
                     />
                   </div>
                   <div>
@@ -284,7 +284,7 @@ export default function NewPurchasePage() {
                       step="0.01"
                       value={item.unit_price}
                       onChange={(e) => handleUpdatePrice(item.product_id, Number(e.target.value))}
-                      className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline/30 mt-1"
+                      className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-primary/20 mt-1"
                     />
                   </div>
                 </div>
@@ -307,7 +307,7 @@ export default function NewPurchasePage() {
           <select
             value={paymentStatus}
             onChange={(e) => setPaymentStatus(e.target.value)}
-            className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline/30 focus:border-abyssal-primary/40"
+            className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/40"
           >
             <option value="PENDIENTE">Pendiente</option>
             <option value="PAGADO">Pagado</option>

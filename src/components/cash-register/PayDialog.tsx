@@ -53,7 +53,7 @@ export function PayDialog({ open, onClose, debtorName, pendingAmount, type, onPa
               max={pendingAmount}
               value={amount}
               onChange={(e) => setAmount(Math.min(Number(e.target.value), pendingAmount))}
-              className="w-full h-11 pl-7 pr-3 rounded-xl bg-abyssal-surface-high text-[15px] text-abyssal-text-primary font-semibold outline-none border border-abyssal-outline/20 focus:border-abyssal-primary/40 transition-colors"
+              className="w-full h-11 pl-7 pr-3 rounded-xl bg-abyssal-surface-high text-[15px] text-abyssal-text-primary font-semibold outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/40 transition-colors"
             />
           </div>
         </div>
@@ -68,7 +68,7 @@ export function PayDialog({ open, onClose, debtorName, pendingAmount, type, onPa
                 className={`py-2.5 rounded-xl text-[13px] font-medium transition-all ${
                   method === m
                     ? "bg-abyssal-primary text-white"
-                    : "bg-abyssal-surface-high text-abyssal-text-secondary border border-abyssal-outline/20"
+                    : "bg-abyssal-surface-high text-abyssal-text-secondary border border-abyssal-primary/20"
                 }`}
               >
                 {m}
