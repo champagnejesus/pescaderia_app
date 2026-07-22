@@ -63,7 +63,7 @@ export function RecentActivityList({ items, onPress }: RecentActivityListProps) 
               onClick={() => onPress?.(item)}
               className={cn(
                 "flex items-center gap-3 p-3 w-full text-left transition-colors hover:bg-abyssal-surface-high",
-                i < items.length - 1 && "border-b border-abyssal-outline/20",
+                i < items.length - 1 && "border-b border-abyssal-outline",
               )}
             >
               <div className={cn("w-9 h-9 rounded-full flex items-center justify-center shrink-0", meta.bg, meta.iconColor)}>

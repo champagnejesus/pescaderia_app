@@ -37,7 +37,7 @@ export function ClientSelector({ clients, selectedId, onSelect, onSearch, search
               "flex flex-col items-center gap-1 shrink-0 p-2 rounded-abyssal-sm border-2 transition-colors",
               selectedId === client.id
                 ? "border-abyssal-primary bg-abyssal-primary/5"
-                : "border-transparent hover:border-abyssal-outline/20",
+                : "border-transparent hover:border-abyssal-outline",
             )}
           >
             <div className="w-10 h-10 rounded-full bg-abyssal-primary-light flex items-center justify-center text-abyssal-primary text-label-small font-bold">
