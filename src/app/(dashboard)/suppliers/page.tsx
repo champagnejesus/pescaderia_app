@@ -61,7 +61,6 @@ export default function SuppliersPage() {
   }, [suppliers, search])
 
   const totalPending = suppliers.reduce((s, d) => s + d.pending_payment, 0)
-  const overdueCount = suppliers.filter((s) => s.pending_payment > 0).length
   const categories = new Set(suppliers.map((s) => s.category)).size
 
   async function handleAdd() {

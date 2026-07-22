@@ -12,6 +12,7 @@ async def create_purchase(db: AsyncSession, data: dict) -> Purchase:
     items_data = data.pop("items", [])
     total_value = sum(i["subtotal"] for i in items_data)
     supplier_id = data.get("supplier_id")
+    supplier = None
     if supplier_id:
         supplier = await db.get(Supplier, supplier_id)
         if not supplier:
@@ -26,14 +27,10 @@ async def create_purchase(db: AsyncSession, data: dict) -> Purchase:
         if product:
             product.price_compra = item_data["unit_price"]
             product.stock = (product.stock or 0) + item_data["quantity"]
-    if supplier_id:
-        supplier = await db.get(Supplier, supplier_id)
-        if supplier:
-            payment_status = data.get("payment_status", "PENDIENTE")
-            if payment_status == "PENDIENTE":
-                supplier.pending_payment = (supplier.pending_payment or 0) + total_value
-            elif payment_status == "PAGO PARCIAL":
-                supplier.pending_payment = (supplier.pending_payment or 0) + total_value
+    if supplier:
+        payment_status = data.get("payment_status", "PENDIENTE")
+        if payment_status in ("PENDIENTE", "PAGO PARCIAL"):
+            supplier.pending_payment = (supplier.pending_payment or 0) + total_value
     await db.flush()
     await db.refresh(purchase, ["items"])
     return purchase

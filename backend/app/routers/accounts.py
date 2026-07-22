@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, union_all, literal_column
+from sqlalchemy import select
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.schemas.purchase import AccountDebtorResponse, AccountEntryResponse, AccountPaymentRequest, AccountCreateRequest
@@ -53,7 +53,7 @@ async def get_entries_for_debtor(db: AsyncSession, account_type: str, debtor_id:
     )
     for m in result.scalars().all():
         entries.append(AccountEntryResponse(
-            id=m.id + 1000000,  # avoid ID collision with purchase/order IDs
+            id=-m.id,  # negative IDs avoid collision with purchase/order IDs
             reference_id=m.id,
             reference_number=f"MANUAL-{m.id}",
             reference_type="manual",
@@ -145,9 +145,9 @@ async def pay_receivable(client_id: int, data: AccountPaymentRequest, db: AsyncS
     result = await db.execute(select(Client).where(Client.id == client_id))
     client = result.scalar_one_or_none()
     if not client:
-        from fastapi import HTTPException; raise HTTPException(404, "Cliente no encontrado")
+        raise HTTPException(404, "Cliente no encontrado")
     if data.amount > client.outstanding_balance:
-        from fastapi import HTTPException; raise HTTPException(400, "El pago excede el saldo pendiente")
+        raise HTTPException(400, "El pago excede el saldo pendiente")
     client.outstanding_balance -= data.amount
     tx = Transaction(
         title=client.name, time=datetime.now(timezone.utc).strftime("%I:%M %p"),
@@ -163,9 +163,9 @@ async def pay_payable(supplier_id: int, data: AccountPaymentRequest, db: AsyncSe
     result = await db.execute(select(Supplier).where(Supplier.id == supplier_id))
     supplier = result.scalar_one_or_none()
     if not supplier:
-        from fastapi import HTTPException; raise HTTPException(404, "Proveedor no encontrado")
+        raise HTTPException(404, "Proveedor no encontrado")
     if data.amount > supplier.pending_payment:
-        from fastapi import HTTPException; raise HTTPException(400, "El pago excede el saldo pendiente")
+        raise HTTPException(400, "El pago excede el saldo pendiente")
     supplier.pending_payment -= data.amount
     tx = Transaction(
         title=f"Pago a {supplier.name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),

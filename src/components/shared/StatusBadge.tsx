@@ -13,6 +13,8 @@ const statusStyles: Record<string, string> = {
   ANULADO: "bg-abyssal-red-bg text-abyssal-red",
   "STOCK BAJO": "bg-abyssal-yellow-bg text-abyssal-yellow animate-subtle-pulse",
   DISPONIBLE: "bg-abyssal-green-bg text-abyssal-green",
+  ACTIVO: "bg-abyssal-green-bg text-abyssal-green",
+  INACTIVO: "bg-abyssal-red-bg text-abyssal-red",
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
