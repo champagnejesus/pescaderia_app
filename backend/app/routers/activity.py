@@ -14,11 +14,13 @@ router = APIRouter(dependencies=[Depends(get_current_user)])
 @router.get("/recent", response_model=list[RecentActivityItem])
 async def recent_activity(db: AsyncSession = Depends(get_db)):
     items: list[RecentActivityItem] = []
+    seen_pairs: set[tuple[str, float]] = set()
 
     orders_result = await db.execute(
         select(Order).order_by(Order.created_at.desc()).limit(10)
     )
     for o in orders_result.scalars().all():
+        seen_pairs.add((o.client_name, o.total_value))
         items.append(RecentActivityItem(
             id=f"order-{o.id}",
             type="pedido",
@@ -51,6 +53,8 @@ async def recent_activity(db: AsyncSession = Depends(get_db)):
         select(Transaction).order_by(Transaction.created_at.desc()).limit(25)
     )
     for t in txs_result.scalars().all():
+        if t.amount > 0 and t.type not in ("Cobro", "Gasto") and (t.title, t.amount) in seen_pairs:
+            continue
         if t.type == "Cobro":
             item_type = "cobro"
         elif t.type == "Transfer":
