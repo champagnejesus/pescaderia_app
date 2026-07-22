@@ -9,116 +9,144 @@ from app.config import settings
 from app.middleware.rate_limit import RateLimitMiddleware
 
 
-async def migrate_sqlite():
-    """SQLite-safe schema migrations."""
-    async with engine.begin() as conn:
+async def migrate(conn):
+    """Schema migrations compatible with SQLite and PostgreSQL."""
+    dialect = engine.dialect.name
+    is_sqlite = dialect == "sqlite"
+
+    if is_sqlite:
         tables = await conn.run_sync(lambda sync_conn: {
             r[0] for r in sync_conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
         })
+    else:
+        tables = await conn.run_sync(lambda sync_conn: {
+            r[0] for r in sync_conn.execute(
+                text("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
+            ).fetchall()
+        })
 
-        def column_names(table: str):
-            return conn.run_sync(lambda sync_conn: {
-                r[1] for r in sync_conn.execute(text(f'PRAGMA table_info("{table}")')).fetchall()
-            })
+    if not tables:
+        return
 
-        # --- Add missing columns ---
-        col_migrations = [
-            ("products", "price_compra", "FLOAT DEFAULT 0.0"),
-            ("products", "price_venta", "FLOAT DEFAULT 0.0"),
-            ("orders", "payment_status", "VARCHAR(50) DEFAULT 'PENDIENTE'"),
-            ("orders", "payment_method", "VARCHAR(50) DEFAULT 'Efectivo'"),
-            ("order_items", "presentation", "VARCHAR(50) DEFAULT 'Unidad'"),
-            ("clients", "initials", "VARCHAR(10) DEFAULT ''"),
-            ("clients", "credit_limit", "FLOAT DEFAULT 1500.0"),
-        ]
-        for table, col, definition in col_migrations:
-            if table not in tables:
-                continue
-            cols = await column_names(table)
-            if col not in cols:
-                await conn.execute(text(f'ALTER TABLE "{table}" ADD COLUMN {col} {definition}'))
+    def column_names_sync(sync_conn, table):
+        if is_sqlite:
+            return {r[1] for r in sync_conn.execute(text(f'PRAGMA table_info("{table}")')).fetchall()}
+        else:
+            return {r[0] for r in sync_conn.execute(
+                text(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{table}' AND table_schema = 'public'")
+            ).fetchall()}
 
-        # --- Create missing tables ---
-        new_tables = {
-            "purchases": """
-                CREATE TABLE IF NOT EXISTS purchases (
-                    id INTEGER NOT NULL, purchase_number VARCHAR(50) NOT NULL UNIQUE,
-                    supplier_id INTEGER, supplier_name VARCHAR(255) NOT NULL,
-                    items_count INTEGER DEFAULT 0, total_value FLOAT NOT NULL,
+    # --- Add missing columns ---
+    col_migrations = [
+        ("products", "price_compra", "FLOAT DEFAULT 0.0"),
+        ("products", "price_venta", "FLOAT DEFAULT 0.0"),
+        ("orders", "payment_status", "VARCHAR(50) DEFAULT 'PENDIENTE'"),
+        ("orders", "payment_method", "VARCHAR(50) DEFAULT 'Efectivo'"),
+        ("order_items", "presentation", "VARCHAR(50) DEFAULT 'Unidad'"),
+        ("clients", "initials", "VARCHAR(10) DEFAULT ''"),
+        ("clients", "credit_limit", "FLOAT DEFAULT 1500.0"),
+    ]
+    for table, col, definition in col_migrations:
+        if table not in tables:
+            continue
+        cols = await conn.run_sync(lambda sync_conn, t=table: column_names_sync(sync_conn, t))
+        if col not in cols:
+            sql = f'ALTER TABLE "{table}" ADD COLUMN {col} {definition}'
+            if not is_sqlite:
+                sql = f'ALTER TABLE "{table}" ADD COLUMN {col} {definition}'
+            try:
+                await conn.execute(text(sql))
+            except Exception as e:
+                # PostgreSQL will error if column already exists (race condition)
+                if "already exists" not in str(e).lower():
+                    raise
+
+    if not is_sqlite:
+        # PostgreSQL: create_all handles everything else
+        return
+
+    # --- SQLite-only: create missing tables ---
+    new_tables = {
+        "purchases": """
+            CREATE TABLE IF NOT EXISTS purchases (
+                id INTEGER NOT NULL, purchase_number VARCHAR(50) NOT NULL UNIQUE,
+                supplier_id INTEGER, supplier_name VARCHAR(255) NOT NULL,
+                items_count INTEGER DEFAULT 0, total_value FLOAT NOT NULL,
+                payment_status VARCHAR(50) DEFAULT 'PENDIENTE',
+                created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+                PRIMARY KEY (id),
+                FOREIGN KEY(supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL
+            )
+        """,
+        "purchase_items": """
+            CREATE TABLE IF NOT EXISTS purchase_items (
+                id INTEGER NOT NULL, purchase_id INTEGER NOT NULL,
+                product_id INTEGER, presentation VARCHAR(50) DEFAULT 'Unidad',
+                quantity FLOAT NOT NULL, unit_price FLOAT NOT NULL, subtotal FLOAT NOT NULL,
+                PRIMARY KEY (id),
+                FOREIGN KEY(purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
+                FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE SET NULL
+            )
+        """,
+    }
+    for name, sql in new_tables.items():
+        if name not in tables:
+            await conn.execute(text(sql))
+
+    # --- Recreate orders if client_id has wrong NOT NULL ---
+    if "orders" in tables:
+        info = await conn.run_sync(lambda sync_conn:
+            sync_conn.execute(text('PRAGMA table_info("orders")')).fetchall()
+        )
+        client_id_col = next((r for r in info if r[1] == "client_id"), None)
+        if client_id_col and client_id_col[3]:
+            await conn.execute(text("PRAGMA foreign_keys = OFF"))
+            await conn.execute(text("DROP TABLE IF EXISTS orders"))
+            await conn.execute(text("""
+                CREATE TABLE orders (
+                    id INTEGER NOT NULL, order_number VARCHAR(50) NOT NULL UNIQUE,
+                    client_id INTEGER, client_name VARCHAR(255) NOT NULL,
+                    delivery_date VARCHAR(100), items_count INTEGER DEFAULT 0,
+                    status VARCHAR(50) DEFAULT 'PENDIENTE',
+                    payment_method VARCHAR(50) DEFAULT 'Efectivo',
                     payment_status VARCHAR(50) DEFAULT 'PENDIENTE',
+                    total_value FLOAT NOT NULL,
                     created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+                    delivered_at DATETIME,
                     PRIMARY KEY (id),
-                    FOREIGN KEY(supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL
+                    FOREIGN KEY(client_id) REFERENCES clients(id) ON DELETE SET NULL
                 )
-            """,
-            "purchase_items": """
-                CREATE TABLE IF NOT EXISTS purchase_items (
-                    id INTEGER NOT NULL, purchase_id INTEGER NOT NULL,
+            """))
+            await conn.execute(text("PRAGMA foreign_keys = ON"))
+
+    # --- Recreate order_items if product_id has wrong NOT NULL ---
+    if "order_items" in tables:
+        info = await conn.run_sync(lambda sync_conn:
+            sync_conn.execute(text('PRAGMA table_info("order_items")')).fetchall()
+        )
+        product_id_col = next((r for r in info if r[1] == "product_id"), None)
+        if product_id_col and product_id_col[3]:
+            await conn.execute(text("PRAGMA foreign_keys = OFF"))
+            await conn.execute(text("DROP TABLE IF EXISTS order_items"))
+            await conn.execute(text("""
+                CREATE TABLE order_items (
+                    id INTEGER NOT NULL, order_id INTEGER NOT NULL,
                     product_id INTEGER, presentation VARCHAR(50) DEFAULT 'Unidad',
                     quantity FLOAT NOT NULL, unit_price FLOAT NOT NULL, subtotal FLOAT NOT NULL,
                     PRIMARY KEY (id),
-                    FOREIGN KEY(purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
+                    FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,
                     FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE SET NULL
                 )
-            """,
-        }
-        for name, sql in new_tables.items():
-            if name not in tables:
-                await conn.execute(text(sql))
-
-        # --- Recreate orders if client_id has wrong NOT NULL ---
-        if "orders" in tables:
-            info = await conn.run_sync(lambda sync_conn:
-                sync_conn.execute(text('PRAGMA table_info("orders")')).fetchall()
-            )
-            client_id_col = next((r for r in info if r[1] == "client_id"), None)
-            if client_id_col and client_id_col[3]:
-                await conn.execute(text("PRAGMA foreign_keys = OFF"))
-                await conn.execute(text("DROP TABLE IF EXISTS orders"))
-                await conn.execute(text("""
-                    CREATE TABLE orders (
-                        id INTEGER NOT NULL, order_number VARCHAR(50) NOT NULL UNIQUE,
-                        client_id INTEGER, client_name VARCHAR(255) NOT NULL,
-                        delivery_date VARCHAR(100), items_count INTEGER DEFAULT 0,
-                        status VARCHAR(50) DEFAULT 'PENDIENTE',
-                        payment_method VARCHAR(50) DEFAULT 'Efectivo',
-                        payment_status VARCHAR(50) DEFAULT 'PENDIENTE',
-                        total_value FLOAT NOT NULL,
-                        created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
-                        delivered_at DATETIME,
-                        PRIMARY KEY (id),
-                        FOREIGN KEY(client_id) REFERENCES clients(id) ON DELETE SET NULL
-                    )
-                """))
-                await conn.execute(text("PRAGMA foreign_keys = ON"))
-
-        # --- Recreate order_items if product_id has wrong NOT NULL ---
-        if "order_items" in tables:
-            info = await conn.run_sync(lambda sync_conn:
-                sync_conn.execute(text('PRAGMA table_info("order_items")')).fetchall()
-            )
-            product_id_col = next((r for r in info if r[1] == "product_id"), None)
-            if product_id_col and product_id_col[3]:
-                await conn.execute(text("PRAGMA foreign_keys = OFF"))
-                await conn.execute(text("DROP TABLE IF EXISTS order_items"))
-                await conn.execute(text("""
-                    CREATE TABLE order_items (
-                        id INTEGER NOT NULL, order_id INTEGER NOT NULL,
-                        product_id INTEGER, presentation VARCHAR(50) DEFAULT 'Unidad',
-                        quantity FLOAT NOT NULL, unit_price FLOAT NOT NULL, subtotal FLOAT NOT NULL,
-                        PRIMARY KEY (id),
-                        FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,
-                        FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE SET NULL
-                    )
-                """))
-                await conn.execute(text("PRAGMA foreign_keys = ON"))
+            """))
+            await conn.execute(text("PRAGMA foreign_keys = ON"))
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    await migrate_sqlite()
+    async with engine.begin() as conn:
+        await migrate(conn)
     yield
 
 app = FastAPI(title="Abyssal ERP API", version="1.0.0", lifespan=lifespan)
