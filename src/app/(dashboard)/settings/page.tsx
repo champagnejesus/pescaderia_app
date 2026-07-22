@@ -21,6 +21,18 @@ type SettingsData = {
   invoicePrefs: InvoicePrefs | null
 }
 
+function SectionCard({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <Card className="p-4 space-y-3">
+      <div className="flex items-center gap-2 text-title-medium text-abyssal-text-primary font-semibold">
+        <span className="text-abyssal-primary">{icon}</span>
+        <h2>{title}</h2>
+      </div>
+      {children}
+    </Card>
+  )
+}
+
 export default function SettingsPage() {
   const { toasts, addToast, removeToast } = useToast()
   const [loading, setLoading] = useState(true)
@@ -209,16 +221,6 @@ export default function SettingsPage() {
     } catch { addToast("Error al limpiar datos", "error") }
     finally { setSaving(null) }
   }
-
-  const SectionCard = ({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) => (
-    <Card className="p-4 space-y-3">
-      <div className="flex items-center gap-2 text-title-medium text-abyssal-text-primary font-semibold">
-        <span className="text-abyssal-primary">{icon}</span>
-        <h2>{title}</h2>
-      </div>
-      {children}
-    </Card>
-  )
 
   if (loading) {
     return (
