@@ -1,6 +1,6 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus, Truck, Download } from "lucide-react"
+import { Plus, Truck, Download, ArrowRightFromLine, Building2, AlertTriangle } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
@@ -8,10 +8,12 @@ import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
 import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { SupplierCard } from "@/components/suppliers/SupplierCard"
 import { formatCurrency } from "@/lib/formatters"
 import { exportCSV } from "@/lib/export"
+import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import api from "@/lib/api"
@@ -33,8 +35,6 @@ export default function SuppliersPage() {
   const [addOpen, setAddOpen] = useState(false)
   const [name, setName] = useState("")
   const [category, setCategory] = useState("")
-  const [detailOpen, setDetailOpen] = useState(false)
-  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null)
   const { toasts, addToast, removeToast } = useToast()
 
   const fetch = useCallback(async () => {
@@ -42,8 +42,7 @@ export default function SuppliersPage() {
     try {
       const { data } = await api.get<Supplier[]>("/suppliers", { params: { limit: 100 } })
       setSuppliers(data)
-    } catch (err) {
-      console.error("Error fetching suppliers:", err)
+    } catch {
       setSuppliers([])
     } finally {
       setLoading(false)
@@ -61,6 +60,10 @@ export default function SuppliersPage() {
     )
   }, [suppliers, search])
 
+  const totalPending = suppliers.reduce((s, d) => s + d.pending_payment, 0)
+  const overdueCount = suppliers.filter((s) => s.pending_payment > 0).length
+  const categories = new Set(suppliers.map((s) => s.category)).size
+
   async function handleAdd() {
     if (!name.trim()) return
     try {
@@ -69,8 +72,8 @@ export default function SuppliersPage() {
       setCategory("")
       setAddOpen(false)
       fetch()
-    } catch (err) {
-      console.error("Error adding supplier:", err)
+    } catch {
+      addToast("Error al agregar proveedor", "error")
     }
   }
 
@@ -97,7 +100,24 @@ export default function SuppliersPage() {
           </div>
         }
       />
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-4">
+        <div className="grid grid-cols-3 gap-2">
+          <Card className="p-3 text-center">
+            <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Total</p>
+            <p className="text-[16px] text-abyssal-text-primary font-bold mt-0.5">{suppliers.length}</p>
+          </Card>
+          <Card className="p-3 text-center">
+            <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Pendiente</p>
+            <p className={cn("text-[16px] font-bold mt-0.5", totalPending > 0 ? "text-abyssal-red" : "text-abyssal-text-secondary")}>
+              {formatCurrency(totalPending)}
+            </p>
+          </Card>
+          <Card className="p-3 text-center">
+            <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Categorías</p>
+            <p className="text-[16px] text-abyssal-text-primary font-bold mt-0.5">{categories}</p>
+          </Card>
+        </div>
+
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -114,10 +134,7 @@ export default function SuppliersPage() {
         ) : (
           <div className="space-y-2">
             {filtered.map((supplier) => (
-              <SupplierCard key={supplier.id} supplier={supplier} onPress={(id: number) => {
-                const s = suppliers.find((sup) => sup.id === id)
-                if (s) { setSelectedSupplier(s); setDetailOpen(true) }
-              }} />
+              <SupplierCard key={supplier.id} supplier={supplier} onPress={(id: number) => router.push(`/suppliers/${id}`)} />
             ))}
           </div>
         )}
@@ -149,19 +166,6 @@ export default function SuppliersPage() {
           </select>
           <Button className="w-full" onClick={handleAdd}>Guardar</Button>
         </div>
-      </Dialog>
-      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} title={selectedSupplier?.name} showClose>
-        {selectedSupplier && (
-          <div className="space-y-3 text-body-medium text-abyssal-text-secondary">
-            <p><span className="text-abyssal-text-primary font-medium">Categoría:</span> {selectedSupplier.category}</p>
-            <p><span className="text-abyssal-text-primary font-medium">Estado:</span> {selectedSupplier.status}</p>
-            <p><span className="text-abyssal-text-primary font-medium">Pago Pendiente:</span>{" "}
-              <span className="text-abyssal-red">
-                {formatCurrency(selectedSupplier.pending_payment)}
-              </span>
-            </p>
-          </div>
-        )}
       </Dialog>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>

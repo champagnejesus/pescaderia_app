@@ -38,10 +38,12 @@ async def create_purchase(db: AsyncSession, data: dict) -> Purchase:
     await db.refresh(purchase, ["items"])
     return purchase
 
-async def get_purchases(db: AsyncSession, payment_status: str = "", page: int = 1, limit: int = 50) -> list[Purchase]:
+async def get_purchases(db: AsyncSession, payment_status: str = "", supplier_id: int = 0, page: int = 1, limit: int = 50) -> list[Purchase]:
     query = select(Purchase)
     if payment_status:
         query = query.where(Purchase.payment_status == payment_status)
+    if supplier_id:
+        query = query.where(Purchase.supplier_id == supplier_id)
     query = query.options(selectinload(Purchase.items)).order_by(Purchase.created_at.desc()).offset((page - 1) * limit).limit(limit)
     result = await db.execute(query)
     return result.scalars().unique().all()

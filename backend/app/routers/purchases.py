@@ -8,8 +8,8 @@ from app.services import purchase_service
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 @router.get("", response_model=list[PurchaseResponse])
-async def list_purchases(status: str = Query(""), page: int = Query(1), limit: int = Query(50), db: AsyncSession = Depends(get_db)):
-    return await purchase_service.get_purchases(db, status, page, limit)
+async def list_purchases(status: str = Query(""), supplier_id: int = Query(0), page: int = Query(1), limit: int = Query(50), db: AsyncSession = Depends(get_db)):
+    return await purchase_service.get_purchases(db, status, supplier_id, page, limit)
 
 @router.get("/{purchase_id}", response_model=PurchaseResponse)
 async def get_purchase(purchase_id: int, db: AsyncSession = Depends(get_db)):
