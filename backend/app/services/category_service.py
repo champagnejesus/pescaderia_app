@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func as sa_func
+from sqlalchemy.exc import IntegrityError
 from app.models.category import Category
 
 async def list_categories(db: AsyncSession, business_id: int) -> list[Category]:
@@ -7,9 +8,16 @@ async def list_categories(db: AsyncSession, business_id: int) -> list[Category]:
     return result.scalars().all()
 
 async def create_category(db: AsyncSession, business_id: int, name: str) -> Category:
+    result = await db.execute(select(sa_func.count()).select_from(Category).where(Category.business_id == business_id))
+    count = result.scalar()
+    if count >= 20:
+        raise ValueError("Máximo 20 categorías")
     cat = Category(name=name, business_id=business_id)
     db.add(cat)
-    await db.flush()
+    try:
+        await db.flush()
+    except IntegrityError:
+        raise ValueError("Ya existe una categoría con ese nombre")
     return cat
 
 async def delete_category(db: AsyncSession, category_id: int, business_id: int) -> bool:

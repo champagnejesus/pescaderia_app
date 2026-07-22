@@ -14,13 +14,13 @@ ENTITY_MAP = {
 }
 
 @router.get("/{entity}")
-async def export_entity(entity: str, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def export_entity(entity: str, db: AsyncSession = Depends(get_db)):
     if entity not in ENTITY_MAP:
         raise HTTPException(status_code=404, detail="Entidad no disponible para exportar")
-    csv_content = await ENTITY_MAP[entity](db, user["id"])
+    csv_content = await ENTITY_MAP[entity](db)
     return Response(content=csv_content, media_type="text/csv", headers={"Content-Disposition": f"attachment; filename={entity}.csv"})
 
 @router.get("/all")
-async def export_all(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    data, filename = await export_service.export_all_zip(db, user["id"])
+async def export_all(db: AsyncSession = Depends(get_db)):
+    data, filename = await export_service.export_all_zip(db)
     return Response(content=data, media_type="application/zip", headers={"Content-Disposition": f"attachment; filename={filename}"})

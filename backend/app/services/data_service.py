@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 
-async def clear_all_data(db: AsyncSession, business_id: int):
+async def clear_all_data(db: AsyncSession):
     """Delete all transactional data but keep business profile and config."""
     tables_in_order = [
         "order_items", "orders",

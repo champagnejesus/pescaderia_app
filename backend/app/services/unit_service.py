@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from app.models.unit import Unit
 
 async def list_units(db: AsyncSession, business_id: int) -> list[Unit]:
@@ -9,7 +10,10 @@ async def list_units(db: AsyncSession, business_id: int) -> list[Unit]:
 async def create_unit(db: AsyncSession, business_id: int, name: str, abbreviation: str) -> Unit:
     unit = Unit(name=name, abbreviation=abbreviation, business_id=business_id)
     db.add(unit)
-    await db.flush()
+    try:
+        await db.flush()
+    except IntegrityError:
+        raise ValueError("Ya existe una unidad con ese nombre")
     return unit
 
 async def delete_unit(db: AsyncSession, unit_id: int, business_id: int) -> bool:

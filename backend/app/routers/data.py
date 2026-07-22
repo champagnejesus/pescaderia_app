@@ -7,6 +7,6 @@ from app.services import data_service
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 @router.delete("/clear-all")
-async def clear_all_data(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    await data_service.clear_all_data(db, user["id"])
+async def clear_all_data(db: AsyncSession = Depends(get_db)):
+    await data_service.clear_all_data(db)
     return {"ok": True, "message": "Todos los datos han sido eliminados"}

@@ -13,7 +13,10 @@ async def list_units(user: dict = Depends(get_current_user), db: AsyncSession = 
 
 @router.post("", response_model=UnitResponse, status_code=201)
 async def create_unit(data: UnitCreate, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    return await unit_service.create_unit(db, user["id"], data.name, data.abbreviation)
+    try:
+        return await unit_service.create_unit(db, user["id"], data.name, data.abbreviation)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.delete("/{unit_id}", status_code=204)
 async def delete_unit(unit_id: int, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):

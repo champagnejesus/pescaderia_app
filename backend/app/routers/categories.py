@@ -13,7 +13,10 @@ async def list_categories(user: dict = Depends(get_current_user), db: AsyncSessi
 
 @router.post("", response_model=CategoryResponse, status_code=201)
 async def create_category(data: CategoryCreate, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    return await category_service.create_category(db, user["id"], data.name)
+    try:
+        return await category_service.create_category(db, user["id"], data.name)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.delete("/{category_id}", status_code=204)
 async def delete_category(category_id: int, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):

@@ -382,6 +382,19 @@ export default function SettingsPage() {
                 <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${invoiceForm.show_tax_breakdown ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
               </button>
             </label>
+            <div>
+              <label className="text-sm text-abyssal-text-secondary mb-1 block">Método de pago predeterminado</label>
+              <select
+                className="w-full bg-abyssal-surface-high text-abyssal-text-primary rounded-xl px-4 py-3.5 text-[15px] outline-none focus:ring-2 focus:ring-abyssal-primary/20"
+                value={invoiceForm.default_payment_method_id ?? ""}
+                onChange={e => setInvoiceForm(f => ({ ...f, default_payment_method_id: e.target.value ? Number(e.target.value) : null }))}
+              >
+                <option value="">Sin predeterminado</option>
+                {data.paymentMethods.filter(pm => pm.is_active).map(pm => (
+                  <option key={pm.id} value={pm.id}>{pm.name}</option>
+                ))}
+              </select>
+            </div>
             <Button variant="primary" onClick={saveInvoicePrefs} loading={saving === "inv"}>
               <Save size={16} /> Guardar
             </Button>
