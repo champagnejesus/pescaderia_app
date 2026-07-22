@@ -3,6 +3,7 @@ from datetime import datetime
 
 class OrderItemCreate(BaseModel):
     product_id: int
+    presentation: str = "Unidad"
     quantity: float
     unit_price: float
     subtotal: float
@@ -13,6 +14,7 @@ class OrderCreate(BaseModel):
     delivery_date: str = ""
     items: list[OrderItemCreate]
     payment_method: str = "Efectivo"
+    payment_status: str = "PENDIENTE"
 
 class OrderStatusUpdate(BaseModel):
     status: str
@@ -20,6 +22,7 @@ class OrderStatusUpdate(BaseModel):
 class OrderItemResponse(BaseModel):
     id: int
     product_id: int | None = None
+    presentation: str = "Unidad"
     quantity: float
     unit_price: float
     subtotal: float
@@ -34,7 +37,9 @@ class OrderResponse(BaseModel):
     items_count: int
     status: str
     payment_method: str = "Efectivo"
+    payment_status: str = "PENDIENTE"
     total_value: float
     created_at: datetime | None = None
+    delivered_at: datetime | None = None
     items: list[OrderItemResponse] = []
     class Config: from_attributes = True

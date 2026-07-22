@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from app.database import engine, Base, migrate_add_column, migrate_client_fk, migrate_product_fk
-from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync
+from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts
 from app.config import settings
 from app.middleware.rate_limit import RateLimitMiddleware
 
@@ -13,6 +13,10 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     await migrate_add_column("orders", "payment_method", "VARCHAR(50) DEFAULT 'Efectivo'")
+    await migrate_add_column("orders", "payment_status", "VARCHAR(50) DEFAULT 'PENDIENTE'")
+    await migrate_add_column("order_items", "presentation", "VARCHAR(50) DEFAULT 'Unidad'")
+    await migrate_add_column("products", "price_compra", "FLOAT DEFAULT 0.0")
+    await migrate_add_column("products", "price_venta", "FLOAT DEFAULT 0.0")
     await migrate_add_column("clients", "initials", "VARCHAR(10) DEFAULT ''")
     await migrate_add_column("clients", "credit_limit", "FLOAT DEFAULT 1500.0")
     await migrate_client_fk()
@@ -43,6 +47,9 @@ app.include_router(orders.router, prefix="/api/v1/orders", tags=["Orders"])
 app.include_router(transactions.router, prefix="/api/v1/transactions", tags=["Transactions"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
 app.include_router(sync.router, prefix="/api/v1/sync", tags=["Sync"])
+app.include_router(purchases.router, prefix="/api/v1/purchases", tags=["Purchases"])
+app.include_router(inventory.router, prefix="/api/v1/inventory", tags=["Inventory"])
+app.include_router(accounts.router, prefix="/api/v1/accounts", tags=["Accounts"])
 
 @app.get("/health")
 async def health():

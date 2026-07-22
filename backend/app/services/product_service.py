@@ -17,6 +17,11 @@ async def get_product(db: AsyncSession, product_id: int) -> Product | None:
     return await db.get(Product, product_id)
 
 async def create_product(db: AsyncSession, data: dict) -> Product:
+    price_venta = data.pop("price_venta", data.pop("price", 0))
+    price_compra = data.pop("price_compra", 0)
+    data["price_compra"] = price_compra
+    data["price_venta"] = price_venta
+    data["price"] = price_venta
     product = Product(**data)
     db.add(product)
     await db.flush()
@@ -24,7 +29,13 @@ async def create_product(db: AsyncSession, data: dict) -> Product:
 
 async def update_product(db: AsyncSession, product_id: int, data: dict) -> Product | None:
     product = await db.get(Product, product_id)
-    if not product: return None
+    if not product:
+        return None
+    if "price_venta" in data:
+        data["price"] = data["price_venta"]
+    if "price" in data and "price_venta" not in data:
+        data["price_venta"] = data["price"]
+        data["price"] = data["price"]
     for key, value in data.items():
         setattr(product, key, value)
     await db.flush()
@@ -32,7 +43,8 @@ async def update_product(db: AsyncSession, product_id: int, data: dict) -> Produ
 
 async def delete_product(db: AsyncSession, product_id: int) -> bool:
     product = await db.get(Product, product_id)
-    if not product: return False
+    if not product:
+        return False
     await db.execute(update(OrderItem).where(OrderItem.product_id == product_id).values(product_id=None))
     await db.delete(product)
     await db.flush()
@@ -40,7 +52,8 @@ async def delete_product(db: AsyncSession, product_id: int) -> bool:
 
 async def adjust_stock(db: AsyncSession, product_id: int, new_stock: float) -> Product | None:
     product = await db.get(Product, product_id)
-    if not product: return None
+    if not product:
+        return None
     product.stock = new_stock
     await db.flush()
     return product

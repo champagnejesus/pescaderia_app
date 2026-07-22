@@ -4,4 +4,5 @@ from app.models.client import Client
 from app.models.supplier import Supplier
 from app.models.order import Order, OrderItem
 from app.models.transaction import Transaction
-__all__ = ["BusinessConfig", "Product", "Client", "Supplier", "Order", "OrderItem", "Transaction"]
+from app.models.purchase import Purchase, PurchaseItem
+__all__ = ["BusinessConfig", "Product", "Client", "Supplier", "Order", "OrderItem", "Transaction", "Purchase", "PurchaseItem"]

@@ -6,7 +6,8 @@ class ProductCreate(BaseModel):
     category: str
     stock: float = 0.0
     unit: str = "kg"
-    price: float
+    price_compra: float = 0.0
+    price_venta: float = 0.0
     image_url: str = ""
     description: str = ""
     is_extra_quality: bool = False
@@ -17,7 +18,8 @@ class ProductUpdate(BaseModel):
     category: str | None = None
     stock: float | None = None
     unit: str | None = None
-    price: float | None = None
+    price_compra: float | None = None
+    price_venta: float | None = None
     image_url: str | None = None
     description: str | None = None
     is_extra_quality: bool | None = None
@@ -32,7 +34,8 @@ class ProductResponse(BaseModel):
     category: str
     stock: float
     unit: str
-    price: float
+    price_compra: float = 0.0
+    price_venta: float = 0.0
     image_url: str | None = None
     description: str | None = None
     is_extra_quality: bool
