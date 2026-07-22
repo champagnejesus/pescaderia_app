@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.dependencies import get_current_user
-from app.schemas.purchase import PurchaseCreate, PurchaseResponse
+from app.schemas.purchase import PurchaseCreate, PurchasePaymentUpdate, PurchaseResponse
 from app.services import purchase_service
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
@@ -20,4 +20,14 @@ async def get_purchase(purchase_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.post("", response_model=PurchaseResponse, status_code=201)
 async def create_purchase(data: PurchaseCreate, db: AsyncSession = Depends(get_db)):
-    return await purchase_service.create_purchase(db, data.model_dump())
+    try:
+        return await purchase_service.create_purchase(db, data.model_dump())
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.patch("/{purchase_id}/payment-status", response_model=PurchaseResponse)
+async def patch_purchase_payment(purchase_id: int, data: PurchasePaymentUpdate, db: AsyncSession = Depends(get_db)):
+    purchase = await purchase_service.update_payment_status(db, purchase_id, data.payment_status)
+    if not purchase:
+        raise HTTPException(status_code=404, detail="Purchase not found")
+    return purchase

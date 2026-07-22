@@ -1,22 +1,28 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 class PurchaseItemCreate(BaseModel):
     product_id: int
+    product_name: str = ""
     presentation: str = "Unidad"
-    quantity: float
-    unit_price: float
-    subtotal: float
+    quantity: float = Field(gt=0)
+    unit_price: float = Field(ge=0)
+    subtotal: float = Field(ge=0)
 
 class PurchaseCreate(BaseModel):
     supplier_id: int
     supplier_name: str
     items: list[PurchaseItemCreate]
     payment_status: str = "PENDIENTE"
+    notes: str = ""
+
+class PurchasePaymentUpdate(BaseModel):
+    payment_status: str
 
 class PurchaseItemResponse(BaseModel):
     id: int
     product_id: int | None = None
+    product_name: str = ""
     presentation: str = "Unidad"
     quantity: float
     unit_price: float
@@ -31,6 +37,7 @@ class PurchaseResponse(BaseModel):
     items_count: int
     total_value: float
     payment_status: str = "PENDIENTE"
+    notes: str = ""
     created_at: datetime | None = None
     items: list[PurchaseItemResponse] = []
     class Config: from_attributes = True

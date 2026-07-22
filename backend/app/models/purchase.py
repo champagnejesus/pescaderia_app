@@ -11,6 +11,7 @@ class Purchase(Base):
     items_count = Column(Integer, default=0)
     total_value = Column(Float, nullable=False)
     payment_status = Column(String(50), default="PENDIENTE", index=True)
+    notes = Column(String(500), default="")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     items = relationship("PurchaseItem", back_populates="purchase", cascade="all, delete-orphan")
 
@@ -19,6 +20,7 @@ class PurchaseItem(Base):
     id = Column(Integer, primary_key=True, index=True)
     purchase_id = Column(Integer, ForeignKey("purchases.id", ondelete="CASCADE"), nullable=False)
     product_id = Column(Integer, ForeignKey("products.id", ondelete="SET NULL"), nullable=True)
+    product_name = Column(String(255), default="")
     presentation = Column(String(50), default="Unidad")
     quantity = Column(Float, nullable=False)
     unit_price = Column(Float, nullable=False)

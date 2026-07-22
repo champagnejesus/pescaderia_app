@@ -21,12 +21,14 @@ async def create_purchase(db: AsyncSession, data: dict) -> Purchase:
     db.add(purchase)
     await db.flush()
     for item_data in items_data:
+        product = await db.get(Product, item_data["product_id"])
+        if not product:
+            raise ValueError(f"Product with id {item_data['product_id']} not found")
+        item_data["product_name"] = product.name
         item = PurchaseItem(purchase_id=purchase.id, **item_data)
         db.add(item)
-        product = await db.get(Product, item_data["product_id"])
-        if product:
-            product.price_compra = item_data["unit_price"]
-            product.stock = (product.stock or 0) + item_data["quantity"]
+        product.price_compra = item_data["unit_price"]
+        product.stock = (product.stock or 0) + item_data["quantity"]
     if supplier:
         payment_status = data.get("payment_status", "PENDIENTE")
         if payment_status in ("PENDIENTE", "PAGO PARCIAL"):
@@ -49,4 +51,13 @@ async def get_purchase(db: AsyncSession, purchase_id: int) -> Purchase | None:
     purchase = await db.get(Purchase, purchase_id)
     if purchase:
         await db.refresh(purchase, ["items"])
+    return purchase
+
+async def update_payment_status(db: AsyncSession, purchase_id: int, payment_status: str) -> Purchase | None:
+    purchase = await db.get(Purchase, purchase_id)
+    if not purchase:
+        return None
+    purchase.payment_status = payment_status
+    await db.flush()
+    await db.refresh(purchase, ["items"])
     return purchase
