@@ -150,7 +150,7 @@ async def pay_receivable(client_id: int, data: AccountPaymentRequest, db: AsyncS
         raise HTTPException(400, "El pago excede el saldo pendiente")
     client.outstanding_balance -= data.amount
     tx = Transaction(
-        title=client.name, time=datetime.now(timezone.utc).strftime("%I:%M %p"),
+        title=f"Pago de {client.name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),
         type=data.method, amount=data.amount,
     )
     db.add(tx)
