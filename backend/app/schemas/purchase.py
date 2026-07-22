@@ -78,3 +78,9 @@ class AccountDebtorResponse(BaseModel):
 class AccountPaymentRequest(BaseModel):
     amount: float
     method: str = "Efectivo"
+
+class AccountCreateRequest(BaseModel):
+    debtor_id: int
+    debtor_name: str
+    description: str
+    amount: float

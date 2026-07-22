@@ -1,12 +1,14 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo } from "react"
-import { ChevronDown, ChevronUp, DollarSign, AlertCircle, Search, Clock, ArrowRightFromLine, HandCoins, Building2, AlertTriangle, Filter, ArrowUpDown, CheckCircle2 } from "lucide-react"
+import { ChevronDown, ChevronUp, DollarSign, AlertCircle, Search, Clock, ArrowRightFromLine, HandCoins, Building2, AlertTriangle, ArrowUpDown, CheckCircle2, Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { PayDialog } from "@/components/cash-register/PayDialog"
+import { AddDebtDialog } from "@/components/cash-register/AddDebtDialog"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import { FilterChip } from "@/components/shared/FilterChip"
 import { useToast } from "@/hooks/useToast"
@@ -42,6 +44,7 @@ export default function AccountsPayablePage() {
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const [search, setSearch] = useState("")
   const [payTarget, setPayTarget] = useState<AccountDebtor | null>(null)
+  const [addOpen, setAddOpen] = useState(false)
   const [sortBy, setSortBy] = useState<SortMode>("amount")
   const [filterBy, setFilterBy] = useState<FilterMode>("all")
   const { toasts, addToast, removeToast } = useToast()
@@ -131,6 +134,10 @@ export default function AccountsPayablePage() {
     <>
       <TopBar title="Cuentas por Pagar" />
       <div className="p-4 space-y-4">
+        <Button variant="primary" size="sm" className="w-full" onClick={() => setAddOpen(true)}>
+          <Plus className="w-4 h-4" />
+          Agregar Deuda
+        </Button>
         <div className="grid grid-cols-3 gap-2">
           <Card className="p-3 text-center">
             <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Pendiente</p>
@@ -356,6 +363,7 @@ export default function AccountsPayablePage() {
         type="payable"
         onPay={handlePay}
       />
+      <AddDebtDialog open={addOpen} onClose={() => setAddOpen(false)} type="payable" onCreated={fetch} />
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )

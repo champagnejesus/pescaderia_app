@@ -78,6 +78,20 @@ async def migrate(conn):
                 FOREIGN KEY(supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL
             )
         """,
+        "manual_entries": """
+            CREATE TABLE IF NOT EXISTS manual_entries (
+                id INTEGER NOT NULL,
+                account_type VARCHAR(20) NOT NULL,
+                debtor_id INTEGER NOT NULL,
+                debtor_name VARCHAR(255) NOT NULL,
+                description VARCHAR(500) NOT NULL,
+                amount FLOAT NOT NULL,
+                pending_amount FLOAT NOT NULL,
+                status VARCHAR(50) DEFAULT 'PENDIENTE',
+                created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+                PRIMARY KEY (id)
+            )
+        """,
         "purchase_items": """
             CREATE TABLE IF NOT EXISTS purchase_items (
                 id INTEGER NOT NULL, purchase_id INTEGER NOT NULL,
