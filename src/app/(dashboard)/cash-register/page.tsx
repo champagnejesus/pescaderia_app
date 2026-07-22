@@ -154,7 +154,7 @@ export default function CashRegisterPage() {
             <Button
               variant="ghost"
               size="lg"
-              className="w-full border border-abyssal-primary/20"
+              className="w-full border border-abyssal-outline/40"
               onClick={() => setExpenseOpen(true)}
             >
               + Agregar Gasto

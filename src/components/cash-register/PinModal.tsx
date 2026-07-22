@@ -74,7 +74,7 @@ export function PinModal({ open, onClose, onConfirm, summary }: PinModalProps) {
               "w-3.5 h-3.5 rounded-full transition-all duration-300",
               pin.length > i
                 ? "bg-abyssal-primary scale-110"
-                : "bg-abyssal-surface-high border-2 border-abyssal-primary/20"
+                : "bg-abyssal-surface-high border-2 border-abyssal-outline/50"
             )}
           />
         ))}

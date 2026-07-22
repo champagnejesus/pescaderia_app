@@ -249,7 +249,7 @@ export default function NewOrderPage() {
                   <select
                     value={item.presentation}
                     onChange={(e) => handleUpdatePresentation(item.product_id, e.target.value)}
-                    className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-primary/20 mt-1"
+                    className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline/30 mt-1"
                   >
                     {PRESENTATIONS.map((p) => (
                       <option key={p} value={p}>{p}</option>
@@ -264,7 +264,7 @@ export default function NewOrderPage() {
                     step="0.1"
                     value={item.quantity}
                     onChange={(e) => handleUpdateQty(item.product_id, Number(e.target.value))}
-                    className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-primary/20 mt-1"
+                    className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline/30 mt-1"
                   />
                 </div>
                 <div>
@@ -275,7 +275,7 @@ export default function NewOrderPage() {
                     step="0.01"
                     value={item.unit_price}
                     onChange={(e) => handleUpdatePrice(item.product_id, Number(e.target.value))}
-                    className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-primary/20 mt-1"
+                    className="w-full bg-abyssal-surface-high rounded-lg px-2 py-2 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline/30 mt-1"
                   />
                 </div>
               </div>
@@ -296,7 +296,7 @@ export default function NewOrderPage() {
         <select
           value={paymentStatus}
           onChange={(e) => setPaymentStatus(e.target.value)}
-          className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/40"
+          className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline/30 focus:border-abyssal-primary/40"
         >
           <option value="PENDIENTE">Pendiente</option>
           <option value="PAGADO">Pagado</option>
@@ -311,7 +311,7 @@ export default function NewOrderPage() {
             type="date"
             value={deliveryDate}
             onChange={(e) => setDeliveryDate(e.target.value)}
-            className="bg-abyssal-surface-high rounded-abyssal-sm px-4 py-3 text-abyssal-text-primary w-full outline-none border border-abyssal-primary/20 focus:border-abyssal-primary transition-colors"
+            className="bg-abyssal-surface-high rounded-abyssal-sm px-4 py-3 text-abyssal-text-primary w-full outline-none border border-abyssal-outline focus:border-abyssal-primary transition-colors"
           />
         </div>
       )}

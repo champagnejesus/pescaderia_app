@@ -87,7 +87,7 @@ export function AddDebtDialog({ open, onClose, type, onCreated }: AddDebtDialogP
               value={customName}
               onChange={(e) => setCustomName(e.target.value)}
               placeholder="Nombre del deudor"
-              className="w-full h-11 px-3 rounded-xl bg-abyssal-surface-high text-[14px] text-abyssal-text-primary placeholder-abyssal-text-secondary outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/40 transition-colors"
+              className="w-full h-11 px-3 rounded-xl bg-abyssal-surface-high text-[14px] text-abyssal-text-primary placeholder-abyssal-text-secondary outline-none border border-abyssal-outline/20 focus:border-abyssal-primary/40 transition-colors"
             />
           </div>
         ) : (
@@ -102,7 +102,7 @@ export function AddDebtDialog({ open, onClose, type, onCreated }: AddDebtDialogP
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar..."
-                className="w-full h-10 pl-9 pr-3 rounded-xl bg-abyssal-surface-high text-[13px] text-abyssal-text-primary placeholder-abyssal-text-secondary outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/40 transition-colors"
+                className="w-full h-10 pl-9 pr-3 rounded-xl bg-abyssal-surface-high text-[13px] text-abyssal-text-primary placeholder-abyssal-text-secondary outline-none border border-abyssal-outline/20 focus:border-abyssal-primary/40 transition-colors"
               />
             </div>
             <div className="max-h-32 overflow-y-auto space-y-1">
@@ -135,7 +135,7 @@ export function AddDebtDialog({ open, onClose, type, onCreated }: AddDebtDialogP
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Ej: Préstamo, productos fiados..."
-            className="w-full h-11 px-3 rounded-xl bg-abyssal-surface-high text-[14px] text-abyssal-text-primary placeholder-abyssal-text-secondary outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/40 transition-colors"
+            className="w-full h-11 px-3 rounded-xl bg-abyssal-surface-high text-[14px] text-abyssal-text-primary placeholder-abyssal-text-secondary outline-none border border-abyssal-outline/20 focus:border-abyssal-primary/40 transition-colors"
           />
         </div>
 
@@ -150,7 +150,7 @@ export function AddDebtDialog({ open, onClose, type, onCreated }: AddDebtDialogP
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
-              className="w-full h-11 pl-7 pr-3 rounded-xl bg-abyssal-surface-high text-[15px] text-abyssal-text-primary font-semibold outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/40 transition-colors"
+              className="w-full h-11 pl-7 pr-3 rounded-xl bg-abyssal-surface-high text-[15px] text-abyssal-text-primary font-semibold outline-none border border-abyssal-outline/20 focus:border-abyssal-primary/40 transition-colors"
             />
           </div>
         </div>
