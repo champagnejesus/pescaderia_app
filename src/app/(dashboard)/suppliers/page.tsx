@@ -1,6 +1,6 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus, Truck, Download, ArrowRightFromLine, Building2, AlertTriangle } from "lucide-react"
+import { Plus, Truck, Download, Truck as TruckIcon } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
@@ -80,6 +80,7 @@ export default function SuppliersPage() {
     <>
       <TopBar
         title="Proveedores"
+        icon={<TruckIcon size={18} />}
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar proveedor..." />

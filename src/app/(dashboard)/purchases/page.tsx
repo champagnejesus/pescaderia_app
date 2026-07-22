@@ -1,7 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ShoppingCart, Download, TrendingUp, DollarSign, Clock } from "lucide-react"
+import { Plus, ShoppingCart, Download, TrendingUp, DollarSign, Clock, ShoppingCart as CartIcon } from "lucide-react"
 import Link from "next/link"
 import { TopBar } from "@/components/layout/TopBar"
 import { Button } from "@/components/ui/button"
@@ -54,6 +54,7 @@ export default function PurchasesPage() {
     <>
       <TopBar
         title="Compras"
+        icon={<CartIcon size={18} />}
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={searchText} onChange={setSearchText} placeholder="Buscar por proveedor o #compra..." />

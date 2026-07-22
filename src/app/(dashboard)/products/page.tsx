@@ -1,7 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, Package } from "lucide-react"
+import { Plus, Fish, Package } from "lucide-react"
 import Link from "next/link"
 import { TopBar } from "@/components/layout/TopBar"
 import { Button } from "@/components/ui/button"
@@ -26,7 +26,7 @@ export default function ProductsPage() {
 
   return (
     <>
-      <TopBar title="Productos" rightAction={<CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar productos..." />} />
+      <TopBar title="Productos" icon={<Fish size={18} />} rightAction={<CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar productos..." />} />
       <div className="p-4 space-y-3">
         <CategoryFilter categories={categories} selected={category} onSelect={setCategory} />
         {loading ? (

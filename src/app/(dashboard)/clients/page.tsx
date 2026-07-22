@@ -1,6 +1,6 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Download, Plus, Users } from "lucide-react"
+import { Download, Plus, Users, Users as UsersIcon } from "lucide-react"
 import Link from "next/link"
 import { TopBar } from "@/components/layout/TopBar"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
@@ -86,6 +86,7 @@ export default function ClientsPage() {
     <>
       <TopBar
         title="Clientes"
+        icon={<UsersIcon size={18} />}
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />

@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { TrendingUp, Plus, ShoppingCart } from "lucide-react"
+import { TrendingUp, Plus, ShoppingCart, LayoutDashboard } from "lucide-react"
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -66,7 +66,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <TopBar title="Resumen" />
+      <TopBar title="Resumen" icon={<LayoutDashboard size={18} />} />
       <div className="p-4 space-y-4">
         {loading ? (
           <>

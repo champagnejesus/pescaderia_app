@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo } from "react"
-import { ChevronDown, ChevronUp, Receipt, AlertCircle, Search, Clock, ArrowLeftFromLine, HandCoins, AlertTriangle, ArrowUpDown, CheckCircle2, Plus } from "lucide-react"
+import { ChevronDown, ChevronUp, Receipt, Search, ArrowLeftFromLine, HandCoins, ArrowUpDown, Plus, AlertCircle, Clock, AlertTriangle, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
@@ -132,7 +132,7 @@ export default function AccountsReceivablePage() {
 
   return (
     <>
-      <TopBar title="Cuentas por Cobrar" />
+      <TopBar title="Cuentas por Cobrar" icon={<ArrowLeftFromLine size={18} />} />
       <div className="p-4 space-y-4">
         <Button variant="primary" size="sm" className="w-full" onClick={() => setAddOpen(true)}>
           <Plus className="w-4 h-4" />

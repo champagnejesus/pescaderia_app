@@ -50,12 +50,15 @@ export function Sidebar() {
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-200",
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-200 relative",
                 active
-                  ? "bg-abyssal-primary/12 text-abyssal-primary"
+                  ? "bg-abyssal-primary/10 text-abyssal-primary"
                   : "text-abyssal-text-secondary hover:bg-abyssal-surface-high hover:text-abyssal-text-primary"
               )}
             >
+              {active && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-abyssal-primary" />
+              )}
               <Icon className="w-[20px] h-[20px]" strokeWidth={active ? 2.2 : 1.8} />
               <span>{label}</span>
             </Link>

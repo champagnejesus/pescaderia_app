@@ -1,7 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ClipboardList, Search, Download } from "lucide-react"
+import { Plus, ClipboardList, Search, Download, ClipboardList as OrdersIcon } from "lucide-react"
 import Link from "next/link"
 import { TopBar } from "@/components/layout/TopBar"
 import { Button } from "@/components/ui/button"
@@ -45,6 +45,7 @@ export default function OrdersPage() {
     <>
       <TopBar
         title="Pedidos"
+        icon={<OrdersIcon size={18} />}
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={searchText} onChange={setSearchText} placeholder="Buscar por cliente o #pedido..." />

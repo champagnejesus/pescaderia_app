@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { Package, X, AlertCircle, Search } from "lucide-react"
+import { Package, X, AlertCircle, Search, Package as PackageIcon } from "lucide-react"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
@@ -93,7 +93,7 @@ export default function InventoryPage() {
 
   return (
     <>
-      <TopBar title="Inventario" />
+      <TopBar title="Inventario" icon={<PackageIcon size={18} />} />
       <div className="p-4 space-y-3">
 
         {loading ? null : error ? null : items.length === 0 ? null : (

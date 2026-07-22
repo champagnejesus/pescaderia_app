@@ -1,5 +1,6 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
+import { DollarSign } from "lucide-react"
 import { TopBar } from "@/components/layout/TopBar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DaySummaryCard } from "@/components/cash-register/DaySummaryCard"
@@ -72,7 +73,7 @@ export default function CashRegisterPage() {
 
   return (
     <>
-      <TopBar title="Cierre de Caja" />
+      <TopBar title="Cierre de Caja" icon={<DollarSign size={18} />} />
       <div className="p-4 space-y-4">
         {loading ? (
           <>
