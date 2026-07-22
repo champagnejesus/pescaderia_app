@@ -31,7 +31,8 @@ export function BottomNav() {
       <div className="absolute inset-0 bg-abyssal-surface glass" />
       <div
         role="tablist"
-        className="relative flex items-center justify-around h-[68px] px-1 pb-1"
+        className="relative flex items-center gap-1 overflow-x-auto overflow-y-hidden h-[68px] px-2 pb-1 scrollbar-none snap-x snap-mandatory"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = pathname.startsWith(href)
@@ -43,18 +44,18 @@ export function BottomNav() {
               aria-selected={active}
               aria-label={label}
               className={cn(
-                "flex flex-col items-center gap-0.5 py-1.5 px-0.5 rounded-xl transition-all duration-200 relative active:scale-90 flex-1 min-w-0",
+                "flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl transition-all duration-200 relative active:scale-90 snap-start shrink-0",
                 active ? "text-abyssal-primary" : "text-abyssal-text-secondary",
               )}
             >
               <div className={cn(
-                "relative flex items-center justify-center w-7 h-6 rounded-full transition-all duration-300",
+                "relative flex items-center justify-center w-10 h-7 rounded-full transition-all duration-300",
                 active && "bg-abyssal-primary/12"
               )}>
-                <Icon className="w-[18px] h-[18px]" strokeWidth={active ? 2.2 : 1.8} />
+                <Icon className="w-[22px] h-[22px]" strokeWidth={active ? 2.2 : 1.8} />
               </div>
               <span className={cn(
-                "text-[9px] leading-tight transition-all duration-200 truncate max-w-full",
+                "text-[10px] leading-tight transition-all duration-200 whitespace-nowrap",
                 active ? "font-semibold text-abyssal-primary" : "font-medium"
               )}>{label}</span>
             </Link>
