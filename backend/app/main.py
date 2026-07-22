@@ -4,8 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from app.database import engine, Base
-from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity, business
+from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity, business, categories, units, payment_methods, tax_config, invoice_prefs, export, data
 from app.config import settings
+from app.models.category import Category
+from app.models.unit import Unit
+from app.models.payment_method import PaymentMethod
+from app.models.tax_config import TaxConfig
+from app.models.invoice_pref import InvoicePref
 from app.middleware.rate_limit import RateLimitMiddleware
 
 
@@ -47,6 +52,8 @@ async def migrate(conn):
         ("clients", "credit_limit", "FLOAT DEFAULT 1500.0"),
         ("purchases", "notes", "VARCHAR(500) DEFAULT ''"),
         ("purchase_items", "product_name", "VARCHAR(255) DEFAULT ''"),
+        ("business_config", "close_day_pin", "VARCHAR(255)"),
+        ("business_config", "require_pin", "BOOLEAN DEFAULT 0"),
     ]
     for table, col, definition in col_migrations:
         if table not in tables:
@@ -102,6 +109,59 @@ async def migrate(conn):
                 PRIMARY KEY (id),
                 FOREIGN KEY(purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
                 FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE SET NULL
+            )
+        """,
+        "categories": """
+            CREATE TABLE IF NOT EXISTS categories (
+                id INTEGER NOT NULL,
+                name VARCHAR(100) NOT NULL,
+                business_id INTEGER NOT NULL,
+                created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+                PRIMARY KEY (id)
+            )
+        """,
+        "units": """
+            CREATE TABLE IF NOT EXISTS units (
+                id INTEGER NOT NULL,
+                name VARCHAR(100) NOT NULL,
+                abbreviation VARCHAR(10) NOT NULL,
+                business_id INTEGER NOT NULL,
+                created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+                PRIMARY KEY (id)
+            )
+        """,
+        "payment_methods": """
+            CREATE TABLE IF NOT EXISTS payment_methods (
+                id INTEGER NOT NULL,
+                name VARCHAR(100) NOT NULL,
+                is_active BOOLEAN DEFAULT 1,
+                sort_order INTEGER DEFAULT 0,
+                business_id INTEGER NOT NULL,
+                created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+                PRIMARY KEY (id)
+            )
+        """,
+        "tax_config": """
+            CREATE TABLE IF NOT EXISTS tax_config (
+                id INTEGER NOT NULL,
+                is_enabled BOOLEAN DEFAULT 0,
+                name VARCHAR(100) DEFAULT 'IVA',
+                rate FLOAT DEFAULT 0.0,
+                included_in_price BOOLEAN DEFAULT 1,
+                business_id INTEGER NOT NULL,
+                created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+                PRIMARY KEY (id)
+            )
+        """,
+        "invoice_prefs": """
+            CREATE TABLE IF NOT EXISTS invoice_prefs (
+                id INTEGER NOT NULL,
+                footer_text VARCHAR(500) DEFAULT '',
+                show_tax_breakdown BOOLEAN DEFAULT 1,
+                default_payment_method_id INTEGER,
+                business_id INTEGER NOT NULL,
+                created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+                PRIMARY KEY (id)
             )
         """,
     }
@@ -210,6 +270,13 @@ app.include_router(inventory.router, prefix="/api/v1/inventory", tags=["Inventor
 app.include_router(accounts.router, prefix="/api/v1/accounts", tags=["Accounts"])
 app.include_router(activity.router, prefix="/api/v1/activity", tags=["Activity"])
 app.include_router(business.router, prefix="/api/v1/business", tags=["Business"])
+app.include_router(categories.router, prefix="/api/v1/categories", tags=["Categories"])
+app.include_router(units.router, prefix="/api/v1/units", tags=["Units"])
+app.include_router(payment_methods.router, prefix="/api/v1/payment-methods", tags=["Payment Methods"])
+app.include_router(tax_config.router, prefix="/api/v1/tax-config", tags=["Tax Config"])
+app.include_router(invoice_prefs.router, prefix="/api/v1/invoice-prefs", tags=["Invoice Prefs"])
+app.include_router(export.router, prefix="/api/v1/export", tags=["Export"])
+app.include_router(data.router, prefix="/api/v1/data", tags=["Data"])
 
 @app.get("/health")
 async def health():
