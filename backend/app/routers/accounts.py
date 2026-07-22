@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.schemas.purchase import AccountDebtorResponse, AccountEntryResponse, AccountPaymentRequest, AccountCreateRequest
@@ -149,6 +149,11 @@ async def pay_receivable(client_id: int, data: AccountPaymentRequest, db: AsyncS
     if data.amount > client.outstanding_balance:
         raise HTTPException(400, "El pago excede el saldo pendiente")
     client.outstanding_balance -= data.amount
+    if client.outstanding_balance == 0:
+        await db.execute(
+            update(Order).where(Order.client_id == client_id, Order.payment_status != "PAGADO")
+            .values(payment_status="PAGADO")
+        )
     tx = Transaction(
         title=f"Pago de {client.name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),
         type="Cobro", amount=data.amount,
@@ -167,6 +172,11 @@ async def pay_payable(supplier_id: int, data: AccountPaymentRequest, db: AsyncSe
     if data.amount > supplier.pending_payment:
         raise HTTPException(400, "El pago excede el saldo pendiente")
     supplier.pending_payment -= data.amount
+    if supplier.pending_payment == 0:
+        await db.execute(
+            update(Purchase).where(Purchase.supplier_id == supplier_id, Purchase.payment_status != "PAGADO")
+            .values(payment_status="PAGADO")
+        )
     tx = Transaction(
         title=f"Pago a {supplier.name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),
         type=data.method, amount=-data.amount,
