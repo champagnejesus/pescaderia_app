@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, Users,
   Truck, Package, Fish, DollarSign, ArrowLeftFromLine,
-  ArrowRightFromLine
+  ArrowRightFromLine, Settings
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -20,6 +20,7 @@ const tabs = [
   { href: "/cash-register", label: "Caja", icon: DollarSign },
   { href: "/accounts-receivable", label: "C x C", icon: ArrowLeftFromLine },
   { href: "/accounts-payable", label: "C x P", icon: ArrowRightFromLine },
+  { href: "/settings", label: "Config", icon: Settings },
 ]
 
 export function BottomNav() {

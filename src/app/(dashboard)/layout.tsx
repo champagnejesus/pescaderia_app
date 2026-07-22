@@ -6,7 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar"
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, Users,
   Truck, Package, Fish, DollarSign, ArrowLeftFromLine,
-  ArrowRightFromLine
+  ArrowRightFromLine, Settings
 } from "lucide-react"
 
 const pageMeta: Record<string, { label: string; icon: React.ReactNode }> = {
@@ -20,6 +20,7 @@ const pageMeta: Record<string, { label: string; icon: React.ReactNode }> = {
   "/cash-register": { label: "Caja", icon: <DollarSign size={18} /> },
   "/accounts-receivable": { label: "Cuentas por Cobrar", icon: <ArrowLeftFromLine size={18} /> },
   "/accounts-payable": { label: "Cuentas por Pagar", icon: <ArrowRightFromLine size={18} /> },
+  "/settings": { label: "Configuración", icon: <Settings size={18} /> },
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

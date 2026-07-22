@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, Users,
   Truck, Package, Fish, DollarSign, ArrowLeftFromLine,
-  ArrowRightFromLine, LogOut
+  ArrowRightFromLine, LogOut, Settings
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -20,6 +20,7 @@ const menuItems = [
   { href: "/cash-register", label: "Caja", icon: DollarSign },
   { href: "/accounts-receivable", label: "Cuentas por cobrar", icon: ArrowLeftFromLine },
   { href: "/accounts-payable", label: "Cuentas por pagar", icon: ArrowRightFromLine },
+  { href: "/settings", label: "Configuración", icon: Settings },
 ]
 
 export function Sidebar() {
