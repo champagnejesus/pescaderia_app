@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from app.database import engine, Base
-from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity
+from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity, business
 from app.config import settings
 from app.middleware.rate_limit import RateLimitMiddleware
 
@@ -209,6 +209,7 @@ app.include_router(purchases.router, prefix="/api/v1/purchases", tags=["Purchase
 app.include_router(inventory.router, prefix="/api/v1/inventory", tags=["Inventory"])
 app.include_router(accounts.router, prefix="/api/v1/accounts", tags=["Accounts"])
 app.include_router(activity.router, prefix="/api/v1/activity", tags=["Activity"])
+app.include_router(business.router, prefix="/api/v1/business", tags=["Business"])
 
 @app.get("/health")
 async def health():
