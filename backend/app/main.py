@@ -53,7 +53,7 @@ async def migrate(conn):
         ("purchases", "notes", "VARCHAR(500) DEFAULT ''"),
         ("purchase_items", "product_name", "VARCHAR(255) DEFAULT ''"),
         ("business_config", "close_day_pin", "VARCHAR(255)"),
-        ("business_config", "require_pin", "BOOLEAN DEFAULT 0"),
+        ("business_config", "require_pin", "BOOLEAN DEFAULT false"),
     ]
     for table, col, definition in col_migrations:
         if table not in tables:
