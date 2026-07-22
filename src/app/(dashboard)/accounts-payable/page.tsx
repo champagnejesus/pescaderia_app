@@ -1,11 +1,13 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo } from "react"
-import { ChevronDown, ChevronUp, DollarSign, AlertCircle, Search, Clock, ArrowRightFromLine } from "lucide-react"
+import { ChevronDown, ChevronUp, DollarSign, AlertCircle, Search, Clock, ArrowRightFromLine, HandCoins } from "lucide-react"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
+import { PayDialog } from "@/components/cash-register/PayDialog"
+import { ToastContainer, useToast } from "@/components/ui/ToastContainer"
 import { cn } from "@/lib/utils"
 import { formatCurrency, formatDate } from "@/lib/formatters"
 import type { AccountDebtor, AccountEntry } from "@/lib/types"
@@ -21,6 +23,8 @@ export default function AccountsPayablePage() {
   const [error, setError] = useState("")
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const [search, setSearch] = useState("")
+  const [payTarget, setPayTarget] = useState<AccountDebtor | null>(null)
+  const { toasts, addToast, removeToast } = useToast()
 
   const fetch = useCallback(async () => {
     setLoading(true)
@@ -36,6 +40,17 @@ export default function AccountsPayablePage() {
   }, [])
 
   useEffect(() => { fetch() }, [fetch])
+
+  const handlePay = async (amount: number, method: string) => {
+    if (!payTarget) return
+    try {
+      await api.post(`/accounts/payable/${payTarget.id}/pay`, { amount, method })
+      addToast(`Pago de ${formatCurrency(amount)} registrado`, "success")
+      fetch()
+    } catch {
+      addToast("Error al registrar el pago", "error")
+    }
+  }
 
   const toggleExpand = async (id: number) => {
     if (expandedId === id) {
@@ -133,10 +148,17 @@ export default function AccountsPayablePage() {
                     )}
                   </p>
                 </div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setPayTarget(debtor) }}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-abyssal-red/12 text-abyssal-red text-[12px] font-semibold hover:bg-abyssal-red/20 transition-colors shrink-0 mr-1"
+                >
+                  <HandCoins className="w-4 h-4" />
+                  Pagar
+                </button>
                 {expandedId === debtor.id ? (
-                  <ChevronUp className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-2" />
+                  <ChevronUp className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-2" />
+                  <ChevronDown className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
                 )}
               </button>
 
@@ -199,6 +221,16 @@ export default function AccountsPayablePage() {
           ))
         )}
       </div>
+
+      <PayDialog
+        open={!!payTarget}
+        onClose={() => setPayTarget(null)}
+        debtorName={payTarget?.name || ""}
+        pendingAmount={payTarget?.total_pending || 0}
+        type="payable"
+        onPay={handlePay}
+      />
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )
 }

@@ -74,3 +74,7 @@ class AccountDebtorResponse(BaseModel):
     name: str
     total_pending: float
     entries: list[AccountEntryResponse] = []
+
+class AccountPaymentRequest(BaseModel):
+    amount: float
+    method: str = "Efectivo"
