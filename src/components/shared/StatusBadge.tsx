@@ -15,6 +15,8 @@ const statusStyles: Record<string, string> = {
   DISPONIBLE: "bg-abyssal-green-bg text-abyssal-green",
   ACTIVO: "bg-abyssal-green-bg text-abyssal-green",
   INACTIVO: "bg-abyssal-red-bg text-abyssal-red",
+  "AL CORRIENTE": "bg-abyssal-green-bg text-abyssal-green",
+  "CON DEUDA": "bg-abyssal-red-bg text-abyssal-red",
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
