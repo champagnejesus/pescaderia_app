@@ -1,6 +1,6 @@
 import { memo } from "react"
 import { cn } from "@/lib/utils"
-import { formatCurrency, getCreditRatio } from "@/lib/formatters"
+import { formatCurrency } from "@/lib/formatters"
 
 interface ClientCardClient {
   id: number
@@ -26,7 +26,6 @@ function getBalanceColor(balance: number, limit: number) {
 function ClientCardComponent({ client, onPress }: ClientCardProps) {
   const initial = client.name.charAt(0).toUpperCase()
   const balanceColor = getBalanceColor(client.outstanding_balance, client.credit_limit)
-  const creditPct = getCreditRatio(client.outstanding_balance, client.credit_limit) * 100
 
   return (
     <button
@@ -54,19 +53,6 @@ function ClientCardComponent({ client, onPress }: ClientCardProps) {
         <p className="text-[12px] text-abyssal-text-secondary mt-0.5 truncate">
           {client.phone}
         </p>
-        {client.credit_limit > 0 && (
-          <div className="mt-1.5 flex items-center gap-2">
-            <div className="flex-1 h-1 bg-abyssal-surface-high rounded-full overflow-hidden">
-              <div
-                className={cn("h-full rounded-full transition-all", balanceColor)}
-                style={{ width: `${creditPct}%` }}
-              />
-            </div>
-            <span className="text-[10px] text-abyssal-text-secondary shrink-0">
-              {creditPct.toFixed(0)}%
-            </span>
-          </div>
-        )}
       </div>
     </button>
   )
