@@ -1,9 +1,12 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.schemas.purchase import InventoryItemResponse, InventoryMovementResponse
+from app.schemas.inventory import AdjustStockRequest, PhysicalCountRequest, AdjustmentResponse, AdjustmentListResponse
+from app.services import inventory_service
 from app.models.product import Product
 from app.models.purchase import PurchaseItem
 from app.models.order import OrderItem
@@ -83,3 +86,41 @@ async def get_product_movements(product_id: int, db: AsyncSession = Depends(get_
         ))
     movements.sort(key=lambda m: m.created_at or "", reverse=True)
     return movements
+
+@router.post("/adjust", response_model=AdjustmentResponse)
+async def adjust_stock(
+    data: AdjustStockRequest,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        adjustment = await inventory_service.adjust_stock(db, data, user.get("id"))
+        return adjustment
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/physical-count", response_model=AdjustmentResponse)
+async def physical_count(
+    data: PhysicalCountRequest,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        adjustment = await inventory_service.physical_count(db, data, user.get("id"))
+        return adjustment
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/adjustments", response_model=AdjustmentListResponse)
+async def list_adjustments(
+    product_id: Optional[int] = Query(None),
+    adjustment_type: Optional[str] = Query(None),
+    limit: int = Query(50),
+    offset: int = Query(0),
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    adjustments, total = await inventory_service.get_adjustments(
+        db, product_id, adjustment_type, limit, offset
+    )
+    return AdjustmentListResponse(adjustments=adjustments, total=total)
