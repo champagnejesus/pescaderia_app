@@ -36,6 +36,7 @@ class ProductResponse(BaseModel):
     unit: str
     price_compra: float = 0.0
     price_venta: float = 0.0
+    avg_purchase_price: float = 0.0
     image_url: str | None = None
     description: str | None = None
     is_extra_quality: bool

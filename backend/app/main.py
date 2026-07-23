@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from app.database import engine, Base
-from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity, business, categories, units, payment_methods, tax_config, invoice_prefs, export, data, expense_categories
+from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity, business, categories, units, payment_methods, tax_config, invoice_prefs, export, data, expense_categories, purchase_prices
 from app.config import settings
 from app.models.category import Category
 from app.models.unit import Unit
@@ -341,6 +341,7 @@ app.include_router(invoice_prefs.router, prefix="/api/v1/invoice-prefs", tags=["
 app.include_router(export.router, prefix="/api/v1/export", tags=["Export"])
 app.include_router(data.router, prefix="/api/v1/data", tags=["Data"])
 app.include_router(expense_categories.router, prefix="/api/v1/expense-categories", tags=["Expense Categories"])
+app.include_router(purchase_prices.router)
 
 @app.get("/health")
 async def health():
