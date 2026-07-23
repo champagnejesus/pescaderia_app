@@ -215,7 +215,7 @@ export default function AccountsReceivablePage() {
             const progressPct = debtor.progress.total > 0
               ? Math.round((debtor.progress.paid / debtor.progress.total) * 100)
               : 0
-            const isFullyPaid = debtor.total_pending === 0 && debtor.progress.total > 0
+            const isFullyPaid = debtor.total_pending === 0
 
             return (
               <Card key={debtor.id} className="overflow-hidden">
