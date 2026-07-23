@@ -45,6 +45,8 @@ async def migrate(conn):
     col_migrations = [
         ("products", "price_compra", "FLOAT DEFAULT 0.0"),
         ("products", "price_venta", "FLOAT DEFAULT 0.0"),
+        ("products", "avg_purchase_price", "FLOAT DEFAULT 0.0"),
+        ("transactions", "expense_category_id", "INTEGER"),
         ("orders", "payment_status", "VARCHAR(50) DEFAULT 'PENDIENTE'"),
         ("orders", "payment_method", "VARCHAR(50) DEFAULT 'Efectivo'"),
         ("order_items", "presentation", "VARCHAR(50) DEFAULT 'Unidad'"),
@@ -73,6 +75,55 @@ async def migrate(conn):
     if not is_sqlite:
         # PostgreSQL: create_all handles everything else
         return
+
+    # --- Create new tables for SQLite ---
+    await conn.execute(text("""
+        CREATE TABLE IF NOT EXISTS inventory_adjustments (
+            id INTEGER NOT NULL,
+            product_id INTEGER NOT NULL,
+            type VARCHAR(50) NOT NULL,
+            quantity_before FLOAT NOT NULL,
+            quantity_adjusted FLOAT NOT NULL,
+            quantity_after FLOAT NOT NULL,
+            reason VARCHAR(100) NOT NULL,
+            notes TEXT,
+            created_by INTEGER,
+            created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+            PRIMARY KEY (id),
+            FOREIGN KEY(product_id) REFERENCES products(id)
+        )
+    """))
+    await conn.execute(text("CREATE INDEX IF NOT EXISTS ix_inventory_adjustments_product_id ON inventory_adjustments (product_id)"))
+
+    await conn.execute(text("""
+        CREATE TABLE IF NOT EXISTS expense_categories (
+            id INTEGER NOT NULL,
+            name VARCHAR(100) NOT NULL,
+            parent_id INTEGER,
+            business_id INTEGER,
+            is_active BOOLEAN DEFAULT 1,
+            created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+            PRIMARY KEY (id),
+            FOREIGN KEY(parent_id) REFERENCES expense_categories(id)
+        )
+    """))
+
+    await conn.execute(text("""
+        CREATE TABLE IF NOT EXISTS purchase_prices (
+            id INTEGER NOT NULL,
+            product_id INTEGER NOT NULL,
+            purchase_id INTEGER,
+            supplier_id INTEGER,
+            unit_price FLOAT NOT NULL,
+            quantity FLOAT NOT NULL,
+            recorded_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
+            PRIMARY KEY (id),
+            FOREIGN KEY(product_id) REFERENCES products(id),
+            FOREIGN KEY(purchase_id) REFERENCES purchases(id),
+            FOREIGN KEY(supplier_id) REFERENCES suppliers(id)
+        )
+    """))
+    await conn.execute(text("CREATE INDEX IF NOT EXISTS ix_purchase_prices_product_id ON purchase_prices (product_id)"))
 
     # --- SQLite-only: create missing tables ---
     new_tables = {

@@ -10,6 +10,7 @@ class Product(Base):
     unit = Column(String(20), nullable=False, default="kg")
     price_compra = Column(Float, default=0.0, server_default="0.0")
     price_venta = Column(Float, default=0.0, server_default="0.0")
+    avg_purchase_price = Column(Float, default=0.0)
     price = Column(Float, default=0.0, server_default="0.0")
     image_url = Column(String(1000))
     description = Column(String(2000))
