@@ -1,20 +1,29 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import api from "@/lib/api"
+import { useCategories } from "@/hooks/useCategories"
 
 export default function NewProductPage() {
   const router = useRouter()
+  const { data: categories, loading: catLoading } = useCategories()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [form, setForm] = useState({
-    name: "", category: "PESCADO BLANCO", stock: 0, unit: "kg",
+    name: "", category_id: 0, stock: 0, unit: "kg",
     price_compra: 0, price_venta: 0, description: "", image_url: "", is_extra_quality: false, low_stock_threshold: 5,
   })
+
+  useEffect(() => {
+    if (categories.length > 0 && form.category_id === 0) {
+      setForm(f => ({ ...f, category_id: categories[0].id }))
+    }
+  }, [categories])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,10 +57,14 @@ export default function NewProductPage() {
         </div>
         <div className="space-y-1.5">
           <label className="text-label-small text-abyssal-text-secondary">Categoría</label>
-          <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}
-            className="w-full bg-abyssal-surface-high rounded-abyssal-sm px-4 py-3 text-body-medium text-abyssal-text-primary outline-none border border-abyssal-outline focus:border-abyssal-primary focus:ring-2 focus:ring-abyssal-primary/20 transition-all appearance-none">
-            {["PESCADO BLANCO", "MARISCO", "CONGELADOS"].map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
+          {catLoading ? (
+            <Skeleton className="h-11 w-full rounded-abyssal-sm" />
+          ) : (
+            <select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: +e.target.value })}
+              className="w-full bg-abyssal-surface-high rounded-abyssal-sm px-4 py-3 text-body-medium text-abyssal-text-primary outline-none border border-abyssal-outline focus:border-abyssal-primary focus:ring-2 focus:ring-abyssal-primary/20 transition-all appearance-none">
+              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">

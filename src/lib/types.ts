@@ -2,6 +2,7 @@ export interface Product {
   id: number
   name: string
   category: string
+  category_id: number | null
   stock: number
   unit: string
   price_compra: number

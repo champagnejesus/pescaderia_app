@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from app.models.product import Product
+from app.models.category import Category
 from app.models.order import OrderItem
 
 async def get_products(db: AsyncSession, search: str = "", category: str = "", page: int = 1, limit: int = 50) -> list[Product]:
@@ -19,9 +20,14 @@ async def get_product(db: AsyncSession, product_id: int) -> Product | None:
 async def create_product(db: AsyncSession, data: dict) -> Product:
     price_venta = data.pop("price_venta", data.pop("price", 0))
     price_compra = data.pop("price_compra", 0)
+    category_id = data.pop("category_id", None)
     data["price_compra"] = price_compra
     data["price_venta"] = price_venta
-    data["price"] = price_venta
+    data["category_id"] = category_id
+    if category_id:
+        cat = await db.get(Category, category_id)
+        if cat:
+            data["category"] = cat.name
     product = Product(**data)
     db.add(product)
     await db.flush()
@@ -31,12 +37,13 @@ async def update_product(db: AsyncSession, product_id: int, data: dict) -> Produ
     product = await db.get(Product, product_id)
     if not product:
         return None
-    if "price_venta" in data:
-        data["price"] = data["price_venta"]
-    if "price" in data and "price_venta" not in data:
-        data["price_venta"] = data["price"]
-        data["price"] = data["price"]
     for key, value in data.items():
+        if key == "price":
+            continue
+        if key == "category_id":
+            cat = await db.get(Category, value)
+            if cat:
+                product.category = cat.name
         setattr(product, key, value)
     await db.flush()
     return product

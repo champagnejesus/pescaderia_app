@@ -8,24 +8,26 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Dialog } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import api from "@/lib/api"
+import { useCategories } from "@/hooks/useCategories"
 
 export default function EditProductPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
+  const { data: categories, loading: catLoading } = useCategories()
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [error, setError] = useState("")
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [form, setForm] = useState({
-    name: "", category: "PESCADO BLANCO", stock: 0, unit: "kg",
+    name: "", category_id: 0, stock: 0, unit: "kg",
     price_compra: 0, price_venta: 0, description: "", image_url: "", is_extra_quality: false, low_stock_threshold: 5,
   })
 
   useEffect(() => {
     api.get(`/products/${id}`).then((res) => {
       const p = res.data
-      setForm({ name: p.name, category: p.category, stock: p.stock, unit: p.unit, price_compra: p.price_compra ?? 0, price_venta: p.price_venta ?? p.price, description: p.description || "", image_url: p.image_url || "", is_extra_quality: p.is_extra_quality, low_stock_threshold: p.low_stock_threshold })
+      setForm({ name: p.name, category_id: p.category_id ?? 0, stock: p.stock, unit: p.unit, price_compra: p.price_compra ?? 0, price_venta: p.price_venta ?? p.price, description: p.description || "", image_url: p.image_url || "", is_extra_quality: p.is_extra_quality, low_stock_threshold: p.low_stock_threshold })
     }).catch(() => setError("Error al cargar producto")).finally(() => setFetching(false))
   }, [id])
 
@@ -93,10 +95,14 @@ export default function EditProductPage() {
         </div>
         <div className="space-y-1.5">
           <label className="text-label-small text-abyssal-text-secondary">Categoría</label>
-          <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}
-            className="w-full bg-abyssal-surface-high rounded-abyssal-sm px-4 py-3 text-body-medium text-abyssal-text-primary outline-none border border-abyssal-outline focus:border-abyssal-primary focus:ring-2 focus:ring-abyssal-primary/20 transition-all appearance-none">
-            {["PESCADO BLANCO", "MARISCO", "CONGELADOS"].map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
+          {catLoading ? (
+            <Skeleton className="h-11 w-full rounded-abyssal-sm" />
+          ) : (
+            <select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: +e.target.value })}
+              className="w-full bg-abyssal-surface-high rounded-abyssal-sm px-4 py-3 text-body-medium text-abyssal-text-primary outline-none border border-abyssal-outline focus:border-abyssal-primary focus:ring-2 focus:ring-abyssal-primary/20 transition-all appearance-none">
+              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">

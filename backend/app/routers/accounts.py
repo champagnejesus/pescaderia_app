@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.schemas.purchase import AccountDebtorResponse, AccountEntryResponse, AccountPaymentRequest, AccountCreateRequest
@@ -167,8 +167,8 @@ async def pay_receivable(client_id: int, data: AccountPaymentRequest, db: AsyncS
             order.payment_status = "PAGO PARCIAL"
             break
     tx = Transaction(
-        title=f"Pago de {client.name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),
-        type="Cobro", amount=data.amount,
+        title=f"Pago de {client.name}", time=datetime.now(timezone.utc).strftime("%H:%M"),
+        type=data.method, amount=data.amount,
     )
     db.add(tx)
     await db.flush()
@@ -184,13 +184,24 @@ async def pay_payable(supplier_id: int, data: AccountPaymentRequest, db: AsyncSe
     if data.amount > supplier.pending_payment:
         raise HTTPException(400, "El pago excede el saldo pendiente")
     supplier.pending_payment -= data.amount
-    if supplier.pending_payment == 0:
-        await db.execute(
-            update(Purchase).where(Purchase.supplier_id == supplier_id, Purchase.payment_status != "PAGADO")
-            .values(payment_status="PAGADO")
-        )
+    remaining = data.amount
+    unpaid = await db.execute(
+        select(Purchase).where(
+            Purchase.supplier_id == supplier_id,
+            Purchase.payment_status != "PAGADO"
+        ).order_by(Purchase.created_at.asc())
+    )
+    for purchase in unpaid.scalars().all():
+        if remaining <= 0:
+            break
+        if remaining >= purchase.total_value:
+            remaining -= purchase.total_value
+            purchase.payment_status = "PAGADO"
+        else:
+            purchase.payment_status = "PAGO PARCIAL"
+            break
     tx = Transaction(
-        title=f"Pago a {supplier.name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),
+        title=f"Pago a {supplier.name}", time=datetime.now(timezone.utc).strftime("%H:%M"),
         type=data.method, amount=-data.amount,
     )
     db.add(tx)
@@ -211,7 +222,7 @@ async def create_receivable(data: AccountCreateRequest, db: AsyncSession = Depen
     if client:
         client.outstanding_balance = (client.outstanding_balance or 0) + data.amount
     tx = Transaction(
-        title=f"Deuda: {data.debtor_name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),
+        title=f"Deuda: {data.debtor_name}", time=datetime.now(timezone.utc).strftime("%H:%M"),
         type="Cuenta por Cobrar", amount=data.amount, status="PENDIENTE",
     )
     db.add(tx)
@@ -231,7 +242,7 @@ async def create_payable(data: AccountCreateRequest, db: AsyncSession = Depends(
     if supplier:
         supplier.pending_payment = (supplier.pending_payment or 0) + data.amount
     tx = Transaction(
-        title=f"Deuda: {data.debtor_name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),
+        title=f"Deuda: {data.debtor_name}", time=datetime.now(timezone.utc).strftime("%H:%M"),
         type="Cuenta por Pagar", amount=-data.amount, status="PENDIENTE",
     )
     db.add(tx)

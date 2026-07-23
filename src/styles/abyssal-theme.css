@@ -12,6 +12,7 @@
   --abyssal-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
   --abyssal-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --abyssal-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --abyssal-bg-overlay: rgba(0, 0, 0, 0.55);
 }
 .dark {
   --abyssal-bg: transparent; --abyssal-surface: rgba(30,30,34,0.72); --abyssal-surface-high: rgba(45,45,50,0.65);

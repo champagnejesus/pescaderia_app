@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
-from ..models.inventory_adjustment import InventoryAdjustment
-from ..models.product import Product
+from app.models.inventory_adjustment import InventoryAdjustment
+from app.models.product import Product
 from ..schemas.inventory import AdjustStockRequest, PhysicalCountRequest
 
 

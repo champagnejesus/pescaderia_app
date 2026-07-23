@@ -33,7 +33,7 @@ async def record_price(
     if product:
         product.avg_purchase_price = round(avg_price, 2)
 
-    await db.commit()
+    await db.flush()
     return price_record
 
 async def get_price_history(db: AsyncSession, product_id: int):

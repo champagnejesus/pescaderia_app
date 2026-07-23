@@ -1,29 +1,29 @@
-# Task 10: Settings Page UI — Report
+# Task 10: Reports Page (Backend) - Completion Report
 
-## Status: ✅ Complete
+**Status:** ✅ Complete
 
-## Files Created
-- `src/app/(dashboard)/settings/page.tsx` — Full settings page with 10 sections
+**Commit:** `7b8ae4f` — `feat: add comprehensive report endpoints with date filtering`
 
-## Implementation Details
-- All `Input label="..."` from the brief were converted to `<label>` + `<Input>` pattern since `Input` component lacks a `label` prop
-- Button `loading` prop used for save/submit feedback
-- Uses existing components: `Card`, `Button`, `Input`, `Skeleton`, `TopBar`, `ToastContainer`
-- Uses `useToast` hook for toast notifications
-- Uses `api` from `@/lib/api` for all API calls
-- Imports types from `@/lib/types`: `BusinessProfile`, `Category`, `Unit`, `PaymentMethod`, `TaxConfig`, `InvoicePrefs`
+**Files modified:**
+- `backend/app/schemas/report.py` — Added 7 new response schemas (DayData, SalesReportResponse, ProductRanking, ProductsReportResponse, ClientRanking, ClientsReportResponse, InventoryReportResponse)
+- `backend/app/services/report_service.py` — Created with 4 async report functions + date range helper
+- `backend/app/routers/reports.py` — Added 4 new GET endpoints
 
-## Sections Implemented
-1. **Perfil del Negocio** — 5 inputs (4 editable, 1 email disabled) + save button
-2. **Categorías de Productos** — chip list with delete + add input + button
-3. **Unidades de Medida** — chip list with delete + name/abbrev inputs + button
-4. **Métodos de Pago** — toggle list with up/down reorder + active/inactive toggle
-5. **Impuesto / IVA** — enable toggle, conditional name/rate/included inputs
-6. **PIN de Caja** — status display, inline PIN change form with validation
-7. **Preferencias de Factura** — footer textarea + show tax toggle
-8. **Exportar Datos** — download buttons for productos, clientes, pedidos, todo (ZIP)
-9. **Información de la App** — read-only app info card
-10. **Limpiar Datos** — destructive section with two-step "BORRAR" confirmation
+**New endpoints:**
+| Endpoint | Description |
+|----------|-------------|
+| `GET /reports/sales` | Sales/expenses report with daily breakdown, date filtering |
+| `GET /reports/products` | Top products + slow movers ranking |
+| `GET /reports/clients` | Top clients by purchase volume, receivables summary |
+| `GET /reports/inventory` | Stock value, low-stock counts, category breakdown |
 
-## Verification
-- `npx tsc --noEmit` — ✅ No errors
+**Test summary:**
+- All 3 module imports verified (schemas, service, router)
+- Router confirmed 5 total routes (existing dashboard + 4 new)
+- All imports resolve correctly from `backend/` working directory
+
+**Notes:**
+- All endpoints require authentication (via `get_current_user` dependency)
+- Sales, products, and clients reports accept `start_date`/`end_date` query params (default: current month)
+- Inventory report is a snapshot (no date filtering)
+- Slow movers bug fix from brief: original `rows[-5:]` could include empty rows; corrected to only include rows where `quantity_sold > 0`

@@ -15,6 +15,9 @@ async def get_client(db: AsyncSession, client_id: int) -> Client | None:
     return await db.get(Client, client_id)
 
 async def create_client(db: AsyncSession, data: dict) -> Client:
+    if not data.get("initials"):
+        name = data.get("name", "")
+        data["initials"] = "".join(w[0].upper() for w in name.split() if w)[:2]
     client = Client(**data)
     db.add(client)
     await db.flush()

@@ -1,18 +1,20 @@
 import csv, io, zipfile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from app.models.product import Product
 from app.models.client import Client
 from app.models.order import Order
 
 async def export_products_csv(db: AsyncSession) -> str:
-    result = await db.execute(select(Product).order_by(Product.name))
+    result = await db.execute(select(Product).options(selectinload(Product.category_rel)).order_by(Product.name))
     products = result.scalars().all()
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(["ID", "Nombre", "Categoría", "Stock", "Unidad", "Precio Compra", "Precio Venta"])
     for p in products:
-        writer.writerow([p.id, p.name, p.category, p.stock, p.unit, p.price_compra, p.price_venta])
+        cat_name = p.category_rel.name if p.category_rel else p.category
+        writer.writerow([p.id, p.name, cat_name, p.stock, p.unit, p.price_compra, p.price_venta])
     return output.getvalue()
 
 async def export_clients_csv(db: AsyncSession) -> str:

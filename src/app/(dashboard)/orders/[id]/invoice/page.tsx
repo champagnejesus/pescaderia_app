@@ -6,6 +6,7 @@ import api from "@/lib/api"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters"
+import type { TaxConfig, BusinessProfile } from "@/lib/types"
 
 interface OrderItem {
   product_id: number
@@ -35,12 +36,20 @@ export default function InvoicePage() {
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [taxConfig, setTaxConfig] = useState<TaxConfig | null>(null)
+  const [business, setBusiness] = useState<BusinessProfile | null>(null)
   const printRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    api.get<OrderDetail>(`/orders/${id}`)
-      .then((res) => setOrder(res.data))
-      .catch(() => setError("Error al cargar pedido"))
+    Promise.all([
+      api.get<OrderDetail>(`/orders/${id}`),
+      api.get<TaxConfig>("/tax-config").catch(() => null),
+      api.get<BusinessProfile>("/business/profile").catch(() => null),
+    ]).then(([orderRes, taxRes, bizRes]) => {
+      setOrder(orderRes.data)
+      setTaxConfig(taxRes?.data ?? null)
+      setBusiness(bizRes?.data ?? null)
+    }).catch(() => setError("Error al cargar pedido"))
       .finally(() => setLoading(false))
   }, [id])
 
@@ -69,9 +78,10 @@ export default function InvoicePage() {
   }
 
   const subtotal = order.items.reduce((sum, item) => sum + item.quantity * item.unit_price, 0)
-  const tax = subtotal * 0.10
-  const businessName = typeof window !== "undefined" ? localStorage.getItem("abyssal-business-name") || "Abyssal ERP" : "Abyssal ERP"
-  const ownerName = typeof window !== "undefined" ? localStorage.getItem("abyssal-owner-name") || "" : ""
+  const taxRate = (taxConfig?.is_enabled && taxConfig?.rate) ? taxConfig.rate / 100 : 0
+  const tax = subtotal * taxRate
+  const businessName = business?.business_name || "Abyssal ERP"
+  const ownerName = business?.owner_name || ""
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -140,7 +150,7 @@ export default function InvoicePage() {
               <span className="text-gray-900">{formatCurrency(subtotal)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">IVA (10%)</span>
+              <span className="text-gray-500">{taxConfig?.is_enabled ? `${taxConfig.name} (${taxConfig.rate}%)` : "Impuesto"}</span>
               <span className="text-gray-900">{formatCurrency(tax)}</span>
             </div>
             <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-200">

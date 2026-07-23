@@ -15,7 +15,7 @@ export function useProducts() {
     setLoading(true)
     setError("")
     try {
-      const { data: products } = await api.get<Product[]>("/products")
+      const { data: products } = await api.get<Product[]>("/products", { params: { limit: 200 } })
       setData(products)
       setCategories([...new Set(products.map((p) => p.category))])
       setLowStockCount(products.filter((p) => p.stock <= p.low_stock_threshold).length)

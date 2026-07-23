@@ -21,6 +21,9 @@ export function exportCSV(data: any[], filename: string, headerMap: Record<strin
   const a = document.createElement("a")
   a.href = url
   a.download = `${filename}.csv`
+  a.style.display = "none"
+  document.body.appendChild(a)
   a.click()
+  document.body.removeChild(a)
   URL.revokeObjectURL(url)
 }

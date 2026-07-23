@@ -8,6 +8,7 @@ export interface DailySummary {
   net_total: number
   cash_total: number
   card_total: number
+  transfer_total?: number
   transaction_count: number
 }
 

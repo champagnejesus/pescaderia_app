@@ -20,6 +20,7 @@ async def create_order(db: AsyncSession, data: dict) -> Order:
     total_value = sum(i["subtotal"] for i in items_data)
     payment_method = data.get("payment_method", "Efectivo")
     client_id = data.get("client_id")
+    client = None
     if client_id:
         client = await db.get(Client, client_id)
         if not client:
@@ -50,11 +51,16 @@ async def create_order(db: AsyncSession, data: dict) -> Order:
         )
         db.add(tx)
     else:
-        # Credit sale: track via client outstanding_balance
-        if client_id:
-            client = await db.get(Client, client_id)
-            if client:
-                client.outstanding_balance = (client.outstanding_balance or 0) + total_value
+        if client:
+            client.outstanding_balance = (client.outstanding_balance or 0) + total_value
+        tx = Transaction(
+            title=f"Venta a crédito: {data.get('client_name', 'N/A')}",
+            time=now.strftime("%H:%M"),
+            type="Cuenta por Cobrar",
+            amount=total_value,
+            status="PENDIENTE",
+        )
+        db.add(tx)
     await db.flush()
     await db.refresh(order, ["items"])
     return order

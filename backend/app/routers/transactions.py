@@ -7,6 +7,8 @@ from app.database import get_db
 from app.dependencies import get_current_user
 from app.schemas.transaction import TransactionCreate, TransactionResponse, DailySummaryResponse, CloseDayRequest
 from app.models.transaction import Transaction
+from app.models.business import BusinessConfig
+from app.services.business_service import verify_pin
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
@@ -21,9 +23,15 @@ async def list_transactions(
 ):
     query = select(Transaction)
     if start_date:
-        query = query.where(Transaction.created_at >= datetime.fromisoformat(start_date))
+        try:
+            query = query.where(Transaction.created_at >= datetime.fromisoformat(start_date))
+        except (TypeError, ValueError):
+            pass
     if end_date:
-        query = query.where(Transaction.created_at <= datetime.fromisoformat(end_date + "T23:59:59"))
+        try:
+            query = query.where(Transaction.created_at <= datetime.fromisoformat(end_date + "T23:59:59"))
+        except (TypeError, ValueError):
+            pass
     if type:
         query = query.where(Transaction.type == type)
     query = query.order_by(Transaction.created_at.desc()).offset((page-1)*limit).limit(limit)
@@ -57,6 +65,10 @@ async def daily_summary(db: AsyncSession = Depends(get_db)):
 async def close_day(data: CloseDayRequest, db: AsyncSession = Depends(get_db), user=Depends(get_current_user)):
     if len(data.pin) != 4 or not data.pin.isdigit():
         raise HTTPException(400, "PIN inválido: debe tener 4 dígitos")
+    business = await db.get(BusinessConfig, user["id"])
+    if business and business.require_pin:
+        if not await verify_pin(db, user["id"], data.pin):
+            raise HTTPException(403, "PIN inválido")
     now = datetime.now(timezone.utc)
     today_start = datetime.combine(now.date(), time.min, tzinfo=timezone.utc)
     today_end = datetime.combine(now.date(), time.max, tzinfo=timezone.utc)

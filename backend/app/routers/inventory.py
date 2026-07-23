@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.schemas.purchase import InventoryItemResponse, InventoryMovementResponse
@@ -17,7 +18,7 @@ router = APIRouter(dependencies=[Depends(get_current_user)])
 
 @router.get("", response_model=list[InventoryItemResponse])
 async def list_inventory(search: str = Query(""), db: AsyncSession = Depends(get_db)):
-    query = select(Product)
+    query = select(Product).options(selectinload(Product.category_rel))
     if search:
         query = query.where(Product.name.ilike(f"%{search}%"))
     query = query.order_by(Product.name.asc())
@@ -27,11 +28,11 @@ async def list_inventory(search: str = Query(""), db: AsyncSession = Depends(get
         InventoryItemResponse(
             product_id=p.id,
             product_name=p.name,
-            category=p.category,
+            category=p.category_rel.name if p.category_rel else p.category,
             stock=p.stock or 0,
             unit=p.unit,
             price_compra=p.price_compra or 0,
-            price_venta=p.price_venta or p.price,
+            price_venta=p.price_venta or 0,
             status="Stock Bajo" if (p.stock or 0) <= (p.low_stock_threshold or 0) else "Disponible",
             low_stock_threshold=p.low_stock_threshold or 0,
         )

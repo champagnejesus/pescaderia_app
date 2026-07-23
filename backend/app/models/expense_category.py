@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, UniqueConstraint, func
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from ..database import Base
+from app.database import Base
 
 class ExpenseCategory(Base):
     __tablename__ = "expense_categories"
@@ -11,7 +10,7 @@ class ExpenseCategory(Base):
     parent_id = Column(Integer, ForeignKey("expense_categories.id"), nullable=True)
     business_id = Column(Integer, nullable=True)
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     parent = relationship("ExpenseCategory", remote_side=[id], backref="subcategories")
     expenses = relationship("Transaction", backref="expense_category")

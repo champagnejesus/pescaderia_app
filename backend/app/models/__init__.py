@@ -11,4 +11,7 @@ from app.models.unit import Unit
 from app.models.payment_method import PaymentMethod
 from app.models.tax_config import TaxConfig
 from app.models.invoice_pref import InvoicePref
-__all__ = ["BusinessConfig", "Product", "Client", "Supplier", "Order", "OrderItem", "Transaction", "Purchase", "PurchaseItem", "ManualEntry", "Category", "Unit", "PaymentMethod", "TaxConfig", "InvoicePref"]
+from app.models.expense_category import ExpenseCategory
+from app.models.inventory_adjustment import InventoryAdjustment
+from app.models.purchase_price import PurchasePrice
+__all__ = ["BusinessConfig", "Product", "Client", "Supplier", "Order", "OrderItem", "Transaction", "Purchase", "PurchaseItem", "ManualEntry", "Category", "Unit", "PaymentMethod", "TaxConfig", "InvoicePref", "ExpenseCategory", "InventoryAdjustment", "PurchasePrice"]

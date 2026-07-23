@@ -8,5 +8,6 @@ class TaxConfig(Base):
     name = Column(String(100), default="IVA")
     rate = Column(Float, default=0.0)
     included_in_price = Column(Boolean, default=True)
+    # TODO: Add ForeignKey("business_config.id") when multi-tenant support is needed
     business_id = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey, Text, func
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from ..database import Base
+from app.database import Base
 
 class InventoryAdjustment(Base):
     __tablename__ = "inventory_adjustments"
@@ -15,6 +14,6 @@ class InventoryAdjustment(Base):
     reason = Column(String(100), nullable=False)  # Mermas, Daño, Conteo, Corrección
     notes = Column(Text, nullable=True)
     created_by = Column(Integer, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     product = relationship("Product", backref="adjustments")

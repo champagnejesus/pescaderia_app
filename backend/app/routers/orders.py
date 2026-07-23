@@ -20,7 +20,10 @@ async def get_order(order_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.post("", response_model=OrderResponse, status_code=201)
 async def create_order(data: OrderCreate, db: AsyncSession = Depends(get_db)):
-    return await order_service.create_order(db, data.model_dump())
+    try:
+        return await order_service.create_order(db, data.model_dump())
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.patch("/{order_id}/status", response_model=OrderResponse)
 async def update_status(order_id: int, data: OrderStatusUpdate, db: AsyncSession = Depends(get_db)):

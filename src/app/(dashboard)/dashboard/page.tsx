@@ -52,7 +52,7 @@ export default function DashboardPage() {
     sales_total: summary?.total_sales ?? 0,
     purchases_total: summary?.total_expenses ?? 0,
     cash_total: summary?.cash_total ?? 0,
-    transfer_total: summary?.card_total ?? 0,
+    transfer_total: (summary?.transfer_total ?? 0) + (summary?.card_total ?? 0),
     pending_orders: orders.filter((o) => o.status === "PENDIENTE").length,
     low_stock_count: lowStockCount,
     total_clients: 0,

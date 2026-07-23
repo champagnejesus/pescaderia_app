@@ -3,7 +3,7 @@ from datetime import datetime
 
 class ProductCreate(BaseModel):
     name: str
-    category: str
+    category_id: int | None = None
     stock: float = 0.0
     unit: str = "kg"
     price_compra: float = 0.0
@@ -15,7 +15,7 @@ class ProductCreate(BaseModel):
 
 class ProductUpdate(BaseModel):
     name: str | None = None
-    category: str | None = None
+    category_id: int | None = None
     stock: float | None = None
     unit: str | None = None
     price_compra: float | None = None

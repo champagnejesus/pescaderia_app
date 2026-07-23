@@ -8,7 +8,6 @@ async def clear_all_data(db: AsyncSession):
         "purchase_items", "purchases",
         "transactions",
         "manual_entries",
-        "inventory_movements",
         "products",
         "clients",
         "suppliers",

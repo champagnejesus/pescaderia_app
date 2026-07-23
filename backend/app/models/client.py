@@ -12,3 +12,4 @@ class Client(Base):
     initials = Column(String(10))
     credit_limit = Column(Float, default=1500.0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

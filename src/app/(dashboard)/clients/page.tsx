@@ -86,10 +86,19 @@ export default function ClientsPage() {
   const debtClients = useMemo(() => clients.filter((c) => c.outstanding_balance > 0).length, [clients])
   const frequentClients = useMemo(() => clients.filter((c) => c.credit_limit > 0).length, [clients])
 
+  function generateInitials(fullName: string): string {
+    return fullName
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0].toUpperCase())
+      .join("")
+  }
+
   async function handleAdd() {
     if (!name.trim()) return
     try {
-      await api.post("/clients", { name: name.trim(), phone: phone.trim(), email: email.trim() })
+      await api.post("/clients", { name: name.trim(), phone: phone.trim(), email: email.trim(), initials: generateInitials(name.trim()) })
       setName("")
       setPhone("")
       setEmail("")

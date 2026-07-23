@@ -4,14 +4,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from app.database import engine, Base
-from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity, business, categories, units, payment_methods, tax_config, invoice_prefs, export, data, expense_categories, purchase_prices
-from app.config import settings
+from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity, business, categories, units, payment_methods, tax_config, invoice_prefs, export, data, expense_categories, purchase_prices, pdf
+from app.config import settings  # TODO: In production, replace with a direct Settings() call that raises on default SECRET_KEY
 from app.models.category import Category
 from app.models.unit import Unit
 from app.models.payment_method import PaymentMethod
 from app.models.tax_config import TaxConfig
 from app.models.invoice_pref import InvoicePref
 from app.middleware.rate_limit import RateLimitMiddleware
+from app.middleware.request_id import RequestIDMiddleware
 
 
 async def migrate(conn):
@@ -46,6 +47,7 @@ async def migrate(conn):
         ("products", "price_compra", "FLOAT DEFAULT 0.0"),
         ("products", "price_venta", "FLOAT DEFAULT 0.0"),
         ("products", "avg_purchase_price", "FLOAT DEFAULT 0.0"),
+        ("products", "category_id", "INTEGER"),
         ("transactions", "expense_category_id", "INTEGER"),
         ("orders", "payment_status", "VARCHAR(50) DEFAULT 'PENDIENTE'"),
         ("orders", "payment_method", "VARCHAR(50) DEFAULT 'Efectivo'"),
@@ -68,9 +70,24 @@ async def migrate(conn):
             try:
                 await conn.execute(text(sql))
             except Exception as e:
-                # PostgreSQL will error if column already exists (race condition)
                 if "already exists" not in str(e).lower():
                     raise
+
+    # --- Add FK indexes ---
+    index_migrations = [
+        ("purchases", "supplier_id"),
+        ("purchase_items", "purchase_id"),
+        ("purchase_items", "product_id"),
+        ("order_items", "order_id"),
+        ("order_items", "product_id"),
+        ("transactions", "client_id"),
+        ("transactions", "purchase_id"),
+        ("products", "category_id"),
+    ]
+    for table, col in index_migrations:
+        if table not in tables:
+            continue
+        await conn.execute(text(f'CREATE INDEX IF NOT EXISTS "ix_{table}_{col}" ON "{table}" ({col})'))
 
     if not is_sqlite:
         # PostgreSQL: create_all handles everything else
@@ -291,12 +308,25 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
     async with engine.begin() as conn:
         await migrate(conn)
-    # Seed default expense categories if none exist
-    from app.models.expense_category import ExpenseCategory
-    from sqlalchemy import func, select
+    # Deduplicate business_config rows
+    from app.models.business import BusinessConfig
+    from sqlalchemy import func, select as sa_select
     from app.database import async_session
     async with engine.begin() as conn:
-        result = await conn.execute(select(func.count(ExpenseCategory.id)))
+        dupes = await conn.execute(
+            sa_select(BusinessConfig.email, func.count(BusinessConfig.id).label("cnt"), func.min(BusinessConfig.id).label("keep_id"))
+            .group_by(BusinessConfig.email)
+            .having(func.count(BusinessConfig.id) > 1)
+        )
+        for row in dupes:
+            keep_id = row.keep_id
+            await conn.execute(
+                text(f"DELETE FROM business_config WHERE email = '{row.email}' AND id != {keep_id}")
+            )
+    # Seed default expense categories if none exist
+    from app.models.expense_category import ExpenseCategory
+    async with engine.begin() as conn:
+        result = await conn.execute(sa_select(func.count(ExpenseCategory.id)))
         if result.scalar() == 0:
             from app.services.expense_category_service import seed_default_categories
             async with async_session() as session:
@@ -305,13 +335,18 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(title="Abyssal ERP API", version="1.0.0", lifespan=lifespan)
+app.add_middleware(RequestIDMiddleware)
 app.add_middleware(RateLimitMiddleware, max_requests=20, window_seconds=60)
 
 origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
+allow_credentials = origins != ["*"]
+if origins == ["*"]:
+    import logging
+    logging.warning("CORS: allow_origins=['*'] disables allow_credentials. Set explicit origins in CORS_ORIGINS for credential support.")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins if origins != ["*"] else ["*"],
-    allow_credentials=origins != ["*"],
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -342,6 +377,7 @@ app.include_router(export.router, prefix="/api/v1/export", tags=["Export"])
 app.include_router(data.router, prefix="/api/v1/data", tags=["Data"])
 app.include_router(expense_categories.router, prefix="/api/v1/expense-categories", tags=["Expense Categories"])
 app.include_router(purchase_prices.router)
+app.include_router(pdf.router, prefix="/api/v1/pdf", tags=["PDF"])
 
 @app.get("/health")
 async def health():

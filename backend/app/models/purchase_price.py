@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from ..database import Base
+from app.database import Base
 
 class PurchasePrice(Base):
     __tablename__ = "purchase_prices"
@@ -12,7 +11,7 @@ class PurchasePrice(Base):
     supplier_id = Column(Integer, ForeignKey("suppliers.id"), nullable=True)
     unit_price = Column(Float, nullable=False)
     quantity = Column(Float, nullable=False)
-    recorded_at = Column(DateTime, default=datetime.utcnow)
+    recorded_at = Column(DateTime(timezone=True), server_default=func.now())
 
     product = relationship("Product", backref="price_history")
     purchase = relationship("Purchase", backref="price_records")

@@ -1,10 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
+from sqlalchemy.orm import selectinload
 from datetime import datetime, timedelta
-from ..models.transaction import Transaction
-from ..models.order import Order, OrderItem
-from ..models.product import Product
-from ..models.client import Client
+from app.models.transaction import Transaction
+from app.models.order import Order, OrderItem
+from app.models.product import Product
+from app.models.client import Client
 from ..schemas.report import (
     DayData, SalesReportResponse, ProductRanking, ProductsReportResponse,
     ClientRanking, ClientsReportResponse, InventoryReportResponse,
@@ -174,8 +175,8 @@ async def get_clients_report(db: AsyncSession, start_date: str = None, end_date:
     )
 
 async def get_inventory_report(db: AsyncSession):
-    result = await db.execute(select(Product))
-    products = result.scalars().all()
+    result = await db.execute(select(Product).options(selectinload(Product.category_rel)))
+    products = result.scalars().unique().all()
 
     total_value = sum(p.stock * p.price_venta for p in products)
     low_stock_count = sum(1 for p in products if p.stock <= p.low_stock_threshold and p.stock > 0)
@@ -183,7 +184,7 @@ async def get_inventory_report(db: AsyncSession):
 
     categories = {}
     for p in products:
-        cat = p.category or "Sin categoría"
+        cat = (p.category_rel.name if p.category_rel else p.category) or "Sin categoría"
         if cat not in categories:
             categories[cat] = {"count": 0, "value": 0}
         categories[cat]["count"] += 1
