@@ -29,7 +29,7 @@ async function downloadPdf(endpoint: string, filename: string, startDate?: strin
 export default function ReportTabs() {
   const [activeTab, setActiveTab] = useState('resumen');
   const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
-  const { salesData, productsData, clientsData, inventoryData, loading } = useReports(dateRange.startDate, dateRange.endDate);
+  const { salesData, productsData, clientsData, inventoryData, loading, error } = useReports(dateRange.startDate, dateRange.endDate);
 
   const tabs = [
     { id: 'resumen', label: 'Resumen', pdf: 'sales', file: 'reporte_ventas.pdf' },
@@ -52,6 +52,11 @@ export default function ReportTabs() {
   if (loading) {
     return <div className="text-gray-400 text-center py-12">Cargando reportes...</div>;
   }
+
+  if (error) {
+    return <div className="text-red-400 text-center py-12">{error}</div>;
+  }
+
 
   return (
     <div className="space-y-6">
@@ -86,7 +91,8 @@ export default function ReportTabs() {
         </button>
       </div>
 
-      {activeTab === 'resumen' && salesData && (
+      {activeTab === 'resumen' && (
+        salesData ? (
         <div className="space-y-6">
           <div className="grid grid-cols-3 gap-4">
             <div className="p-4 bg-white/5 rounded-xl border border-white/10">
@@ -105,51 +111,67 @@ export default function ReportTabs() {
             </div>
           </div>
 
-          <div className="h-80 bg-white/5 rounded-xl border border-white/10 p-4">
-            <h3 className="text-sm font-medium text-gray-400 mb-4">Tendencia Diaria</h3>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={salesData.daily_breakdown}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="date" stroke="#9CA3AF" fontSize={12} />
-                <YAxis stroke="#9CA3AF" fontSize={12} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
-                />
-                <Bar dataKey="sales" fill="#10b981" name="Ingresos" />
-                <Bar dataKey="expenses" fill="#ef4444" name="Gastos" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          {salesData.daily_breakdown.length === 0 ? (
+            <p className="text-gray-400 text-center py-8">Sin transacciones en el período seleccionado</p>
+          ) : (
+            <div className="h-80 bg-white/5 rounded-xl border border-white/10 p-4">
+              <h3 className="text-sm font-medium text-gray-400 mb-4">Tendencia Diaria</h3>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={salesData.daily_breakdown}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="date" stroke="#9CA3AF" fontSize={12} />
+                  <YAxis stroke="#9CA3AF" fontSize={12} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
+                  />
+                  <Bar dataKey="sales" fill="#10b981" name="Ingresos" />
+                  <Bar dataKey="expenses" fill="#ef4444" name="Gastos" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
+        ) : (
+          <div className="text-gray-400 text-center py-12">No se pudieron cargar los datos de ventas</div>
+        )
       )}
 
-      {activeTab === 'productos' && productsData && (
+      {activeTab === 'productos' && (
+        productsData ? (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-white">Productos Más Vendidos</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-gray-400 border-b border-white/10">
-                  <th className="text-left py-3">Producto</th>
-                  <th className="text-right py-3">Unidades</th>
-                  <th className="text-right py-3">Ingresos</th>
-                </tr>
-              </thead>
-              <tbody>
-                {productsData.top_products.map((p) => (
-                  <tr key={p.product_id} className="border-b border-white/5">
-                    <td className="py-3 text-white">{p.product_name}</td>
-                    <td className="py-3 text-right text-gray-300">{p.quantity_sold}</td>
-                    <td className="py-3 text-right text-cyan-400">${p.revenue.toFixed(2)}</td>
+          {productsData.top_products.length === 0 ? (
+            <p className="text-gray-400 text-center py-8">Sin datos de productos en este período</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-gray-400 border-b border-white/10">
+                    <th className="text-left py-3">Producto</th>
+                    <th className="text-right py-3">Unidades</th>
+                    <th className="text-right py-3">Ingresos</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {productsData.top_products.map((p) => (
+                    <tr key={p.product_id} className="border-b border-white/5">
+                      <td className="py-3 text-white">{p.product_name}</td>
+                      <td className="py-3 text-right text-gray-300">{p.quantity_sold}</td>
+                      <td className="py-3 text-right text-cyan-400">${p.revenue.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
+        ) : (
+          <div className="text-gray-400 text-center py-12">No se pudieron cargar los datos de productos</div>
+        )
       )}
 
-      {activeTab === 'clientes' && clientsData && (
+      {activeTab === 'clientes' && (
+        clientsData ? (
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-white/5 rounded-xl border border-white/10">
@@ -163,30 +185,38 @@ export default function ReportTabs() {
           </div>
 
           <h3 className="text-lg font-semibold text-white">Clientes Top</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-gray-400 border-b border-white/10">
-                  <th className="text-left py-3">Cliente</th>
-                  <th className="text-right py-3">Compras</th>
-                  <th className="text-right py-3">Pedidos</th>
-                </tr>
-              </thead>
-              <tbody>
-                {clientsData.top_clients.map((c) => (
-                  <tr key={c.client_id} className="border-b border-white/5">
-                    <td className="py-3 text-white">{c.client_name}</td>
-                    <td className="py-3 text-right text-cyan-400">${c.total_purchases.toFixed(2)}</td>
-                    <td className="py-3 text-right text-gray-300">{c.order_count}</td>
+          {clientsData.top_clients.length === 0 ? (
+            <p className="text-gray-400 text-center py-8">Sin datos de clientes en este período</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-gray-400 border-b border-white/10">
+                    <th className="text-left py-3">Cliente</th>
+                    <th className="text-right py-3">Compras</th>
+                    <th className="text-right py-3">Pedidos</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {clientsData.top_clients.map((c) => (
+                    <tr key={c.client_id} className="border-b border-white/5">
+                      <td className="py-3 text-white">{c.client_name}</td>
+                      <td className="py-3 text-right text-cyan-400">${c.total_purchases.toFixed(2)}</td>
+                      <td className="py-3 text-right text-gray-300">{c.order_count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
+        ) : (
+          <div className="text-gray-400 text-center py-12">No se pudieron cargar los datos de clientes</div>
+        )
       )}
 
-      {activeTab === 'inventario' && inventoryData && (
+      {activeTab === 'inventario' && (
+        inventoryData ? (
         <div className="space-y-4">
           <div className="grid grid-cols-4 gap-4">
             <div className="p-4 bg-white/5 rounded-xl border border-white/10">
@@ -207,30 +237,37 @@ export default function ReportTabs() {
             </div>
           </div>
 
-          <div className="h-80 bg-white/5 rounded-xl border border-white/10 p-4">
-            <h3 className="text-sm font-medium text-gray-400 mb-4">Por Categoría</h3>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={inventoryData.categories_summary}
-                  dataKey="value"
-                  nameKey="category"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  label={({ category, percent }) => `${category} (${(percent * 100).toFixed(0)}%)`}
-                >
-                  {inventoryData.categories_summary.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          {inventoryData.categories_summary.length === 0 ? (
+            <p className="text-gray-400 text-center py-8">Sin datos de inventario</p>
+          ) : (
+            <div className="h-80 bg-white/5 rounded-xl border border-white/10 p-4">
+              <h3 className="text-sm font-medium text-gray-400 mb-4">Por Categoría</h3>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={inventoryData.categories_summary}
+                    dataKey="value"
+                    nameKey="category"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    label={({ category, percent }) => `${category} (${(percent * 100).toFixed(0)}%)`}
+                  >
+                    {inventoryData.categories_summary.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
+        ) : (
+          <div className="text-gray-400 text-center py-12">No se pudieron cargar los datos de inventario</div>
+        )
       )}
     </div>
   );
