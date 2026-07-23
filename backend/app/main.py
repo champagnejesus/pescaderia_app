@@ -80,8 +80,7 @@ async def migrate(conn):
         ("purchase_items", "product_id"),
         ("order_items", "order_id"),
         ("order_items", "product_id"),
-        ("transactions", "client_id"),
-        ("transactions", "purchase_id"),
+        ("transactions", "expense_category_id"),
         ("products", "category_id"),
     ]
     for table, col in index_migrations:
