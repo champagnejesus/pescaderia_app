@@ -14,9 +14,9 @@ async def get_current_user(
     token = credentials.credentials
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
-        user_id_str: str = payload.get("sub")
-        if user_id_str is None:
+        user_id = payload.get("id")
+        if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid token")
-        return {"id": int(user_id_str), "email": payload.get("email")}
+        return {"id": user_id, "email": payload.get("sub")}
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
