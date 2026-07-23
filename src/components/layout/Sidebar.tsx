@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, Users,
   Truck, Package, Fish, DollarSign, ArrowLeftFromLine,
-  ArrowRightFromLine, LogOut, Settings
+  ArrowRightFromLine, LogOut, Settings, BarChart3
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import LowStockBadge from "./LowStockBadge"
@@ -21,6 +21,7 @@ const menuItems = [
   { href: "/cash-register", label: "Caja", icon: DollarSign },
   { href: "/accounts-receivable", label: "Cuentas por cobrar", icon: ArrowLeftFromLine },
   { href: "/accounts-payable", label: "Cuentas por pagar", icon: ArrowRightFromLine },
+  { href: "/reports", label: "Reportes", icon: BarChart3 },
   { href: "/settings", label: "Configuración", icon: Settings },
 ]
 
