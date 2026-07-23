@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { Package, X, AlertCircle, Search, Package as PackageIcon } from "lucide-react"
+import { Package, X, AlertCircle, Search, Package as PackageIcon, Settings } from "lucide-react"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,6 +9,9 @@ import { Dialog } from "@/components/ui/dialog"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { formatCurrency, formatDateTime } from "@/lib/formatters"
 import type { InventoryItem, InventoryMovement } from "@/lib/types"
+import AdjustmentModal from "@/components/inventory/AdjustmentModal"
+import PhysicalCountModal from "@/components/inventory/PhysicalCountModal"
+import AdjustmentHistory from "@/components/inventory/AdjustmentHistory"
 
 type FilterTab = "todos" | "bajo" | "disponible"
 
@@ -23,6 +26,9 @@ export default function InventoryPage() {
   const [movementsLoading, setMovementsLoading] = useState(false)
   const [sortBy, setSortBy] = useState<"name" | "stock">("name")
   const searchRef = useRef<HTMLInputElement>(null)
+  const [showAdjustmentModal, setShowAdjustmentModal] = useState(false)
+  const [showPhysicalCountModal, setShowPhysicalCountModal] = useState(false)
+  const [adjustmentProduct, setAdjustmentProduct] = useState<InventoryItem | null>(null)
 
   const fetch = useCallback(async () => {
     setLoading(true)
@@ -143,6 +149,12 @@ export default function InventoryPage() {
           >
             {sortBy === "name" ? "A-Z" : "Stock"}
           </button>
+          <button
+            onClick={() => setShowPhysicalCountModal(true)}
+            className="bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-xl px-3 py-2.5 text-[13px] whitespace-nowrap hover:bg-orange-500/30 transition-colors"
+          >
+            Conteo Físico
+          </button>
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -195,6 +207,7 @@ export default function InventoryPage() {
                     <th className="py-3 px-2 font-medium text-right">P. Compra</th>
                     <th className="py-3 px-2 font-medium text-right">P. Venta</th>
                     <th className="py-3 px-2 font-medium text-center">Estado</th>
+                    <th className="py-3 px-2 font-medium text-center">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -223,6 +236,15 @@ export default function InventoryPage() {
                       <td className="py-3 px-2 text-[14px] text-abyssal-text-primary text-right">{formatCurrency(item.price_venta)}</td>
                       <td className="py-3 px-2 text-center">
                         <StatusBadge status={item.status} />
+                      </td>
+                      <td className="py-3 px-2 text-center">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setAdjustmentProduct(item); setShowAdjustmentModal(true); }}
+                          className="text-gray-400 hover:text-cyan-400"
+                          title="Ajustar stock"
+                        >
+                          <Settings size={16} />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -344,7 +366,30 @@ export default function InventoryPage() {
             </div>
           )}
         </div>
+        {selectedProduct && (
+          <div className="pt-2 border-t border-abyssal-primary/20">
+            <AdjustmentHistory productId={selectedProduct.product_id} />
+          </div>
+        )}
       </Dialog>
+
+      {showAdjustmentModal && adjustmentProduct && (
+        <AdjustmentModal
+          productId={adjustmentProduct.product_id}
+          productName={adjustmentProduct.product_name}
+          currentStock={adjustmentProduct.stock}
+          onClose={() => { setShowAdjustmentModal(false); setAdjustmentProduct(null); }}
+          onAdjustment={fetch}
+        />
+      )}
+
+      {showPhysicalCountModal && (
+        <PhysicalCountModal
+          products={items.map(i => ({ id: i.product_id, name: i.product_name, stock: i.stock, unit: i.unit }))}
+          onClose={() => setShowPhysicalCountModal(false)}
+          onCount={fetch}
+        />
+      )}
     </>
   )
 }
