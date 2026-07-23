@@ -17,13 +17,13 @@ export default function EditClientPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [form, setForm] = useState({
-    name: "", phone: "", email: "", address: "",
+    name: "", phone: "", email: "", address: "", credit_limit: 0,
   })
 
   useEffect(() => {
     api.get(`/clients/${id}`).then((res) => {
       const c = res.data
-      setForm({ name: c.name, phone: c.phone || "", email: c.email || "", address: c.address || "" })
+      setForm({ name: c.name, phone: c.phone || "", email: c.email || "", address: c.address || "", credit_limit: c.credit_limit ?? 0 })
     }).catch(() => setError("Error al cargar cliente")).finally(() => setFetching(false))
   }, [id])
 
@@ -95,6 +95,10 @@ export default function EditClientPage() {
         <div className="space-y-1.5">
           <label className="text-label-small text-abyssal-text-secondary">Dirección</label>
           <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-label-small text-abyssal-text-secondary">Límite de Crédito</label>
+          <Input type="number" step="0.01" min="0" value={form.credit_limit} onChange={(e) => setForm({ ...form, credit_limit: parseFloat(e.target.value) || 0 })} />
         </div>
         <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full">
           {loading ? "" : "Guardar Cambios"}
