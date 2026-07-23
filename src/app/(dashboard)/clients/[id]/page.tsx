@@ -165,7 +165,7 @@ export default function ClientDetail() {
             ].map((item, i) => (
               <div key={i} className={cn(
                 "flex items-center p-4 gap-4 transition-colors hover:bg-abyssal-surface-high",
-                i < 2 && "border-b border-abyssal-primary/20"
+                i < 2 && "border-b border-abyssal-outline"
               )}>
                 <item.icon className="w-5 h-5 text-abyssal-primary shrink-0" />
                 <div>
