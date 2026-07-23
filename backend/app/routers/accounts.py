@@ -78,7 +78,7 @@ async def list_accounts_payable(search: str = Query(""), db: AsyncSession = Depe
     # Also get suppliers from manual entries
     manual = await db.execute(
         select(ManualEntry.debtor_id, ManualEntry.debtor_name)
-        .where(ManualEntry.account_type == "payable", ManualEntry.pending_amount > 0)
+        .where(ManualEntry.account_type == "payable")
         .distinct()
     )
     manual_suppliers = {(r.debtor_id, r.debtor_name) for r in manual.fetchall()}
@@ -86,7 +86,7 @@ async def list_accounts_payable(search: str = Query(""), db: AsyncSession = Depe
     seen = {s.id for s in suppliers}
     result_list = [
         AccountDebtorResponse(id=s.id, name=s.name, total_pending=s.pending_payment or 0, entries=[])
-        for s in suppliers if (s.pending_payment or 0) > 0
+        for s in suppliers
     ]
     for mid, mname in manual_suppliers:
         if mid not in seen:
@@ -96,7 +96,7 @@ async def list_accounts_payable(search: str = Query(""), db: AsyncSession = Depe
             )
             result_list.append(AccountDebtorResponse(id=mid, name=mname, total_pending=total or 0, entries=[]))
 
-    return [r for r in result_list if r.total_pending > 0]
+    return result_list
 
 
 @router.get("/payable/{supplier_id}/entries", response_model=list[AccountEntryResponse])
@@ -114,7 +114,7 @@ async def list_accounts_receivable(search: str = Query(""), db: AsyncSession = D
 
     manual = await db.execute(
         select(ManualEntry.debtor_id, ManualEntry.debtor_name)
-        .where(ManualEntry.account_type == "receivable", ManualEntry.pending_amount > 0)
+        .where(ManualEntry.account_type == "receivable")
         .distinct()
     )
     manual_clients = {(r.debtor_id, r.debtor_name) for r in manual.fetchall()}
@@ -122,7 +122,7 @@ async def list_accounts_receivable(search: str = Query(""), db: AsyncSession = D
     seen = {c.id for c in clients}
     result_list = [
         AccountDebtorResponse(id=c.id, name=c.name, total_pending=c.outstanding_balance or 0, entries=[])
-        for c in clients if (c.outstanding_balance or 0) > 0
+        for c in clients
     ]
     for mid, mname in manual_clients:
         if mid not in seen:
@@ -132,7 +132,7 @@ async def list_accounts_receivable(search: str = Query(""), db: AsyncSession = D
             )
             result_list.append(AccountDebtorResponse(id=mid, name=mname, total_pending=total or 0, entries=[]))
 
-    return [r for r in result_list if r.total_pending > 0]
+    return result_list
 
 
 @router.get("/receivable/{client_id}/entries", response_model=list[AccountEntryResponse])
