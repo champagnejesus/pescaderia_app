@@ -84,7 +84,7 @@ export default function ClientsPage() {
   }, [filtered])
 
   const debtClients = useMemo(() => clients.filter((c) => c.outstanding_balance > 0).length, [clients])
-  const frequentClients = useMemo(() => debtClients, [debtClients])
+  const frequentClients = useMemo(() => clients.filter((c) => c.credit_limit > 0).length, [clients])
 
   async function handleAdd() {
     if (!name.trim()) return

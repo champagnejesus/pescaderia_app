@@ -6,14 +6,11 @@ import { ArrowLeft, Phone, MessageCircle, ShoppingCart, Mail, MapPin, Package, A
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { cn } from "@/lib/utils"
+import { formatCurrency, getCreditRatio } from "@/lib/formatters"
 import { useClient } from "@/hooks/useClient"
 import { useClientOrders } from "@/hooks/useClientOrders"
 import { useClientPayments } from "@/hooks/useClientPayments"
 import { PayDialog } from "@/components/clients/PayDialog"
-
-function formatCurrency(n: number) {
-  return `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
-}
 
 function formatDate(dateStr: string | null) {
   if (!dateStr) return ""
@@ -25,11 +22,6 @@ function formatDate(dateStr: string | null) {
   if (diffDays === 1) return "Ayer"
   if (diffDays < 7) return `Hace ${diffDays} días`
   return date.toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" })
-}
-
-function getCreditRatio(balance: number, limit: number) {
-  if (limit <= 0) return 0
-  return Math.min(balance / limit, 1)
 }
 
 export default function ClientDetail() {
@@ -80,7 +72,7 @@ export default function ClientDetail() {
   const hasDebt = client.outstanding_balance > 0
   const creditRatio = getCreditRatio(client.outstanding_balance, client.credit_limit)
   const creditColor = client.outstanding_balance <= 0 ? "bg-abyssal-green"
-    : client.outstanding_balance >= client.credit_limit ? "bg-abyssal-red"
+    : (client.credit_limit > 0 && client.outstanding_balance >= client.credit_limit) ? "bg-abyssal-red"
     : "bg-abyssal-yellow"
 
   const phoneUrl = `tel:${client.phone}`
@@ -257,7 +249,7 @@ export default function ClientDetail() {
               </div>
             ) : (
               payments
-                .filter((e) => e.reference_type === "manual" || e.status === "PAGADO" || e.pending_amount === 0)
+                .filter((e) => e.pending_amount === 0 || e.status === "PAGADO")
                 .slice(0, 10)
                 .map((entry) => (
                   <div key={entry.id} className="flex items-center justify-between p-4 bg-abyssal-surface glass rounded-2xl">

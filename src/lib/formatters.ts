@@ -40,3 +40,8 @@ export function formatShortDate(dateStr: string | null | undefined): string {
     return dateStr
   }
 }
+
+export function getCreditRatio(balance: number, limit: number): number {
+  if (limit <= 0) return 0
+  return Math.min(balance / limit, 1)
+}

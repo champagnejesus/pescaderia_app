@@ -1,5 +1,6 @@
 import { memo } from "react"
 import { cn } from "@/lib/utils"
+import { formatCurrency, getCreditRatio } from "@/lib/formatters"
 
 interface ClientCardClient {
   id: number
@@ -16,26 +17,16 @@ interface ClientCardProps {
   onPress: (id: number) => void
 }
 
-function formatCurrency(n: number) {
-  return `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
-}
-
 function getBalanceColor(balance: number, limit: number) {
   if (balance <= 0) return "bg-abyssal-green"
-  if (balance >= limit) return "bg-abyssal-red"
-  if (balance > limit * 0.5) return "bg-abyssal-yellow"
-  return "bg-abyssal-green"
-}
-
-function getCreditBarWidth(balance: number, limit: number) {
-  if (limit <= 0) return 0
-  return Math.min((balance / limit) * 100, 100)
+  if (limit > 0 && balance >= limit) return "bg-abyssal-red"
+  return "bg-abyssal-yellow"
 }
 
 function ClientCardComponent({ client, onPress }: ClientCardProps) {
   const initial = client.name.charAt(0).toUpperCase()
   const balanceColor = getBalanceColor(client.outstanding_balance, client.credit_limit)
-  const creditPct = getCreditBarWidth(client.outstanding_balance, client.credit_limit)
+  const creditPct = getCreditRatio(client.outstanding_balance, client.credit_limit) * 100
 
   return (
     <button
