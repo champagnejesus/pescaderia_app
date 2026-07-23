@@ -1,4 +1,5 @@
 from datetime import date, time, datetime, timezone
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -10,9 +11,21 @@ from app.models.transaction import Transaction
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 @router.get("", response_model=list[TransactionResponse])
-async def list_transactions(type: str = Query(""), page: int = Query(1), limit: int = Query(50), db: AsyncSession = Depends(get_db)):
+async def list_transactions(
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    type: str = Query(""),
+    page: int = Query(1),
+    limit: int = Query(50),
+    db: AsyncSession = Depends(get_db),
+):
     query = select(Transaction)
-    if type: query = query.where(Transaction.type == type)
+    if start_date:
+        query = query.where(Transaction.created_at >= datetime.fromisoformat(start_date))
+    if end_date:
+        query = query.where(Transaction.created_at <= datetime.fromisoformat(end_date + "T23:59:59"))
+    if type:
+        query = query.where(Transaction.type == type)
     query = query.order_by(Transaction.created_at.desc()).offset((page-1)*limit).limit(limit)
     result = await db.execute(query)
     return result.scalars().all()
@@ -31,12 +44,13 @@ async def daily_summary(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Transaction).where(Transaction.created_at.between(today_start, today_end)))
     txs = result.scalars().all()
     total_collections = sum(t.amount for t in txs if t.type == "Cobro")
-    total_sales = sum(t.amount for t in txs if t.amount > 0 and t.type != "Cobro")
-    total_expenses = sum(t.amount for t in txs if t.amount < 0)
+    total_sales = sum(t.amount for t in txs if t.amount > 0 and t.type not in ("Cobro", "Cuenta por Cobrar"))
+    total_expenses = sum(abs(t.amount) for t in txs if t.type == "Gasto")
     return DailySummaryResponse(
-        total_sales=total_sales, total_expenses=total_expenses, net_total=total_sales + total_collections + total_expenses,
+        total_sales=total_sales, total_expenses=total_expenses, net_total=total_sales + total_collections - total_expenses,
         cash_total=sum(t.amount for t in txs if t.type == "Efectivo" and t.amount > 0),
         card_total=sum(t.amount for t in txs if t.type == "Tarjeta" and t.amount > 0),
+        transfer_total=sum(t.amount for t in txs if t.type in ("Transferencia", "Transfer") and t.amount > 0),
         transaction_count=len(txs), total_collections=total_collections,
     )
 
@@ -49,10 +63,10 @@ async def close_day(data: CloseDayRequest, db: AsyncSession = Depends(get_db), u
     today_end = datetime.combine(now.date(), time.max, tzinfo=timezone.utc)
     result = await db.execute(select(Transaction).where(Transaction.created_at.between(today_start, today_end)))
     txs = result.scalars().all()
-    total_sales = sum(t.amount for t in txs if t.amount > 0 and t.type != "Cobro")
-    total_expenses = sum(t.amount for t in txs if t.amount < 0)
+    total_sales = sum(t.amount for t in txs if t.amount > 0 and t.type not in ("Cobro", "Cuenta por Cobrar"))
+    total_expenses = sum(abs(t.amount) for t in txs if t.type == "Gasto")
     total_collections = sum(t.amount for t in txs if t.type == "Cobro")
-    net = total_sales + total_collections + total_expenses
+    net = total_sales + total_collections - total_expenses
     tx_close = Transaction(
         title=f"Cierre de caja — {now.strftime('%d/%m/%Y')}",
         time=now.strftime("%H:%M"),

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 from datetime import datetime
 
 class TransactionCreate(BaseModel):
@@ -24,8 +25,13 @@ class DailySummaryResponse(BaseModel):
     net_total: float
     cash_total: float
     card_total: float
+    transfer_total: float = 0.0
     transaction_count: int
     total_collections: float = 0.0
 
 class CloseDayRequest(BaseModel):
     pin: str
+
+class TransactionQueryParams(BaseModel):
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None

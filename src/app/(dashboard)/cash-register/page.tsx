@@ -11,6 +11,7 @@ import { ExpenseDialog } from "@/components/cash-register/ExpenseDialog"
 import { Button } from "@/components/ui/button"
 import { FilterChip } from "@/components/shared/FilterChip"
 import { ToastContainer } from "@/components/ui/ToastContainer"
+import DateRangePicker from "@/components/common/DateRangePicker"
 import { useToast } from "@/hooks/useToast"
 import api from "@/lib/api"
 import type { DailySummary, Transaction } from "@/lib/types"
@@ -24,15 +25,19 @@ export default function CashRegisterPage() {
   const [expenseOpen, setExpenseOpen] = useState(false)
   const [closing, setClosing] = useState(false)
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null)
+  const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' })
   const { toasts, addToast, removeToast } = useToast()
 
   const fetch = useCallback(async () => {
     setLoading(true)
     setError("")
     try {
+      const txParams: Record<string, string | number> = { limit: 50 }
+      if (dateRange.startDate) txParams.start_date = dateRange.startDate
+      if (dateRange.endDate) txParams.end_date = dateRange.endDate
       const [summaryRes, txRes] = await Promise.all([
         api.get<DailySummary>("/transactions/daily-summary"),
-        api.get<Transaction[]>("/transactions", { params: { limit: 50 } }),
+        api.get<Transaction[]>("/transactions", { params: txParams }),
       ])
       setSummary(summaryRes.data)
       setTransactions(txRes.data)
@@ -42,7 +47,7 @@ export default function CashRegisterPage() {
     } finally {
       setLoading(false)
     }
-  }, [addToast])
+  }, [addToast, dateRange.startDate, dateRange.endDate])
 
   useEffect(() => { fetch() }, [fetch])
 
@@ -119,6 +124,12 @@ export default function CashRegisterPage() {
                   </p>
                 )}
               </div>
+
+              <DateRangePicker
+                startDate={dateRange.startDate}
+                endDate={dateRange.endDate}
+                onChange={(start, end) => setDateRange({ startDate: start, endDate: end })}
+              />
 
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {filterOptions.map((opt) => (
