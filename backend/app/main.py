@@ -104,7 +104,8 @@ async def migrate(conn):
             is_active BOOLEAN DEFAULT 1,
             created_at DATETIME DEFAULT (CURRENT_TIMESTAMP),
             PRIMARY KEY (id),
-            FOREIGN KEY(parent_id) REFERENCES expense_categories(id)
+            FOREIGN KEY(parent_id) REFERENCES expense_categories(id),
+            UNIQUE(name, parent_id, business_id)
         )
     """))
 
