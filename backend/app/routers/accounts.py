@@ -212,7 +212,7 @@ async def create_receivable(data: AccountCreateRequest, db: AsyncSession = Depen
         client.outstanding_balance = (client.outstanding_balance or 0) + data.amount
     tx = Transaction(
         title=f"Deuda: {data.debtor_name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),
-        type="Cuenta por Cobrar", amount=data.amount,
+        type="Cuenta por Cobrar", amount=data.amount, status="PENDIENTE",
     )
     db.add(tx)
     await db.flush()
@@ -232,7 +232,7 @@ async def create_payable(data: AccountCreateRequest, db: AsyncSession = Depends(
         supplier.pending_payment = (supplier.pending_payment or 0) + data.amount
     tx = Transaction(
         title=f"Deuda: {data.debtor_name}", time=datetime.now(timezone.utc).strftime("%I:%M %p"),
-        type="Cuenta por Pagar", amount=-data.amount,
+        type="Cuenta por Pagar", amount=-data.amount, status="PENDIENTE",
     )
     db.add(tx)
     await db.flush()
