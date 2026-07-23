@@ -82,7 +82,7 @@ export default function ClientDetail() {
 
   return (
     <div className="min-h-screen bg-abyssal-bg">
-      <header className="bg-abyssal-surface/80 backdrop-blur-xl border-b border-abyssal-primary/20 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+      <header className="bg-abyssal-surface/80 backdrop-blur-xl px-4 py-3 flex items-center justify-between sticky top-0 z-40">
         <button onClick={() => router.back()} className="p-2 -ml-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-colors active:scale-95">
           <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
