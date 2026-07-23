@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.database import get_db
@@ -14,6 +15,7 @@ from app.models.client import Client
 from app.models.supplier import Supplier
 from app.models.transaction import Transaction
 from app.services import report_service
+from app.services import pdf_service
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
@@ -69,3 +71,48 @@ async def get_inventory_report(
     db: AsyncSession = Depends(get_db),
 ):
     return await report_service.get_inventory_report(db)
+
+
+@router.get("/pdf/sales")
+async def download_sales_pdf(
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    pdf_bytes = await pdf_service.generate_report_pdf(db, "sales", start_date, end_date)
+    return StreamingResponse(
+        iter([pdf_bytes]),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=reporte_ventas.pdf"},
+    )
+
+
+@router.get("/pdf/products")
+async def download_products_pdf(
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    pdf_bytes = await pdf_service.generate_report_pdf(db, "products", start_date, end_date)
+    return StreamingResponse(
+        iter([pdf_bytes]),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=reporte_productos.pdf"},
+    )
+
+
+@router.get("/pdf/transactions")
+async def download_transactions_pdf(
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    pdf_bytes = await pdf_service.generate_report_pdf(db, "transactions", start_date, end_date)
+    return StreamingResponse(
+        iter([pdf_bytes]),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=reporte_transacciones.pdf"},
+    )
