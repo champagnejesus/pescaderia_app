@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
 
 class TransactionCreate(BaseModel):
@@ -31,7 +30,3 @@ class DailySummaryResponse(BaseModel):
 
 class CloseDayRequest(BaseModel):
     pin: str
-
-class TransactionQueryParams(BaseModel):
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None

@@ -20,17 +20,27 @@ export default function DateRangePicker({ startDate, endDate, onChange }: DateRa
 
   const getPresetDates = (preset: string) => {
     const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
     const start = new Date();
 
     switch (preset) {
       case 'today':
-        return { start: today.toISOString().split('T')[0], end: today.toISOString().split('T')[0] };
+        return { start: todayStr, end: todayStr };
       case 'week':
         start.setDate(today.getDate() - today.getDay());
-        return { start: start.toISOString().split('T')[0], end: today.toISOString().split('T')[0] };
+        const weekYear = start.getFullYear();
+        const weekMonth = String(start.getMonth() + 1).padStart(2, '0');
+        const weekDay = String(start.getDate()).padStart(2, '0');
+        return { start: `${weekYear}-${weekMonth}-${weekDay}`, end: todayStr };
       case 'month':
         start.setDate(1);
-        return { start: start.toISOString().split('T')[0], end: today.toISOString().split('T')[0] };
+        const monthYear = start.getFullYear();
+        const monthMonth = String(start.getMonth() + 1).padStart(2, '0');
+        const monthDay = String(start.getDate()).padStart(2, '0');
+        return { start: `${monthYear}-${monthMonth}-${monthDay}`, end: todayStr };
       default:
         return { start: startDate, end: endDate };
     }

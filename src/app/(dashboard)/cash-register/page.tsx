@@ -147,7 +147,9 @@ export default function CashRegisterPage() {
                   <p className="text-body-medium text-abyssal-text-secondary">
                     {selectedFilter
                       ? `No hay transacciones de tipo "${selectedFilter}"`
-                      : "No hay transacciones hoy"}
+                      : dateRange.startDate || dateRange.endDate
+                        ? "No hay transacciones en el rango seleccionado"
+                        : "No hay transacciones hoy"}
                   </p>
                   <p className="text-[12px] text-abyssal-text-secondary mt-1">
                     {selectedFilter ? "Prueba cambiando el filtro" : "Realiza una venta para verlo aquí"}
