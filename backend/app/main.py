@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from app.database import engine, Base
-from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity, business, categories, units, payment_methods, tax_config, invoice_prefs, export, data
+from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity, business, categories, units, payment_methods, tax_config, invoice_prefs, export, data, expense_categories
 from app.config import settings
 from app.models.category import Category
 from app.models.unit import Unit
@@ -291,6 +291,17 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
     async with engine.begin() as conn:
         await migrate(conn)
+    # Seed default expense categories if none exist
+    from app.models.expense_category import ExpenseCategory
+    from sqlalchemy import func, select
+    from app.database import async_session
+    async with engine.begin() as conn:
+        result = await conn.execute(select(func.count(ExpenseCategory.id)))
+        if result.scalar() == 0:
+            from app.services.expense_category_service import seed_default_categories
+            async with async_session() as session:
+                await seed_default_categories(session, business_id=1)
+                await session.commit()
     yield
 
 app = FastAPI(title="Abyssal ERP API", version="1.0.0", lifespan=lifespan)
@@ -329,6 +340,7 @@ app.include_router(tax_config.router, prefix="/api/v1/tax-config", tags=["Tax Co
 app.include_router(invoice_prefs.router, prefix="/api/v1/invoice-prefs", tags=["Invoice Prefs"])
 app.include_router(export.router, prefix="/api/v1/export", tags=["Export"])
 app.include_router(data.router, prefix="/api/v1/data", tags=["Data"])
+app.include_router(expense_categories.router, prefix="/api/v1/expense-categories", tags=["Expense Categories"])
 
 @app.get("/health")
 async def health():
