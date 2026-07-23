@@ -8,6 +8,7 @@ import {
   ArrowRightFromLine, LogOut, Settings
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import LowStockBadge from "./LowStockBadge"
 
 const menuItems = [
   { href: "/dashboard", label: "Panel", icon: LayoutDashboard },
@@ -62,6 +63,7 @@ export function Sidebar() {
               )}
               <Icon className="w-[18px] h-[18px]" strokeWidth={active ? 2.2 : 1.8} />
               <span>{label}</span>
+              {href === "/products" && <LowStockBadge />}
             </Link>
           )
         })}

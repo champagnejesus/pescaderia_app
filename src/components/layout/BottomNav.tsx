@@ -8,6 +8,7 @@ import {
   ArrowRightFromLine, Settings
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useLowStock } from "@/hooks/useLowStock"
 
 const tabs = [
   { href: "/dashboard", label: "Panel", icon: LayoutDashboard },
@@ -25,6 +26,7 @@ const tabs = [
 
 export function BottomNav() {
   const pathname = usePathname()
+  const { count } = useLowStock()
 
   return (
     <nav aria-label="Navegación principal" className="fixed bottom-0 left-0 right-0 z-40">
@@ -53,6 +55,11 @@ export function BottomNav() {
                 active && "bg-abyssal-primary/12"
               )}>
                 <Icon className="w-[22px] h-[22px]" strokeWidth={active ? 2.2 : 1.8} />
+                {href === "/products" && count > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center">
+                    {count}
+                  </span>
+                )}
               </div>
               <span className={cn(
                 "text-[10px] leading-tight transition-all duration-200 whitespace-nowrap",
