@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { StockBadge } from "@/components/products/StockBadge"
+import PriceHistory from "@/components/products/PriceHistory"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 
@@ -143,6 +144,11 @@ export default function ProductDetailPage() {
                 <Bar dataKey="price" fill="var(--abyssal-primary)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+          </div>
+
+          <div className="bg-abyssal-surface rounded-abyssal-md p-4 animate-fade-in" style={{ animationDelay: "200ms" }}>
+            <p className="text-title-medium text-abyssal-text-primary mb-4">Historial de Precios</p>
+            <PriceHistory productId={product.id} />
           </div>
 
           <div className="bg-abyssal-surface rounded-abyssal-md p-4 flex items-center justify-between animate-fade-in" style={{ animationDelay: "200ms" }}>

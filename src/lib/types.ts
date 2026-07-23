@@ -215,3 +215,29 @@ export interface ExpenseCategory {
   created_at: string
   subcategories: ExpenseCategory[]
 }
+
+export interface PurchasePrice {
+  id: number
+  product_id: number
+  purchase_id: number | null
+  supplier_id: number | null
+  supplier_name: string | null
+  unit_price: number
+  quantity: number
+  recorded_at: string
+}
+
+export interface PriceHistory {
+  prices: PurchasePrice[]
+  avg_price: number
+  min_price: number
+  max_price: number
+}
+
+export interface PriceAlert {
+  has_alert: boolean
+  current_price: number
+  avg_price: number
+  percentage_change: number
+  message: string
+}
