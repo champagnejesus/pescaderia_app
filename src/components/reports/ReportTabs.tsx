@@ -1,11 +1,30 @@
 'use client';
 
 import { useState } from 'react';
+import { Download } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useReports } from '@/hooks/useReports';
 import DateRangePicker from '@/components/common/DateRangePicker';
+import api from '@/lib/api';
 
 const COLORS = ['#06b6d4', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#ec4899'];
+
+async function downloadPdf(endpoint: string, filename: string, startDate?: string, endDate?: string) {
+  const params = new URLSearchParams();
+  if (startDate) params.append('start_date', startDate);
+  if (endDate) params.append('end_date', endDate);
+  const qs = params.toString();
+  const url = `${api.defaults.baseURL}/reports/pdf/${endpoint}${qs ? `?${qs}` : ''}`;
+  const token = localStorage.getItem('abyssal-token');
+  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (!response.ok) throw new Error('Error downloading PDF');
+  const blob = await response.blob();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 
 export default function ReportTabs() {
   const [activeTab, setActiveTab] = useState('resumen');
@@ -13,11 +32,22 @@ export default function ReportTabs() {
   const { salesData, productsData, clientsData, inventoryData, loading } = useReports(dateRange.startDate, dateRange.endDate);
 
   const tabs = [
-    { id: 'resumen', label: 'Resumen' },
-    { id: 'productos', label: 'Productos' },
-    { id: 'clientes', label: 'Clientes' },
-    { id: 'inventario', label: 'Inventario' },
+    { id: 'resumen', label: 'Resumen', pdf: 'sales', file: 'reporte_ventas.pdf' },
+    { id: 'productos', label: 'Productos', pdf: 'products', file: 'reporte_productos.pdf' },
+    { id: 'clientes', label: 'Clientes', pdf: 'clients', file: 'reporte_clientes.pdf' },
+    { id: 'inventario', label: 'Inventario', pdf: 'inventory', file: 'reporte_inventario.pdf' },
   ];
+
+  const currentTab = tabs.find((t) => t.id === activeTab);
+
+  const handleDownload = async () => {
+    if (!currentTab) return;
+    try {
+      await downloadPdf(currentTab.pdf, currentTab.file, dateRange.startDate, dateRange.endDate);
+    } catch (error) {
+      console.error('PDF download error:', error);
+    }
+  };
 
   if (loading) {
     return <div className="text-gray-400 text-center py-12">Cargando reportes...</div>;
@@ -31,20 +61,29 @@ export default function ReportTabs() {
         onChange={(start, end) => setDateRange({ startDate: start, endDate: end })}
       />
 
-      <div className="flex gap-2 border-b border-white/10 pb-2">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeTab === tab.id
-                ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-                : 'text-gray-400 hover:bg-white/5'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="flex items-center justify-between border-b border-white/10 pb-2">
+        <div className="flex gap-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                  : 'text-gray-400 hover:bg-white/5'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={handleDownload}
+          className="flex items-center gap-2 px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm font-medium hover:bg-cyan-500/30 transition-colors border border-cyan-500/30"
+        >
+          <Download size={16} />
+          Descargar PDF
+        </button>
       </div>
 
       {activeTab === 'resumen' && salesData && (
