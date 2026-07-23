@@ -38,6 +38,7 @@ export interface DailySummary {
   net_total: number
   cash_total: number
   card_total: number
+  transfer_total?: number
   transaction_count: number
   total_collections?: number
 }
@@ -204,4 +205,13 @@ export interface InvoicePrefs {
   footer_text: string
   show_tax_breakdown: boolean
   default_payment_method_id: number | null
+}
+
+export interface ExpenseCategory {
+  id: number
+  name: string
+  parent_id: number | null
+  is_active: boolean
+  created_at: string
+  subcategories: ExpenseCategory[]
 }

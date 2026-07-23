@@ -4,6 +4,7 @@ import { Dialog } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import api from "@/lib/api"
+import ExpenseCategorySelect from "@/components/transactions/ExpenseCategorySelect"
 
 interface ExpenseDialogProps {
   open: boolean
@@ -14,6 +15,7 @@ interface ExpenseDialogProps {
 export function ExpenseDialog({ open, onClose, onCreated }: ExpenseDialogProps) {
   const [title, setTitle] = useState("")
   const [amount, setAmount] = useState("")
+  const [expenseCategoryId, setExpenseCategoryId] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
 
@@ -31,9 +33,11 @@ export function ExpenseDialog({ open, onClose, onCreated }: ExpenseDialogProps) 
         type: "Gasto",
         amount: -num,
         status: "EGRESO",
+        expense_category_id: expenseCategoryId,
       })
       setTitle("")
       setAmount("")
+      setExpenseCategoryId(null)
       onCreated()
       onClose()
     } catch {
@@ -61,6 +65,13 @@ export function ExpenseDialog({ open, onClose, onCreated }: ExpenseDialogProps) 
               if (/^\d*\.?\d{0,2}$/.test(v)) setAmount(v)
             }}
             className="pl-8"
+          />
+        </div>
+        <div>
+          <label className="block text-sm text-abyssal-text-secondary mb-1">Categoría del gasto</label>
+          <ExpenseCategorySelect
+            value={expenseCategoryId}
+            onChange={setExpenseCategoryId}
           />
         </div>
         {error && <p className="text-[12px] font-medium text-abyssal-red">{error}</p>}
