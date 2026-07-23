@@ -1,14 +1,19 @@
-from fastapi import APIRouter, Depends
+from typing import Optional
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.database import get_db
 from app.dependencies import get_current_user
-from app.schemas.report import DashboardResponse
+from app.schemas.report import (
+    DashboardResponse, SalesReportResponse, ProductsReportResponse,
+    ClientsReportResponse, InventoryReportResponse,
+)
 from app.models.product import Product
 from app.models.order import Order
 from app.models.client import Client
 from app.models.supplier import Supplier
 from app.models.transaction import Transaction
+from app.services import report_service
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
@@ -29,3 +34,38 @@ async def dashboard(db: AsyncSession = Depends(get_db)):
         low_stock_count=sum(1 for p in products_all if p.stock <= p.low_stock_threshold),
         total_clients=clients_count, total_suppliers=suppliers_count,
     )
+
+@router.get("/sales", response_model=SalesReportResponse)
+async def get_sales_report(
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    period: Optional[str] = Query("day"),
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    return await report_service.get_sales_report(db, start_date, end_date, period)
+
+@router.get("/products", response_model=ProductsReportResponse)
+async def get_products_report(
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    return await report_service.get_products_report(db, start_date, end_date)
+
+@router.get("/clients", response_model=ClientsReportResponse)
+async def get_clients_report(
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    return await report_service.get_clients_report(db, start_date, end_date)
+
+@router.get("/inventory", response_model=InventoryReportResponse)
+async def get_inventory_report(
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    return await report_service.get_inventory_report(db)
