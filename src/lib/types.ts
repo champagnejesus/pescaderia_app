@@ -1,4 +1,4 @@
-export type PaymentStatus = 'PAGADO' | 'PENDIENTE' | 'PAGO_PARCIAL'
+export type PaymentStatus = 'PAGADO' | 'PENDIENTE' | 'PAGO PARCIAL'
 export type OrderStatus = 'PENDIENTE' | 'ENTREGADO' | 'ANULADO'
 export type ProductUnit = 'cajas' | 'kg' | 'unidades'
 
