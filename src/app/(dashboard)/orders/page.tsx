@@ -1,18 +1,19 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ClipboardList, Search, Download, ClipboardList as OrdersIcon } from "lucide-react"
-import Link from "next/link"
+import { Plus, ClipboardList, Search, Download, ClipboardList as OrdersIcon, Filter } from "lucide-react"
 import { TopBar } from "@/components/layout/TopBar"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { OrderFilters } from "@/components/orders/OrderFilters"
-import { OrderCard } from "@/components/orders/OrderCard"
-import { useOrders } from "@/hooks/useOrders"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
+import { useOrders } from "@/hooks/useOrders"
+import { OrderCard } from "@/components/orders/OrderCard"
+import { OrderFilters } from "@/components/orders/OrderFilters"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import { exportCSV } from "@/lib/export"
+import { StatCard } from "@/components/shared/StatCard"
+import { FilterTabs } from "@/components/shared/FilterTabs"
+import { FAB } from "@/components/shared/FAB"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function OrdersPage() {
   const [filter, setFilter] = useState("Todos")
@@ -31,6 +32,10 @@ export default function OrdersPage() {
   const apiStatus = statusMap[filter]
   const { data: orders, loading, error } = useOrders(apiStatus)
 
+  const pendingCount = orders.filter((o) => o.status === "PENDIENTE").length
+  const deliveredCount = orders.filter((o) => o.status === "ENTREGADO").length
+  const totalValue = orders.reduce((s, o) => s + o.total_value, 0)
+
   const filteredOrders = useMemo(() => {
     if (!searchText) return orders
     const q = searchText.toLowerCase()
@@ -40,6 +45,13 @@ export default function OrdersPage() {
         o.order_number.toLowerCase().includes(q)
     )
   }, [orders, searchText])
+
+  const filterTabs = [
+    { key: "Todos", label: "Todos", count: orders.length },
+    { key: "Pendientes", label: "Pendientes", count: pendingCount },
+    { key: "Entregados", label: "Entregados", count: deliveredCount },
+    { key: "Anulados", label: "Anulados", count: orders.filter((o) => o.status === "ANULADO").length },
+  ]
 
   return (
     <>
@@ -67,7 +79,14 @@ export default function OrdersPage() {
         }
       />
       <div className="p-4 space-y-3">
-        <OrderFilters selected={filter} onSelect={setFilter} />
+        <div className="grid grid-cols-3 gap-2">
+          <StatCard label="Total" value={orders.length} icon={ClipboardList} />
+          <StatCard label="Pendientes" value={pendingCount} icon={Filter} iconColor="abyssal-yellow" />
+          <StatCard label="Total Ventas" value={`$${totalValue.toLocaleString("es-MX", { minimumFractionDigits: 0 })}`} icon={ClipboardList} iconColor="abyssal-green" />
+        </div>
+
+        <FilterTabs tabs={filterTabs} activeKey={filter} onSelect={setFilter} />
+
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -81,9 +100,9 @@ export default function OrdersPage() {
             <ClipboardList size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-title-medium text-abyssal-text-primary mb-2">No hay pedidos</p>
             <p className="text-body-medium text-abyssal-text-secondary mb-4">Crea tu primer pedido para comenzar</p>
-            <Link href="/orders/new">
-              <Button variant="primary">Crear Pedido</Button>
-            </Link>
+            <FAB href="/orders/new" aria-label="Crear pedido">
+              <Plus className="w-6 h-6" />
+            </FAB>
           </div>
         ) : (
           <div className="space-y-2">
@@ -97,13 +116,9 @@ export default function OrdersPage() {
           </div>
         )}
       </div>
-      <Link
-        href="/orders/new"
-        className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 z-30"
-        aria-label="Crear pedido"
-      >
+      <FAB href="/orders/new" aria-label="Crear pedido">
         <Plus className="w-6 h-6" />
-      </Link>
+      </FAB>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )

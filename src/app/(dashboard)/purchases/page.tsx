@@ -1,18 +1,18 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ShoppingCart, Download, TrendingUp, DollarSign, Clock, ShoppingCart as CartIcon } from "lucide-react"
-import Link from "next/link"
+import { Plus, ShoppingCart, Download, TrendingUp, DollarSign, Clock, ShoppingCart as CartIcon, Filter } from "lucide-react"
 import { TopBar } from "@/components/layout/TopBar"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { FilterChip } from "@/components/shared/FilterChip"
+import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
 import { PurchaseCard } from "@/components/purchases/PurchaseCard"
 import { usePurchases } from "@/hooks/usePurchases"
-import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import { exportCSV } from "@/lib/export"
+import { StatCard } from "@/components/shared/StatCard"
+import { FilterTabs } from "@/components/shared/FilterTabs"
+import { FAB } from "@/components/shared/FAB"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const FILTERS = ["Todos", "Pagados", "Pendientes", "Pago parcial"]
 const STATUS_MAP: Record<string, string | undefined> = {
@@ -50,6 +50,13 @@ export default function PurchasesPage() {
     )
   }, [purchases, searchText])
 
+  const filterTabs = [
+    { key: "Todos", label: "Todos", count: purchases.length },
+    { key: "Pendientes", label: "Pendientes", count: stats.pending },
+    { key: "Pagados", label: "Pagados", count: purchases.filter((p) => p.payment_status === "PAGADO").length },
+    { key: "Pago parcial", label: "Pago parcial", count: purchases.filter((p) => p.payment_status === "PAGO PARCIAL").length },
+  ]
+
   return (
     <>
       <TopBar
@@ -76,41 +83,13 @@ export default function PurchasesPage() {
         }
       />
       <div className="p-4 space-y-3">
-        <div className="grid grid-cols-2 gap-3 animate-fade-in">
-          <div className="bg-abyssal-surface rounded-abyssal-md p-3 shadow-abyssal-sm">
-            <div className="flex items-center gap-2 mb-1">
-              <TrendingUp className="w-3.5 h-3.5 text-abyssal-primary" />
-              <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Total Compras</p>
-            </div>
-            <p className="text-title-large text-abyssal-text-primary font-bold">{stats.total}</p>
-          </div>
-          <div className="bg-abyssal-surface rounded-abyssal-md p-3 shadow-abyssal-sm">
-            <div className="flex items-center gap-2 mb-1">
-              <DollarSign className="w-3.5 h-3.5 text-abyssal-primary" />
-              <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Total Gastado</p>
-            </div>
-            <p className="text-title-large text-abyssal-text-primary font-bold">{stats.spent.toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 })}</p>
-          </div>
-          <div className="bg-abyssal-surface rounded-abyssal-md p-3 shadow-abyssal-sm">
-            <div className="flex items-center gap-2 mb-1">
-              <Clock className="w-3.5 h-3.5 text-abyssal-red" />
-              <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Pendientes</p>
-            </div>
-            <p className="text-title-large text-abyssal-red font-bold">{stats.pending}</p>
-          </div>
-          <div className="bg-abyssal-surface rounded-abyssal-md p-3 shadow-abyssal-sm">
-            <div className="flex items-center gap-2 mb-1">
-              <DollarSign className="w-3.5 h-3.5 text-abyssal-red" />
-              <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Por Pagar</p>
-            </div>
-            <p className="text-title-large text-abyssal-red font-bold">{stats.pendingAmount.toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 })}</p>
-          </div>
+        <div className="grid grid-cols-3 gap-2">
+          <StatCard label="Compras" value={stats.total} icon={CartIcon} />
+          <StatCard label="Total Gastado" value={`$${stats.spent.toLocaleString("es-MX", { minimumFractionDigits: 0 })}`} icon={DollarSign} iconColor="abyssal-green" />
+          <StatCard label="Por Pagar" value={`$${stats.pendingAmount.toLocaleString("es-MX", { minimumFractionDigits: 0 })}`} icon={Clock} iconColor="abyssal-red" />
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {FILTERS.map((label) => (
-            <FilterChip key={label} label={label} selected={filter === label} onClick={() => setFilter(label)} />
-          ))}
-        </div>
+
+        <FilterTabs tabs={filterTabs} activeKey={filter} onSelect={setFilter} />
 
         {loading ? (
           <div className="space-y-2">
@@ -125,9 +104,9 @@ export default function PurchasesPage() {
             <ShoppingCart size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-title-medium text-abyssal-text-primary mb-2">No hay compras</p>
             <p className="text-body-medium text-abyssal-text-secondary mb-4">Registra tu primera compra para comenzar</p>
-            <Link href="/purchases/new">
-              <Button variant="primary">Registrar Compra</Button>
-            </Link>
+            <FAB href="/purchases/new" aria-label="Registrar compra">
+              <Plus className="w-6 h-6" />
+            </FAB>
           </div>
         ) : (
           <div className="space-y-2">
@@ -141,13 +120,9 @@ export default function PurchasesPage() {
           </div>
         )}
       </div>
-      <Link
-        href="/purchases/new"
-        className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 z-30"
-        aria-label="Registrar compra"
-      >
+      <FAB href="/purchases/new" aria-label="Registrar compra">
         <Plus className="w-6 h-6" />
-      </Link>
+      </FAB>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )

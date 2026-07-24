@@ -378,6 +378,7 @@ export default function InventoryPage() {
           productId={adjustmentProduct.product_id}
           productName={adjustmentProduct.product_name}
           currentStock={adjustmentProduct.stock}
+          unit={adjustmentProduct.unit}
           onClose={() => { setShowAdjustmentModal(false); setAdjustmentProduct(null); }}
           onAdjustment={fetch}
         />

@@ -1,22 +1,22 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus, Truck, Download, Truck as TruckIcon } from "lucide-react"
-import Link from "next/link"
+import { Plus, Truck, Download, Truck as TruckIcon, Filter, DollarSign } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
 import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { SupplierCard } from "@/components/suppliers/SupplierCard"
 import { formatCurrency } from "@/lib/formatters"
 import { exportCSV } from "@/lib/export"
-import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import api from "@/lib/api"
+import { FilterTabs } from "@/components/shared/FilterTabs"
+import { StatCard } from "@/components/shared/StatCard"
+import { FAB } from "@/components/shared/FAB"
 
 interface Supplier {
   id: number
@@ -56,7 +56,7 @@ export default function SuppliersPage() {
     return suppliers.filter(
       (s) =>
         s.name.toLowerCase().includes(search.toLowerCase()) ||
-        s.category.toLowerCase().includes(search.toLowerCase()),
+        s.category.toLowerCase().includes(search.toLowerCase())
     )
   }, [suppliers, search])
 
@@ -75,6 +75,12 @@ export default function SuppliersPage() {
       addToast("Error al agregar proveedor", "error")
     }
   }
+
+  const filterTabs = [
+    { key: "Todos", label: "Todos", count: suppliers.length },
+    { key: "Con Deuda", label: "Con Deuda", count: suppliers.filter((s) => s.pending_payment > 0).length },
+    { key: "Al Corriente", label: "Al Corriente", count: suppliers.filter((s) => s.pending_payment <= 0).length },
+  ]
 
   return (
     <>
@@ -100,23 +106,14 @@ export default function SuppliersPage() {
           </div>
         }
       />
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-3">
         <div className="grid grid-cols-3 gap-2">
-          <Card className="p-3 text-center">
-            <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Total</p>
-            <p className="text-[16px] text-abyssal-text-primary font-bold mt-0.5">{suppliers.length}</p>
-          </Card>
-          <Card className="p-3 text-center">
-            <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Pendiente</p>
-            <p className={cn("text-[16px] font-bold mt-0.5", totalPending > 0 ? "text-abyssal-red" : "text-abyssal-text-secondary")}>
-              {formatCurrency(totalPending)}
-            </p>
-          </Card>
-          <Card className="p-3 text-center">
-            <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Categorías</p>
-            <p className="text-[16px] text-abyssal-text-primary font-bold mt-0.5">{categories}</p>
-          </Card>
+          <StatCard label="Total" value={suppliers.length} icon={Truck} />
+          <StatCard label="Pendiente" value={formatCurrency(totalPending)} icon={DollarSign} iconColor="abyssal-red" />
+          <StatCard label="Categorías" value={categories} icon={Filter} iconColor="abyssal-green" />
         </div>
+
+        <FilterTabs tabs={filterTabs} activeKey="Todos" onSelect={() => {}} />
 
         {loading ? (
           <div className="space-y-2">
@@ -129,7 +126,9 @@ export default function SuppliersPage() {
             <Truck size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-title-medium text-abyssal-text-primary mb-2">No hay proveedores</p>
             <p className="text-body-medium text-abyssal-text-secondary mb-4">Agrega tu primer proveedor para comenzar</p>
-            <Button variant="primary" onClick={() => setAddOpen(true)}>Agregar Proveedor</Button>
+            <FAB onClick={() => setAddOpen(true)} aria-label="Agregar proveedor">
+              <Plus className="w-6 h-6" />
+            </FAB>
           </div>
         ) : (
           <div className="space-y-2">
@@ -140,13 +139,9 @@ export default function SuppliersPage() {
         )}
       </div>
 
-      <button
-        onClick={() => setAddOpen(true)}
-        aria-label="Agregar proveedor"
-        className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 z-30"
-      >
+      <FAB onClick={() => setAddOpen(true)} aria-label="Agregar proveedor">
         <Plus className="w-6 h-6" />
-      </button>
+      </FAB>
 
       <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Agregar Proveedor" showClose>
         <div className="space-y-3">
@@ -154,7 +149,7 @@ export default function SuppliersPage() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full bg-abyssal-surface-high rounded-xl px-4 py-3.5 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 transition-all appearance-none"
+            className="w-full bg-abyssal-surface-high glass-subtle rounded-xl px-4 py-3.5 text-[15px] text-abyssal-text-primary outline-none border border-abyssal-outline focus:border-abyssal-primary/60 focus:ring-4 focus:ring-abyssal-primary/10 transition-all appearance-none"
           >
             <option value="">Seleccionar categoría</option>
             <option value="PESCADO BLANCO">PESCADO BLANCO</option>

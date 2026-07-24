@@ -1,12 +1,9 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
 import { Download, Plus, Users, Users as UsersIcon } from "lucide-react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
-import { exportCSV } from "@/lib/export"
-import { useToast } from "@/hooks/useToast"
-import { ToastContainer } from "@/components/ui/ToastContainer"
 import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,7 +12,12 @@ import { ClientCard } from "@/components/clients/ClientCard"
 import { ClientStats } from "@/components/clients/ClientStats"
 import { ClientFilters } from "@/components/clients/ClientFilters"
 import api from "@/lib/api"
-import { useRouter } from "next/navigation"
+import { exportCSV } from "@/lib/export"
+import { useToast } from "@/hooks/useToast"
+import { ToastContainer } from "@/components/ui/ToastContainer"
+import { StatCard } from "@/components/shared/StatCard"
+import { FilterTabs } from "@/components/shared/FilterTabs"
+import { FAB } from "@/components/shared/FAB"
 
 interface Client {
   id: number
@@ -113,6 +115,13 @@ export default function ClientsPage() {
     router.push(`/clients/${id}`)
   }
 
+  const filterTabs = [
+    { key: "Todos", label: "Todos", count: clients.length },
+    { key: "Con Deuda", label: "Con Deuda", count: debtClients },
+    { key: "Al Corriente", label: "Al Corriente", count: clients.length - debtClients },
+    { key: "Excede Límite", label: "Excede Límite", count: clients.filter((c) => c.credit_limit > 0 && c.outstanding_balance > c.credit_limit).length },
+  ]
+
   return (
     <>
       <TopBar
@@ -121,7 +130,7 @@ export default function ClientsPage() {
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
-            <button
+<button
               onClick={() => {
                 if (clients.length === 0) { addToast("No hay datos para exportar", "error"); return }
                 exportCSV(clients, "clientes", {
@@ -140,6 +149,7 @@ export default function ClientsPage() {
       <div className="p-4 space-y-3">
         <ClientStats totalClients={clients.length} debtClients={debtClients} frequentClients={frequentClients} />
         <ClientFilters selected={filter} onSelect={setFilter} />
+
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -156,9 +166,9 @@ export default function ClientsPage() {
               {filter !== "Todos" ? "Prueba con otro filtro" : "Agrega tu primer cliente para comenzar"}
             </p>
             {filter === "Todos" && (
-              <Link href="/clients/new">
-                <Button variant="primary">Agregar Cliente</Button>
-              </Link>
+              <FAB onClick={() => setAddOpen(true)} aria-label="Agregar cliente">
+                <Plus className="w-6 h-6" />
+              </FAB>
             )}
           </div>
         ) : (
@@ -191,13 +201,9 @@ export default function ClientsPage() {
         )}
       </div>
 
-      <button
-        onClick={() => setAddOpen(true)}
-        aria-label="Agregar cliente"
-        className="bg-abyssal-primary rounded-abyssal-full p-4 fixed bottom-20 right-4 text-abyssal-on-primary shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 z-30"
-      >
+      <FAB onClick={() => setAddOpen(true)} aria-label="Agregar cliente">
         <Plus className="w-6 h-6" />
-      </button>
+      </FAB>
 
       <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Agregar Cliente" showClose>
         <div className="space-y-3">
