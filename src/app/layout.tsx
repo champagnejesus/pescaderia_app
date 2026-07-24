@@ -9,7 +9,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className="dark" suppressHydrationWarning>
       <head>
-        <link rel="preload" as="image" href="/fondo.png" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -24,8 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="bg-site text-abyssal-text-primary font-sans antialiased">
-        <div id="bg-overlay" />
+      <body className="bg-abyssal-bg text-abyssal-text-primary font-sans antialiased">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-abyssal-primary focus:text-white focus:rounded-xl focus:outline-none focus:ring-2 focus:ring-abyssal-primary/50"

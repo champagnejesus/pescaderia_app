@@ -79,36 +79,6 @@
   display: none;
 }
 
-/* Site background image container (separate from scroll layer) */
-#bg-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background-image: url('/fondo.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.bg-site {
-  position: relative;
-}
-
-.bg-site::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: var(--abyssal-bg-overlay, rgba(0, 0, 0, 0.55));
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* Let background image show through page-level containers */
-.min-h-screen.bg-abyssal-bg,
-.min-h-screen[class*="bg-abyssal"] {
-  background-color: transparent !important;
-}
-
 /* iOS frosted glass surfaces */
 .glass {
   backdrop-filter: blur(20px) saturate(1.8);
