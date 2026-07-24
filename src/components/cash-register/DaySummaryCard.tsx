@@ -8,7 +8,7 @@ interface DaySummaryCardProps {
 
 function DaySummaryCardComponent({ totalSales, netTotal, transactionCount }: DaySummaryCardProps) {
   return (
-    <div className="bg-abyssal-surface glass rounded-3xl p-6 text-center contain-render">
+    <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 text-center contain-render">
       <p className="text-[34px] font-bold text-abyssal-primary tracking-[-0.5px]">
         ${totalSales.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
       </p>

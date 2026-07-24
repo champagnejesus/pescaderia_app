@@ -24,16 +24,16 @@ export function Dialog({ open, onClose, children, className, showClose, title }:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm animate-fade-in" onClick={onClose} />
+      <div className="fixed inset-0 bg-abyssal-bg-overlay animate-fade-in" onClick={onClose} />
       <div className={cn(
-        "relative bg-abyssal-surface glass rounded-3xl z-10 mx-4 w-full max-w-md shadow-lg animate-fade-in",
+        "relative bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg z-10 mx-4 w-full max-w-md shadow-abyssal-lg animate-fade-in",
         className
       )}>
         {(title || showClose) && (
           <div className="flex items-center justify-between px-5 pt-5 pb-0">
-            {title && <h2 className="text-[17px] font-semibold text-abyssal-text-primary">{title}</h2>}
+            {title && <h2 className="text-[17px] font-semibold text-abyssal-text-primary font-heading">{title}</h2>}
             {showClose && (
-              <button onClick={onClose} className="p-1.5 rounded-full bg-abyssal-surface-high/60 hover:bg-abyssal-surface-highest/60 transition-colors">
+              <button onClick={onClose} className="p-1.5 rounded-full bg-abyssal-surface-high hover:bg-abyssal-surface-highest transition-colors">
                 <X className="w-4 h-4 text-abyssal-text-secondary" />
               </button>
             )}

@@ -30,7 +30,7 @@ export function BottomNav() {
 
   return (
     <nav aria-label="Navegación principal" className="fixed bottom-0 left-0 right-0 z-40">
-      <div className="absolute inset-0 bg-abyssal-surface glass" />
+      <div className="absolute inset-0 bg-abyssal-surface border-t border-abyssal-outline" />
       <div
         role="tablist"
         className="relative flex items-center gap-1 overflow-x-auto overflow-y-hidden h-[68px] px-2 pb-1 scrollbar-none snap-x snap-mandatory"

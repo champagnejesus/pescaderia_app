@@ -242,7 +242,7 @@ export default function NewPurchasePage() {
           <div className="space-y-3">
             <p className="text-body-medium text-abyssal-text-primary font-medium">Agregados</p>
             {selectedItems.map((item) => (
-              <div key={item.product_id} className="bg-abyssal-surface glass rounded-2xl p-3.5 space-y-2">
+              <div key={item.product_id} className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3.5 space-y-2">
                 <div className="flex items-center justify-between">
                   <p className="text-[15px] text-abyssal-text-primary font-medium truncate">{item.product_name}</p>
                   <button
@@ -297,7 +297,7 @@ export default function NewPurchasePage() {
         )}
       </div>
 
-      <div className="bg-abyssal-surface glass rounded-2xl p-4 space-y-3">
+      <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 space-y-3">
         <div className="flex justify-between text-title-medium">
           <span className="text-abyssal-text-secondary">Total</span>
           <span className="text-abyssal-text-primary font-bold">{formatCurrency(totalValue)}</span>

@@ -30,7 +30,7 @@ function ClientCardComponent({ client, onPress }: ClientCardProps) {
   return (
     <button
       onClick={() => onPress(client.id)}
-      className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl w-full text-left transition-all duration-200 active:scale-[0.98] contain-render"
+      className="flex items-center gap-3 p-3.5 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg w-full text-left transition-all duration-200 active:scale-[0.98] contain-render"
     >
       <div className="w-12 h-12 rounded-xl bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary text-[17px] font-bold shrink-0 relative">
         {initial}

@@ -22,7 +22,7 @@ function TransactionRowComponent({ transaction }: TransactionRowProps) {
   const Icon = isExpense ? ArrowDownCircle : TypeIcon || ArrowUpCircle
 
   return (
-    <div className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl contain-render">
+    <div className="flex items-center gap-3 p-3.5 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg contain-render">
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${bgColor}`}>
         <Icon className={`w-5 h-5 ${iconColor}`} />
       </div>

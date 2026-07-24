@@ -233,7 +233,7 @@ export default function NewOrderPage() {
         <div className="space-y-3">
           <p className="text-title-medium text-abyssal-text-primary">Productos Agregados</p>
           {selectedItems.map((item) => (
-            <div key={item.product_id} className="bg-abyssal-surface glass rounded-2xl p-3.5 space-y-2">
+            <div key={item.product_id} className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3.5 space-y-2">
               <div className="flex items-center justify-between">
                 <p className="text-[15px] text-abyssal-text-primary font-medium truncate">{item.product_name}</p>
                 <button

@@ -38,7 +38,7 @@ function MobileCardListComponent<T>({
           key={keyExtractor(item)}
           onClick={() => onItemClick?.(item)}
           className={cn(
-            "bg-abyssal-surface glass rounded-2xl p-3.5 w-full text-left transition-all duration-200 active:scale-[0.98]",
+            "bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3.5 w-full text-left transition-all duration-200 active:scale-[0.98]",
             onItemClick && "hover:bg-abyssal-surface-high/50"
           )}
         >

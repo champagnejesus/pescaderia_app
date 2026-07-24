@@ -87,7 +87,7 @@ export function PinModal({ open, onClose, onConfirm, summary }: PinModalProps) {
             <button
               key={i}
               onClick={() => handleDigit(d)}
-              className="h-[52px] rounded-full bg-abyssal-surface-high/60 glass-subtle text-[17px] text-abyssal-text-primary font-semibold hover:bg-abyssal-surface-highest/60 transition-all active:scale-90"
+              className="h-[52px] rounded-full bg-abyssal-surface-high/60 border border-abyssal-outline text-[17px] text-abyssal-text-primary font-semibold hover:bg-abyssal-surface-highest/60 transition-all active:scale-90"
             >
               {d}
             </button>
@@ -95,7 +95,7 @@ export function PinModal({ open, onClose, onConfirm, summary }: PinModalProps) {
         })}
         <button
           onClick={handleDelete}
-          className="h-[52px] rounded-full bg-abyssal-surface-high/60 glass-subtle flex items-center justify-center text-abyssal-text-secondary hover:bg-abyssal-surface-highest/60 transition-all active:scale-90"
+          className="h-[52px] rounded-full bg-abyssal-surface-high/60 border border-abyssal-outline flex items-center justify-center text-abyssal-text-secondary hover:bg-abyssal-surface-highest/60 transition-all active:scale-90"
         >
           <Delete className="w-5 h-5" />
         </button>

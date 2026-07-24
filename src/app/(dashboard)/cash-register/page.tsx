@@ -92,7 +92,7 @@ export default function CashRegisterPage() {
             <Skeleton className="h-48" />
           </>
         ) : error && !summary ? (
-          <div className="bg-abyssal-surface glass rounded-3xl p-8 text-center">
+          <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-8 text-center">
             <p className="text-body-large text-abyssal-red font-medium font-body">{error}</p>
             <Button variant="secondary" size="md" className="mt-4" onClick={fetch}>
               Reintentar
@@ -143,7 +143,7 @@ export default function CashRegisterPage() {
               </div>
 
               {filteredTransactions.length === 0 ? (
-                <div className="bg-abyssal-surface glass rounded-2xl p-8 text-center">
+                <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-8 text-center">
                   <p className="text-body-medium text-abyssal-text-secondary font-body">
                     {selectedFilter
                       ? `No hay transacciones de tipo "${selectedFilter}"`

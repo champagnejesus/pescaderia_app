@@ -277,7 +277,7 @@ export default function InventoryPage() {
                 <button
                   key={item.product_id}
                   onClick={() => openMovements(item)}
-                  className="bg-abyssal-surface glass rounded-2xl p-3.5 w-full text-left transition-all duration-200 active:scale-[0.98]"
+                  className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3.5 w-full text-left transition-all duration-200 active:scale-[0.98]"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2 min-w-0">

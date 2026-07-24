@@ -25,7 +25,7 @@ function ProductCardComponent({ product, onPress }: ProductCardProps) {
   return (
     <button
       onClick={() => onPress(product.id)}
-      className="flex items-center gap-3 p-3.5 bg-abyssal-surface glass rounded-2xl w-full text-left transition-all duration-200 active:scale-[0.98] contain-render"
+      className="flex items-center gap-3 p-3.5 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg w-full text-left transition-all duration-200 active:scale-[0.98] contain-render"
     >
       {product.image_url ? (
         <img src={product.image_url} alt={product.name} className="w-12 h-12 rounded-xl object-cover shrink-0" loading="lazy" />

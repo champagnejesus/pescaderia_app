@@ -34,7 +34,7 @@ function OrderCardComponent({ order, onPress }: OrderCardProps) {
   return (
     <button
       onClick={() => onPress(order.id)}
-      className="bg-abyssal-surface glass rounded-2xl p-3.5 flex items-center justify-between w-full text-left transition-all duration-200 active:scale-[0.98] contain-render"
+      className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3.5 flex items-center justify-between w-full text-left transition-all duration-200 active:scale-[0.98] contain-render"
     >
       <div className="min-w-0 flex-1">
         <p className="text-[15px] text-abyssal-text-primary font-medium truncate">

@@ -6,7 +6,7 @@ const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
     <div
       ref={ref}
       className={cn(
-        "bg-abyssal-surface glass rounded-2xl p-4 shadow-abyssal-sm transition-all duration-200",
+        "bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 shadow-abyssal-lg transition-all duration-200",
         className
       )}
       {...props}
@@ -22,16 +22,16 @@ const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
 )
 CardHeader.displayName = "CardHeader"
 
-const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
+const CardTitle = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("text-title-medium text-abyssal-text-primary", className)} {...props} />
+    <h3 ref={ref} className={cn("text-title-medium text-abyssal-text-primary font-heading", className)} {...props} />
   )
 )
 CardTitle.displayName = "CardTitle"
 
 const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("text-body-medium text-abyssal-text-secondary", className)} {...props} />
+    <div ref={ref} className={cn("text-body-medium text-abyssal-text-secondary font-body", className)} {...props} />
   )
 )
 CardContent.displayName = "CardContent"

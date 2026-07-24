@@ -96,7 +96,7 @@ export default function ClientDetail() {
       </header>
 
       <main className="max-w-[480px] mx-auto p-4 pb-24 space-y-4">
-        <section className="bg-abyssal-surface glass rounded-2xl p-4 animate-fade-in">
+        <section className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 animate-fade-in">
           <div className="flex items-center gap-4 mb-3">
             <div className="w-12 h-12 rounded-xl bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary text-[19px] font-bold shrink-0">
               {client.name.charAt(0).toUpperCase()}
@@ -120,19 +120,19 @@ export default function ClientDetail() {
         </section>
 
         <section className="grid grid-cols-4 gap-2 animate-fade-in" style={{ animationDelay: "50ms" }}>
-          <a href={phoneUrl} className="flex flex-col items-center justify-center bg-abyssal-surface glass rounded-2xl p-3 gap-1.5 hover:bg-abyssal-surface-high transition-all active:scale-95">
+          <a href={phoneUrl} className="flex flex-col items-center justify-center bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3 gap-1.5 hover:bg-abyssal-surface-high transition-all active:scale-95">
             <div className="w-9 h-9 rounded-full bg-abyssal-green-bg flex items-center justify-center text-abyssal-green">
               <Phone className="w-4 h-4" />
             </div>
             <span className="text-[10px] text-abyssal-text-secondary font-medium">Llamar</span>
           </a>
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center bg-abyssal-surface glass rounded-2xl p-3 gap-1.5 hover:bg-abyssal-surface-high transition-all active:scale-95">
+          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3 gap-1.5 hover:bg-abyssal-surface-high transition-all active:scale-95">
             <div className="w-9 h-9 rounded-full bg-[#25D366]/20 flex items-center justify-center text-[#25D366]">
               <MessageCircle className="w-4 h-4" />
             </div>
             <span className="text-[10px] text-abyssal-text-secondary font-medium">WhatsApp</span>
           </a>
-          <Link href={newOrderUrl} className="flex flex-col items-center justify-center bg-abyssal-surface glass rounded-2xl p-3 gap-1.5 hover:bg-abyssal-surface-high transition-all active:scale-95">
+          <Link href={newOrderUrl} className="flex flex-col items-center justify-center bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3 gap-1.5 hover:bg-abyssal-surface-high transition-all active:scale-95">
             <div className="w-9 h-9 rounded-full bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary">
               <ShoppingCart className="w-4 h-4" />
             </div>
@@ -146,7 +146,7 @@ export default function ClientDetail() {
               <span className="text-[10px] text-white/90 font-medium">Cobrar</span>
             </button>
           ) : (
-            <div className="flex flex-col items-center justify-center bg-abyssal-surface glass rounded-2xl p-3 gap-1.5 opacity-50">
+            <div className="flex flex-col items-center justify-center bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3 gap-1.5 opacity-50">
               <div className="w-9 h-9 rounded-full bg-abyssal-green/20 flex items-center justify-center text-abyssal-green">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
@@ -157,7 +157,7 @@ export default function ClientDetail() {
 
         <section className="animate-fade-in" style={{ animationDelay: "100ms" }}>
           <h2 className="text-label-small text-abyssal-text-secondary uppercase tracking-wider mb-3 px-1">Información de Contacto</h2>
-          <div className="bg-abyssal-surface glass rounded-2xl overflow-hidden">
+          <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg overflow-hidden">
             {[
               { icon: Phone, label: "Teléfono", value: client.phone || "No disponible" },
               { icon: Mail, label: "Email", value: client.email || "No disponible" },
@@ -200,12 +200,12 @@ export default function ClientDetail() {
                 </div>
               ))
             ) : ordersError ? (
-              <div className="bg-abyssal-surface glass rounded-2xl p-6 text-center">
+              <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 text-center">
                 <AlertCircle className="w-10 h-10 text-abyssal-red mx-auto mb-2" />
                 <p className="text-body-medium text-abyssal-red">{ordersError}</p>
               </div>
             ) : orders.length === 0 ? (
-              <div className="bg-abyssal-surface glass rounded-2xl p-6 text-center">
+              <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 text-center">
                 <Inbox className="w-10 h-10 text-abyssal-text-secondary mx-auto mb-2" />
                 <p className="text-body-medium text-abyssal-text-secondary">Sin pedidos recientes</p>
               </div>
@@ -214,7 +214,7 @@ export default function ClientDetail() {
                 <Link
                   key={order.id}
                   href={`/orders/${order.id}`}
-                  className="flex items-center justify-between p-4 bg-abyssal-surface glass rounded-2xl transition-all hover:bg-abyssal-surface-high active:scale-[0.99]"
+                  className="flex items-center justify-between p-4 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg transition-all hover:bg-abyssal-surface-high active:scale-[0.99]"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-abyssal-sm bg-abyssal-surface-high flex items-center justify-center">
@@ -243,7 +243,7 @@ export default function ClientDetail() {
                 <Skeleton key={i} className="h-14 rounded-2xl" />
               ))
             ) : payments.length === 0 ? (
-              <div className="bg-abyssal-surface glass rounded-2xl p-6 text-center">
+              <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 text-center">
                 <DollarSign className="w-10 h-10 text-abyssal-text-secondary mx-auto mb-2" />
                 <p className="text-body-medium text-abyssal-text-secondary">Sin pagos registrados</p>
               </div>
@@ -252,7 +252,7 @@ export default function ClientDetail() {
                 .filter((e) => e.pending_amount === 0 || e.status === "PAGADO")
                 .slice(0, 10)
                 .map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between p-4 bg-abyssal-surface glass rounded-2xl">
+                  <div key={entry.id} className="flex items-center justify-between p-4 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-abyssal-sm bg-abyssal-green/15 flex items-center justify-center">
                         <CheckCircle2 className="w-5 h-5 text-abyssal-green" />
