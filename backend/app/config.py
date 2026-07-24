@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     secret_key: str = "change-this-in-production"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 1440
-    cors_origins: str = "*"
+    cors_origins: str = "http://localhost:3000,https://pescaderia-app.vercel.app"
     refresh_token_expire_minutes: int = 43200
 
     class Config:
