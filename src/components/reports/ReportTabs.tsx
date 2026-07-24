@@ -53,6 +53,18 @@ export default function ReportTabs() {
     }
   };
 
+  const stats = useMemo(() => {
+    if (!salesData) return { totalSales: 0, totalExpenses: 0, netProfit: 0, avgTicket: 0 };
+    return {
+      totalSales: salesData.total_sales || 0,
+      totalExpenses: salesData.total_expenses || 0,
+      netProfit: salesData.net_profit || 0,
+      avgTicket: salesData.daily_breakdown?.length
+        ? salesData.total_sales / salesData.daily_breakdown.length
+        : 0,
+    };
+  }, [salesData]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -69,18 +81,6 @@ export default function ReportTabs() {
       </div>
     );
   }
-
-  const stats = useMemo(() => {
-    if (!salesData) return { totalSales: 0, totalExpenses: 0, netProfit: 0, avgTicket: 0 };
-    return {
-      totalSales: salesData.total_sales || 0,
-      totalExpenses: salesData.total_expenses || 0,
-      netProfit: salesData.net_profit || 0,
-      avgTicket: salesData.daily_breakdown?.length
-        ? salesData.total_sales / salesData.daily_breakdown.length
-        : 0,
-    };
-  }, [salesData]);
 
   return (
     <div className="p-4 lg:p-6 space-y-4 lg:space-y-6">
