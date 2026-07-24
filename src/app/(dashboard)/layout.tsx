@@ -5,8 +5,8 @@ import { BottomNav } from "@/components/layout/BottomNav"
 import { Sidebar } from "@/components/layout/Sidebar"
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, Users,
-  Truck, Package, Fish, DollarSign, ArrowLeftFromLine,
-  ArrowRightFromLine, Settings
+  Truck, Package, Fish, ArrowLeftFromLine,
+  ArrowRightFromLine
 } from "lucide-react"
 
 const pageMeta: Record<string, { label: string; icon: React.ReactNode }> = {
@@ -17,10 +17,8 @@ const pageMeta: Record<string, { label: string; icon: React.ReactNode }> = {
   "/suppliers": { label: "Proveedores", icon: <Truck size={18} /> },
   "/inventory": { label: "Inventario", icon: <Package size={18} /> },
   "/products": { label: "Productos", icon: <Fish size={18} /> },
-  "/cash-register": { label: "Caja", icon: <DollarSign size={18} /> },
   "/accounts-receivable": { label: "Cuentas por Cobrar", icon: <ArrowLeftFromLine size={18} /> },
   "/accounts-payable": { label: "Cuentas por Pagar", icon: <ArrowRightFromLine size={18} /> },
-  "/settings": { label: "Configuración", icon: <Settings size={18} /> },
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -41,7 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <h1 className="text-title-large text-abyssal-text-primary font-bold">{meta.label}</h1>
             </div>
           )}
-          <div className="mx-auto lg:max-w-none lg:px-6 pb-24 lg:pb-8">
+          <div className="mx-auto lg:max-w-[1280px] lg:px-8 pb-24 lg:pb-8">
             {children}
           </div>
         </main>

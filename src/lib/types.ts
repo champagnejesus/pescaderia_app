@@ -1,10 +1,14 @@
+export type PaymentStatus = 'PAGADO' | 'PENDIENTE' | 'PAGO_PARCIAL'
+export type OrderStatus = 'PENDIENTE' | 'ENTREGADO' | 'ANULADO'
+export type ProductUnit = 'cajas' | 'kg' | 'unidades'
+
 export interface Product {
   id: number
   name: string
   category: string
   category_id: number | null
   stock: number
-  unit: string
+  unit: ProductUnit
   price_compra: number
   price_venta: number
   image_url: string
@@ -60,10 +64,10 @@ export interface Order {
   client_name: string
   delivery_date: string
   items_count: number
-  status: string
+  status: OrderStatus
   total_value: number
   created_at: string
-  payment_status: string
+  payment_status: PaymentStatus
 }
 
 export interface OrderItem {
@@ -96,7 +100,7 @@ export interface Purchase {
   supplier_name: string
   items_count: number
   total_value: number
-  payment_status: string
+  payment_status: PaymentStatus
   created_at: string
 }
 
@@ -126,7 +130,7 @@ export interface InventoryItem {
   product_name: string
   category: string
   stock: number
-  unit: string
+  unit: ProductUnit
   price_compra: number
   price_venta: number
   status: string
@@ -139,7 +143,7 @@ export interface InventoryMovement {
   product_name: string
   type: string
   quantity: number
-  unit: string
+  unit: ProductUnit
   unit_price: number
   total: number
   reference: string
@@ -152,8 +156,9 @@ export interface AccountEntry {
   reference_number: string
   reference_type: string
   amount: number
+  paid_amount: number
   pending_amount: number
-  status: string
+  status: PaymentStatus
   date: string
 }
 

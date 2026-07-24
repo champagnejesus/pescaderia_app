@@ -123,6 +123,7 @@
 /* Contain rendering to individual elements */
 .contain-render {
   contain: layout style paint;
+  will-change: transform, opacity;
 }
 
 /* iOS separator */
