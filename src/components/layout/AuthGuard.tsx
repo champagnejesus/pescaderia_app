@@ -12,21 +12,21 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const [mounted, setMounted] = useState(false)
   const [authenticated, setAuthenticated] = useState(false)
 
-  useEffect(() => {
+  // Synchronous check on first render (before effects)
+  if (typeof window !== "undefined" && !mounted) {
     const token = localStorage.getItem("abyssal-token")
-    if (!token) {
-      router.replace("/login")
-    } else {
-      setAuthenticated(true)
-    }
+    if (token) setAuthenticated(true)
     setMounted(true)
-  }, [router])
+  }
 
-  if (!mounted) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="w-8 h-8 border-2 border-abyssal-primary border-t-transparent rounded-full animate-spin" />
-    </div>
-  )
+  useEffect(() => {
+    if (!mounted) return
+    if (!authenticated) {
+      router.replace("/login")
+    }
+  }, [mounted, authenticated, router])
+
+  if (!mounted) return null
   if (!authenticated) return null
 
   return <>{children}</>
