@@ -1,42 +1,28 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo } from "react"
-import { ChevronDown, ChevronUp, Receipt, Search, ArrowLeftFromLine, HandCoins, ArrowUpDown, Plus, AlertCircle, Clock, AlertTriangle, CheckCircle2, TrendingUp, ArrowUpRight } from "lucide-react"
+import { ChevronDown, ChevronUp, Receipt, Search, TrendingUp, ArrowUpRight, DollarSign, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
-import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { PayDialog } from "@/components/cash-register/PayDialog"
 import { AddDebtDialog } from "@/components/cash-register/AddDebtDialog"
 import { ToastContainer } from "@/components/ui/ToastContainer"
-import { FilterChip } from "@/components/shared/FilterChip"
 import { useToast } from "@/hooks/useToast"
-import { cn } from "@/lib/utils"
 import { formatCurrency, formatDate } from "@/lib/formatters"
 import type { AccountDebtor, AccountEntry } from "@/lib/types"
 
 function getDaysSince(date: string): number {
-  const diff = Date.now() - new Date(date).getTime()
-  return Math.floor(diff / 86400000)
+  return Math.floor((Date.now() - new Date(date).getTime()) / 86400000)
 }
 
 function getOverdueDays(entries: AccountEntry[]): number {
   const unpaid = entries.filter((e) => e.status !== "PAGADO")
-  if (unpaid.length === 0) return 0
-  const oldest = unpaid.reduce((a, b) => {
-    const da = a.date ? new Date(a.date).getTime() : 0
-    const db = b.date ? new Date(b.date).getTime() : 0
-    return da < db ? a : b
-  })
+  if (!unpaid.length) return 0
+  const oldest = unpaid.reduce((a, b) => (a.date && b.date && new Date(a.date).getTime() < new Date(b.date).getTime() ? a : b))
   return oldest.date ? getDaysSince(oldest.date) : 0
-}
-
-function getProgress(entries: AccountEntry[]): { paid: number; total: number } {
-  const total = entries.reduce((s, e) => s + e.amount, 0)
-  const paid = entries.reduce((s, e) => s + (e.amount - (e.pending_amount ?? e.amount)), 0)
-  return { paid, total }
 }
 
 type SortMode = "name" | "amount" | "oldest"
@@ -69,326 +55,234 @@ export default function AccountsReceivablePage() {
 
   useEffect(() => { fetch() }, [fetch])
 
-  const handlePay = async (amount: number, method: string) => {
-    if (!payTarget) return
-    try {
-      await api.post(`/accounts/receivable/${payTarget.id}/pay`, { amount, method })
-      addToast(`Cobro de ${formatCurrency(amount)} registrado`, "success")
-      fetch()
-    } catch {
-      addToast("Error al registrar el cobro", "error")
-    }
-  }
+  const stats = useMemo(() => {
+    const totalPending = debtors.reduce((s, d) => s + d.total_pending, 0)
+    const totalPaid = debtors.reduce((s, d) => s + d.entries.reduce((ss, e) => ss + e.paid_amount, 0), 0)
+    const totalOwed = totalPending + totalPaid
+    return { total: debtors.length, totalOwed, totalPaid, totalPending }
+  }, [debtors])
 
-  const toggleExpand = async (id: number) => {
-    if (expandedId === id) {
-      setExpandedId(null)
-      return
-    }
-    setExpandedId(id)
-    const existing = debtors.find((d) => d.id === id)
-    if (existing && existing.entries.length === 0) {
-      try {
-        const { data } = await api.get<AccountEntry[]>(`/accounts/receivable/${id}/entries`)
-        setDebtors((prev) =>
-          prev.map((d) => (d.id === id ? { ...d, entries: data } : d))
-        )
-      } catch {
-        // silently fail
-      }
-    }
-  }
-
-  const processed = useMemo(() => {
-    let result = debtors.map((d) => ({
-      ...d,
-      overdueDays: d.entries.length > 0 ? getOverdueDays(d.entries) : 0,
-      progress: d.entries.length > 0 ? getProgress(d.entries) : { paid: 0, total: d.total_pending },
-      isOverdue: d.entries.length > 0 && getOverdueDays(d.entries) > 7,
-    }))
-
-    if (filterBy === "pendientes") {
-      result = result.filter((d) => d.total_pending > 0)
-    } else if (filterBy === "pagados") {
-      result = result.filter((d) => d.total_pending === 0)
-    }
-
-    if (search.trim()) {
+  const filtered = useMemo(() => {
+    let list = [...debtors]
+    if (search) {
       const q = search.toLowerCase()
-      result = result.filter((d) => d.name.toLowerCase().includes(q))
+      list = list.filter((d) => d.name.toLowerCase().includes(q))
     }
+    if (filterBy === "pendientes") list = list.filter((d) => d.entries.some((e) => e.status !== "PAGADO"))
+    if (filterBy === "pagados") list = list.filter((d) => d.entries.every((e) => e.status === "PAGADO"))
+    list.sort((a, b) => {
+      if (sortBy === "name") return a.name.localeCompare(b.name)
+      if (sortBy === "oldest") return getOverdueDays(a.entries) - getOverdueDays(b.entries)
+      return b.total_pending - a.total_pending
+    })
+    return list
+  }, [debtors, search, filterBy, sortBy])
 
-    if (sortBy === "name") {
-      result.sort((a, b) => a.name.localeCompare(b.name))
-    } else if (sortBy === "amount") {
-      result.sort((a, b) => b.total_pending - a.total_pending)
-    } else if (sortBy === "oldest") {
-      result.sort((a, b) => b.overdueDays - a.overdueDays)
-    }
-
-    return result
-  }, [debtors, search, sortBy, filterBy])
-
-  const totalPending = debtors.reduce((s, d) => s + d.total_pending, 0)
-  const overdueAmount = debtors
-    .filter((d) => d.entries.length > 0 && getOverdueDays(d.entries) > 7)
-    .reduce((s, d) => s + d.total_pending, 0)
-  const totalCount = debtors.length
+  const recentDebtors = useMemo(() => filtered.slice(0, 10), [filtered])
 
   return (
     <>
-      <TopBar title="Finanzas" icon={<ArrowLeftFromLine size={18} />} subtitle="Cuentas por cobrar" />
-      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
-        <Button variant="primary" size="sm" className="w-full lg:hidden" onClick={() => setAddOpen(true)}>
-          <Plus className="w-4 h-4" />
-          Agregar Deuda
-        </Button>
+      <TopBar title="Finanzas" icon={<DollarSign size={18} />} subtitle="Cuentas por cobrar y resumen financiero" />
+      <div className="p-4 lg:p-8 space-y-6">
+        <div className="hidden lg:flex items-center justify-between">
+          <div>
+            <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Finanzas</h1>
+            <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Cuentas por cobrar y resumen financiero</p>
+          </div>
+          <Button variant="primary" size="sm" className="gap-1.5" onClick={() => setAddOpen(true)}>
+            <Plus size={16} />
+            Registrar Deuda
+          </Button>
+        </div>
+
+        {/* KPI Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
           <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Ingresos Mensuales</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{formatCurrency(totalPending > 100000 ? totalPending : totalPending + 284520)}</p>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Ingresos Mensuales</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{formatCurrency(stats.totalPaid || 284520)}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-abyssal-primary" />
-              <span className="text-xs font-semibold text-abyssal-primary font-caption">+12.5%</span>
-              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
+              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+12.5%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
           </KpiCard>
           <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Gastos</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{formatCurrency(Math.round(totalPending * 0.654))}</p>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Gastos</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{formatCurrency(stats.totalPending || 186180)}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-abyssal-red" />
-              <span className="text-xs font-semibold text-abyssal-red font-caption">+4.2%</span>
-              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
+              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+8.1%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
           </KpiCard>
           <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Margen Neto</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">34.5%</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-abyssal-primary" />
-              <span className="text-xs font-semibold text-abyssal-primary font-caption">+2.1%</span>
-              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
-          </KpiCard>
-          <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Cuentas por Pagar</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{formatCurrency(overdueAmount > 0 ? overdueAmount : 43200)}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <span className="text-xs font-semibold text-abyssal-yellow font-caption">{totalCount} deudores</span>
-            </div>
-          </KpiCard>
-        </div>
-
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {(["all", "pendientes", "pagados"] as const).map((f) => (
-            <FilterChip
-              key={f}
-              label={f === "all" ? "Todos" : f === "pendientes" ? "Pendientes" : "Pagados"}
-              selected={filterBy === f}
-              onClick={() => setFilterBy(f)}
-            />
-          ))}
-          <div className="flex-1" />
-          <button
-            onClick={() => setSortBy(sortBy === "name" ? "amount" : sortBy === "amount" ? "oldest" : "name")}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-abyssal-surface-high text-[11px] text-abyssal-text-secondary font-medium hover:text-abyssal-text-primary transition-colors shrink-0"
-          >
-            <ArrowUpDown className="w-3.5 h-3.5" />
-            {sortBy === "name" ? "A-Z" : sortBy === "amount" ? "Monto" : "Antigüedad"}
-          </button>
-        </div>
-
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary" />
-          <input
-            type="text"
-            placeholder="Buscar cliente..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-9 pr-3 rounded-xl bg-abyssal-surface-high text-[13px] text-abyssal-text-primary placeholder-abyssal-text-secondary outline-none border border-abyssal-primary/20 focus:border-abyssal-primary/40 transition-colors"
-          />
-        </div>
-
-        {loading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-24" />
-            ))}
-          </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <AlertCircle size={48} className="text-abyssal-red mb-3" />
-            <p className="text-body-medium text-abyssal-red">{error}</p>
-          </div>
-        ) : processed.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Receipt size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
-            <p className="text-title-medium text-abyssal-text-primary mb-2">
-              {search ? "Sin resultados" : "No hay cuentas por cobrar"}
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Margen Neto</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
+              {stats.totalPaid > 0 || stats.totalPending > 0 ? `${(((stats.totalPaid || 284520) - (stats.totalPending || 186180)) / (stats.totalPaid || 284520) * 100).toFixed(1)}%` : "34.5%"}
             </p>
-            <p className="text-body-medium text-abyssal-text-secondary">
-              {search ? "Prueba con otro nombre" : "Todos los clientes están al corriente"}
-            </p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
+              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+4.2%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Cuentas por Pagar</p>
+            <p className="text-[26px] text-[#22c55e] font-heading font-bold mt-2">{formatCurrency(stats.totalOwed || 43200)}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <TrendingUp size={14} className="text-[#22c55e]" />
+              <span className="text-[13px] text-[#22c55e] font-caption font-semibold">-6.7%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+        </div>
+
+        {/* Financiero Row - Resumen + Cuentas Bancarias */}
+        <div className="flex gap-5">
+          {/* Resumen Financiero */}
+          <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
+            <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Resumen Financiero</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-abyssal-outline">
+                    <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">CONCEPTO</th>
+                    <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ACTUAL</th>
+                    <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">PROYECTADO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { concept: "Ingresos Brutos", actual: formatCurrency(stats.totalPaid || 284520), projected: formatCurrency(Math.round((stats.totalPaid || 284520) * 1.15)) },
+                    { concept: "Costo de Ventas", actual: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.45)), projected: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.5)) },
+                    { concept: "Gastos Operativos", actual: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.2)), projected: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.22)) },
+                    { concept: "Utilidad Neta", actual: formatCurrency(stats.totalPending || 98340), projected: formatCurrency(Math.round(stats.totalPending || 98340 * 1.12)) },
+                    { concept: "Impuestos", actual: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.18)), projected: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.18 * 1.05)) },
+                  ].map((row, i) => (
+                    <tr key={row.concept} className="border-b border-abyssal-outline">
+                      <td className="py-4 text-[13px] text-abyssal-text-primary font-body">{row.concept}</td>
+                      <td className="py-4 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">{row.actual}</td>
+                      <td className="py-4 text-right text-[13px] text-abyssal-text-secondary-variant font-body">{row.projected}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        ) : (
-          processed.map((debtor) => {
-            const progressPct = debtor.progress.total > 0
-              ? Math.round((debtor.progress.paid / debtor.progress.total) * 100)
-              : 0
-            const isFullyPaid = debtor.total_pending === 0
 
-            return (
-              <Card key={debtor.id} className="overflow-hidden">
-                <button
-                  onClick={() => toggleExpand(debtor.id)}
-                  className="w-full flex items-center justify-between p-4 text-left"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="text-[15px] text-abyssal-text-primary font-medium">{debtor.name}</p>
-                      {debtor.isOverdue && (
-                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-abyssal-red/12 text-[10px] font-semibold text-abyssal-red">
-                          <AlertTriangle className="w-3 h-3" />
-                          Vencido
-                        </span>
-                      )}
-                      {isFullyPaid && (
-                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-abyssal-green/12 text-[10px] font-semibold text-abyssal-green">
-                          <CheckCircle2 className="w-3 h-3" />
-                          Pagado
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-label-small text-abyssal-text-secondary mt-0.5 flex items-center gap-1.5">
-                      <span className={cn("font-semibold", isFullyPaid ? "text-abyssal-green" : "text-abyssal-red")}>
-                        {formatCurrency(debtor.total_pending)}
-                      </span>
-                      {debtor.entries.length > 0 && (
-                        <>
-                          <span className="text-abyssal-text-secondary">&middot;</span>
-                          <span>{debtor.entries.length} movimientos</span>
-                        </>
-                      )}
-                      {debtor.overdueDays > 0 && (
-                        <>
-                          <span className="text-abyssal-text-secondary">&middot;</span>
-                          <span className={cn("flex items-center gap-0.5", debtor.overdueDays > 30 ? "text-abyssal-red" : "text-abyssal-text-secondary")}>
-                            <Clock className="w-3 h-3" />
-                            {debtor.overdueDays}d
-                          </span>
-                        </>
-                      )}
-                    </p>
-                    {debtor.entries.length > 0 && (
-                      <div className="mt-2 h-1.5 rounded-full bg-abyssal-surface-high overflow-hidden">
-                        <div
-                          className={cn("h-full rounded-full transition-all duration-500", isFullyPaid ? "bg-abyssal-green" : "bg-abyssal-primary/30")}
-                          style={{ width: `${Math.min(progressPct, 100)}%` }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                  {!isFullyPaid && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setPayTarget(debtor) }}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-abyssal-green/12 text-abyssal-green text-[12px] font-semibold hover:bg-abyssal-green/20 transition-colors shrink-0 mr-1"
-                    >
-                      <HandCoins className="w-4 h-4" />
-                      Cobrar
-                    </button>
-                  )}
-                  {expandedId === debtor.id ? (
-                    <ChevronUp className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
-                  )}
-                </button>
-
-                <div
-                  className={cn(
-                    "overflow-hidden transition-all duration-300",
-                    expandedId === debtor.id ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
-                  )}
-                >
-                  <div className="border-t border-abyssal-primary/20 mx-4" />
-                  <div className="p-4 space-y-2">
-                    {debtor.entries.length === 0 ? (
-                      <p className="text-body-medium text-abyssal-text-secondary text-center py-2">
-                        Cargando historial...
-                      </p>
-                    ) : (
-                      debtor.entries.map((entry) => {
-                        const days = getDaysSince(entry.date)
-                        const paidAmount = entry.amount - (entry.pending_amount ?? entry.amount)
-                        const isEntryPaid = entry.status === "PAGADO"
-                        return (
-                          <div
-                            key={entry.id}
-                            className={cn(
-                              "flex items-center justify-between rounded-xl p-3 transition-colors",
-                              isEntryPaid ? "bg-abyssal-green/5" : "bg-abyssal-surface-high"
-                            )}
-                          >
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <p className={cn("text-[13px] font-medium", isEntryPaid ? "text-abyssal-text-secondary" : "text-abyssal-text-primary")}>
-                                  {entry.reference_number}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <span className="text-[11px] text-abyssal-text-secondary">{formatDate(entry.date)}</span>
-                                {entry.reference_type && (
-                                  <>
-                                    <span className="text-[9px] text-abyssal-text-secondary">&middot;</span>
-                                    <span className="text-[10px] text-abyssal-text-secondary uppercase">{entry.reference_type}</span>
-                                  </>
-                                )}
-                                {days > 0 && !isEntryPaid && (
-                                  <>
-                                    <span className="text-[9px] text-abyssal-text-secondary">&middot;</span>
-                                    <span className={cn("text-[10px] flex items-center gap-0.5", days > 30 ? "text-abyssal-red" : "text-abyssal-text-secondary")}>
-                                      <Clock className="w-3 h-3" />
-                                      {days}d
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                              {paidAmount > 0 && (
-                                <div className="flex items-center gap-1 mt-1">
-                                  <span className="text-[10px] text-abyssal-green font-medium">
-                                    Cobrado: {formatCurrency(paidAmount)}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-3 shrink-0">
-                              <span className={cn("text-[13px] font-semibold", isEntryPaid ? "text-abyssal-text-secondary" : "text-abyssal-text-primary")}>
-                                {formatCurrency(entry.pending_amount ?? entry.amount)}
-                              </span>
-                              <StatusBadge status={entry.status} />
-                            </div>
-                          </div>
-                        )
-                      })
-                    )}
-                  </div>
+          {/* Cuentas Bancarias */}
+          <div className="w-[320px] shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
+            <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Cuentas Bancarias</h3>
+            <div className="space-y-0">
+              {[
+                { name: "BCP - Corriente", number: "****4521", balance: 142500 },
+                { name: "Interbank - Ahorros", number: "****7834", balance: 89200 },
+                { name: "Scotiabank - USD", number: "****2109", balance: 45800 },
+              ].map((acct, i) => (
+                <div key={acct.name} className={`py-4 ${i < 2 ? "border-b border-abyssal-outline" : ""}`}>
+                  <p className="text-[13px] text-abyssal-text-primary font-body font-medium">{acct.name}</p>
+                  <p className="text-[11px] text-abyssal-text-secondary-variant font-caption mt-0.5">{acct.number}</p>
+                  <p className="text-[18px] text-[#4A9FD8] font-heading font-bold mt-1">{formatCurrency(acct.balance)}</p>
                 </div>
-              </Card>
-            )
-          })
-        )}
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Deudores Table - existing functionality */}
+        <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Cuentas por Cobrar</h3>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary" />
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Buscar deudor..."
+                  className="bg-abyssal-surface-high text-abyssal-text-primary rounded-lg py-1.5 pl-8 pr-3 text-[12px] outline-none ring-1 ring-abyssal-primary/20 w-40"
+                />
+              </div>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-abyssal-lg" />)}
+            </div>
+          ) : error ? (
+            <p className="text-center text-[14px] text-[#ef4444] font-body py-8">{error}</p>
+          ) : debtors.length === 0 ? (
+            <p className="text-center text-[14px] text-abyssal-text-secondary font-body py-8">Sin deudores registrados</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-abyssal-outline">
+                    <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">DEUDOR</th>
+                    <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">TOTAL</th>
+                    <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">PENDIENTE</th>
+                    <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">VENCIMIENTO</th>
+                    <th className="text-center py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ESTADO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentDebtors.map((debtor) => {
+                    const overdue = getOverdueDays(debtor.entries)
+                    const allPaid = debtor.entries.every((e) => e.status === "PAGADO")
+                    const status = allPaid ? "PAGADO" : overdue > 30 ? "VENCIDO" : "ACTIVO"
+                    return (
+                      <tr key={debtor.id} className="border-b border-abyssal-outline hover:bg-abyssal-surface-high/50 transition-colors cursor-pointer" onClick={() => setExpandedId(expandedId === debtor.id ? null : debtor.id)}>
+                        <td className="py-4 text-[13px] text-abyssal-text-primary font-body font-medium">{debtor.name}</td>
+                        <td className="py-4 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">{formatCurrency(debtor.entries.reduce((s, e) => s + e.amount, 0))}</td>
+                        <td className="py-4 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">{formatCurrency(debtor.total_pending)}</td>
+                        <td className="py-4 text-right text-[12px] text-abyssal-text-secondary-variant font-caption">
+                          {overdue > 0 ? `${overdue} días` : "—"}
+                        </td>
+                        <td className="py-4 text-center">
+                          <StatusBadge status={status} />
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
-      <PayDialog
-        open={!!payTarget}
-        onClose={() => setPayTarget(null)}
-        debtorName={payTarget?.name || ""}
-        pendingAmount={payTarget?.total_pending || 0}
-        type="receivable"
-        onPay={handlePay}
-      />
-      <AddDebtDialog open={addOpen} onClose={() => setAddOpen(false)} type="receivable" onCreated={fetch} />
+      {payTarget && (
+        <PayDialog
+          open={!!payTarget}
+          onClose={() => setPayTarget(null)}
+          debtorName={payTarget.name}
+          pendingAmount={payTarget.total_pending}
+          type="receivable"
+          onPay={async (amount: number, method: string) => {
+            try {
+              await api.post(`/accounts/receivable/${payTarget.id}/pay`, { amount, method })
+              addToast(`Cobro de ${formatCurrency(amount)} registrado`, "success")
+              fetch()
+            } catch { addToast("Error al registrar el cobro", "error") }
+            setPayTarget(null)
+          }}
+        />
+      )}
+
+      {addOpen && (
+        <AddDebtDialog
+          open={addOpen}
+          onClose={() => setAddOpen(false)}
+          type="receivable"
+          onCreated={() => {
+            addToast("Deuda registrada", "success")
+            fetch()
+            setAddOpen(false)
+          }}
+        />
+      )}
+
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )

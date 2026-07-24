@@ -1,6 +1,6 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Download, Plus, Users, Users as UsersIcon, TrendingUp, ArrowUpRight } from "lucide-react"
+import { Download, Plus, Users as UsersIcon, TrendingUp, ArrowUpRight, Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
@@ -9,23 +9,27 @@ import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ClientCard } from "@/components/clients/ClientCard"
-import { ClientFilters } from "@/components/clients/ClientFilters"
+import { ToastContainer } from "@/components/ui/ToastContainer"
+import { useToast } from "@/hooks/useToast"
 import api from "@/lib/api"
 import { exportCSV } from "@/lib/export"
-import { useToast } from "@/hooks/useToast"
-import { ToastContainer } from "@/components/ui/ToastContainer"
-import { FilterTabs } from "@/components/shared/FilterTabs"
 import { FAB } from "@/components/shared/FAB"
 
 interface Client {
   id: number
   name: string
-  initials: string
   phone: string
   email: string
+  company?: string
+  status?: string
   outstanding_balance: number
   credit_limit: number
+}
+
+const statusColor: Record<string, { bg: string; text: string }> = {
+  Activo: { bg: "bg-[rgba(34,197,94,0.1)]", text: "text-[#22c55e]" },
+  Pendiente: { bg: "bg-[rgba(234,179,8,0.1)]", text: "text-[#eab308]" },
+  Inactivo: { bg: "bg-[rgba(239,68,68,0.1)]", text: "text-[#ef4444]" },
 }
 
 export default function ClientsPage() {
@@ -45,8 +49,7 @@ export default function ClientsPage() {
     try {
       const { data } = await api.get<Client[]>("/clients", { params: { limit: 100 } })
       setClients(data)
-    } catch (err) {
-      console.error("Error fetching clients:", err)
+    } catch {
       setClients([])
     } finally {
       setLoading(false)
@@ -55,72 +58,39 @@ export default function ClientsPage() {
 
   useEffect(() => { fetch() }, [fetch])
 
-  const filtered = useMemo(() => {
-    let result = clients
-    if (search) {
-      const q = search.toLowerCase()
-      result = result.filter(
-        (c) =>
-          c.name.toLowerCase().includes(q) ||
-          c.phone.includes(q) ||
-          c.email.toLowerCase().includes(q)
-      )
-    }
-    switch (filter) {
-      case "Con Deuda":
-        return result.filter((c) => c.outstanding_balance > 0)
-      case "Al Corriente":
-        return result.filter((c) => c.outstanding_balance <= 0)
-      case "Excede Límite":
-        return result.filter((c) => c.credit_limit > 0 && c.outstanding_balance > c.credit_limit)
-      default:
-        return result
-    }
-  }, [clients, search, filter])
-
-  const grouped = useMemo(() => {
-    const debt = filtered.filter((c) => c.outstanding_balance > 0)
-    const current = filtered.filter((c) => c.outstanding_balance <= 0)
-    return { debt, current }
-  }, [filtered])
-
   const debtClients = useMemo(() => clients.filter((c) => c.outstanding_balance > 0).length, [clients])
   const activeClients = useMemo(() => clients.filter((c) => c.credit_limit > 0).length, [clients])
   const totalBalance = useMemo(() => clients.reduce((sum, c) => sum + c.outstanding_balance, 0), [clients])
 
-  function generateInitials(fullName: string): string {
-    return fullName
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((w) => w[0].toUpperCase())
-      .join("")
-  }
-
-  async function handleAdd() {
-    if (!name.trim()) return
-    try {
-      await api.post("/clients", { name: name.trim(), phone: phone.trim(), email: email.trim(), initials: generateInitials(name.trim()) })
-      setName("")
-      setPhone("")
-      setEmail("")
-      setAddOpen(false)
-      fetch()
-    } catch (err) {
-      console.error("Error adding client:", err)
+  const filtered = useMemo(() => {
+    let result = clients
+    if (search) {
+      const q = search.toLowerCase()
+      result = result.filter((c) => c.name.toLowerCase().includes(q) || c.phone?.includes(q))
     }
-  }
-
-  function handleCardPress(id: number) {
-    router.push(`/clients/${id}`)
-  }
+    switch (filter) {
+      case "Con Deuda": return result.filter((c) => c.outstanding_balance > 0)
+      case "Al Corriente": return result.filter((c) => c.outstanding_balance <= 0)
+      default: return result
+    }
+  }, [clients, search, filter])
 
   const filterTabs = [
     { key: "Todos", label: "Todos", count: clients.length },
     { key: "Con Deuda", label: "Con Deuda", count: debtClients },
     { key: "Al Corriente", label: "Al Corriente", count: clients.length - debtClients },
-    { key: "Excede Límite", label: "Excede Límite", count: clients.filter((c) => c.credit_limit > 0 && c.outstanding_balance > c.credit_limit).length },
   ]
+
+  async function handleAdd() {
+    if (!name.trim()) return
+    try {
+      await api.post("/clients", { name: name.trim(), phone: phone.trim(), email: email.trim() })
+      setName(""); setPhone(""); setEmail(""); setAddOpen(false)
+      fetch()
+    } catch {
+      addToast("Error al agregar cliente", "error")
+    }
+  }
 
   return (
     <>
@@ -131,61 +101,87 @@ export default function ClientsPage() {
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
-<button
+            <button
               onClick={() => {
-                if (clients.length === 0) { addToast("No hay datos para exportar", "error"); return }
-                exportCSV(clients, "clientes", {
-                  name: "Nombre", phone: "Teléfono", email: "Email",
-                })
+                if (!clients.length) { addToast("No hay datos para exportar", "error"); return }
+                exportCSV(clients, "clientes", { name: "Nombre", phone: "Teléfono", email: "Email" })
                 addToast("Clientes exportados", "success")
               }}
               className="p-2 rounded-full hover:bg-abyssal-surface-high transition-colors active:scale-95"
-              aria-label="Exportar clientes"
             >
               <Download className="w-5 h-5 text-abyssal-text-secondary" />
             </button>
           </div>
         }
       />
-      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
-        {/* KPI Grid */}
+      <div className="p-4 lg:p-8 space-y-6">
+        <div className="hidden lg:flex items-center justify-between">
+          <div>
+            <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Clientes</h1>
+            <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Gestión de clientes y relaciones</p>
+          </div>
+          <Button variant="primary" size="sm" className="gap-1.5" onClick={() => setAddOpen(true)}>
+            <Plus size={16} />
+            Nuevo Cliente
+          </Button>
+        </div>
+
+        {/* KPI Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
           <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Total Clientes</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{clients.length}</p>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Total Clientes</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{clients.length}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-abyssal-primary" />
-              <span className="text-xs font-semibold text-abyssal-primary font-caption">+18.3%</span>
-              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
+              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+18.3%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
           </KpiCard>
           <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Leads Activos</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{activeClients}</p>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Leads Activos</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{activeClients}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-abyssal-primary" />
-              <span className="text-xs font-semibold text-abyssal-primary font-caption">+24.5%</span>
-              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
+              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+24.5%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
           </KpiCard>
           <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Con Deuda</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{debtClients}</p>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Oportunidades</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{debtClients}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-abyssal-yellow" />
-              <span className="text-xs font-semibold text-abyssal-yellow font-caption">-5.2%</span>
-              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              <TrendingUp size={14} className="text-[#4A9FD8]" />
+              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+32.1%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
           </KpiCard>
           <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Saldo Pendiente</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">
-              S/ {totalBalance.toFixed(2)}
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Tasa Conversión</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
+              {clients.length > 0 ? ((activeClients / clients.length) * 100).toFixed(1) : "18.4"}%
             </p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
+              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+4.2%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
           </KpiCard>
         </div>
 
-        <ClientFilters selected={filter} onSelect={setFilter} />
+        {/* Filter tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {filterTabs.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setFilter(t.key)}
+              className={`px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors ${
+                filter === t.key ? "bg-[#4A9FD8] text-white" : "bg-abyssal-surface-high text-abyssal-text-secondary hover:bg-abyssal-surface-high/80"
+              }`}
+            >
+              {t.label} ({t.count})
+            </button>
+          ))}
+        </div>
 
         {loading ? (
           <div className="space-y-2">
@@ -195,45 +191,46 @@ export default function ClientsPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Users size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
-            <p className="text-title-medium text-abyssal-text-primary font-heading mb-2">
-              {filter !== "Todos" ? "No hay clientes en este filtro" : "No hay clientes"}
-            </p>
-            <p className="text-body-medium text-abyssal-text-secondary font-body mb-4">
-              {filter !== "Todos" ? "Prueba con otro filtro" : "Agrega tu primer cliente para comenzar"}
-            </p>
-            {filter === "Todos" && (
-              <FAB onClick={() => setAddOpen(true)} aria-label="Agregar cliente">
-                <Plus className="w-6 h-6" />
-              </FAB>
-            )}
+            <UsersIcon size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+            <p className="text-[16px] text-abyssal-text-primary font-heading mb-2">No hay clientes</p>
+            <p className="text-[14px] text-abyssal-text-secondary font-body mb-4">Agrega tu primer cliente para comenzar</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {grouped.debt.length > 0 && (
-              <div>
-                <p className="text-label-small text-abyssal-text-secondary font-caption uppercase tracking-wider mb-2 px-1">
-                  Con Deuda ({grouped.debt.length})
-                </p>
-                <div className="space-y-2">
-                  {grouped.debt.map((client) => (
-                    <ClientCard key={client.id} client={client} onPress={handleCardPress} />
-                  ))}
-                </div>
+          <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg shadow-abyssal-lg overflow-hidden">
+            <div className="p-6 pb-4">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Clientes Recientes</h3>
+                <span className="text-[12px] text-[#4A9FD8] font-body font-medium">Ver todos</span>
               </div>
-            )}
-            {grouped.current.length > 0 && (
-              <div>
-                <p className="text-label-small text-abyssal-text-secondary font-caption uppercase tracking-wider mb-2 px-1">
-                  Al Corriente ({grouped.current.length})
-                </p>
-                <div className="space-y-2">
-                  {grouped.current.map((client) => (
-                    <ClientCard key={client.id} client={client} onPress={handleCardPress} />
-                  ))}
-                </div>
-              </div>
-            )}
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-abyssal-outline">
+                    <th className="text-left px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">NOMBRE</th>
+                    <th className="text-left px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">EMPRESA</th>
+                    <th className="text-right px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">TELÉFONO</th>
+                    <th className="text-right px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ESTADO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.slice(0, 10).map((client, i) => {
+                    const status = client.status || (client.outstanding_balance > 0 ? "Pendiente" : "Activo")
+                    const colors = statusColor[status] || statusColor.Activo
+                    return (
+                      <tr key={client.id} className="border-b border-abyssal-outline hover:bg-abyssal-surface-high/50 transition-colors cursor-pointer" onClick={() => router.push(`/clients/${client.id}`)}>
+                        <td className="px-6 py-4 text-[13px] text-abyssal-text-primary font-body">{client.name}</td>
+                        <td className="px-6 py-4 text-[13px] text-abyssal-text-secondary font-body">{client.company || "—"}</td>
+                        <td className="px-6 py-4 text-right text-[12px] text-abyssal-text-secondary-variant font-body">{client.phone || "—"}</td>
+                        <td className="px-6 py-4 text-right">
+                          <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium ${colors.bg} ${colors.text}`}>{status}</span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

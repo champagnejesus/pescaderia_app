@@ -1,25 +1,21 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ShoppingCart, Download, TrendingUp, ShoppingCart as CartIcon } from "lucide-react"
+import { Plus, ShoppingCart, Download, TrendingUp, ArrowUpRight, ShoppingCart as CartIcon } from "lucide-react"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
-import { PurchaseCard } from "@/components/purchases/PurchaseCard"
 import { usePurchases } from "@/hooks/usePurchases"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import { exportCSV } from "@/lib/export"
-import { FilterTabs } from "@/components/shared/FilterTabs"
 import { FAB } from "@/components/shared/FAB"
 import { Skeleton } from "@/components/ui/skeleton"
 
-const FILTERS = ["Todos", "Pagados", "Pendientes", "Pago parcial"]
-const STATUS_MAP: Record<string, string | undefined> = {
-  Todos: undefined,
-  Pagados: "PAGADO",
-  Pendientes: "PENDIENTE",
-  "Pago parcial": "PAGO PARCIAL",
+const statusColor: Record<string, { bg: string; text: string }> = {
+  PAGADO: { bg: "bg-[rgba(34,197,94,0.1)]", text: "text-[#22c55e]" },
+  PENDIENTE: { bg: "bg-[rgba(234,179,8,0.1)]", text: "text-[#eab308]" },
+  "PAGO PARCIAL": { bg: "bg-[rgba(74,159,216,0.1)]", text: "text-[#4A9FD8]" },
 }
 
 export default function PurchasesPage() {
@@ -28,34 +24,30 @@ export default function PurchasesPage() {
   const router = useRouter()
   const { toasts, addToast, removeToast } = useToast()
 
+  const STATUS_MAP: Record<string, string | undefined> = {
+    Todos: undefined,
+    Pendientes: "PENDIENTE",
+    Pagados: "PAGADO",
+    "Pago parcial": "PAGO PARCIAL",
+  }
+
   const { data: purchases, loading, error } = usePurchases(STATUS_MAP[filter])
 
   const stats = useMemo(() => {
-    if (!purchases.length) return { total: 0, spent: 0, pending: 0, pendingAmount: 0 }
-    return {
-      total: purchases.length,
-      spent: purchases.reduce((s, p) => s + p.total_value, 0),
-      pending: purchases.filter((p) => p.payment_status !== "PAGADO").length,
-      pendingAmount: purchases.filter((p) => p.payment_status !== "PAGADO").reduce((s, p) => s + p.total_value, 0),
-    }
+    if (!purchases.length) return { total: 0, spent: 0, pending: 0, pendingAmount: 0, avgPurchase: 0 }
+    const spent = purchases.reduce((s, p) => s + p.total_value, 0)
+    const pending = purchases.filter((p) => p.payment_status !== "PAGADO").length
+    const pendingAmount = purchases.filter((p) => p.payment_status !== "PAGADO").reduce((s, p) => s + p.total_value, 0)
+    return { total: purchases.length, spent, pending, pendingAmount, avgPurchase: spent / purchases.length }
   }, [purchases])
 
   const filteredPurchases = useMemo(() => {
     if (!searchText) return purchases
     const q = searchText.toLowerCase()
-    return purchases.filter(
-      (p) =>
-        p.supplier_name.toLowerCase().includes(q) ||
-        p.purchase_number.toLowerCase().includes(q)
-    )
+    return purchases.filter((p) => p.supplier_name.toLowerCase().includes(q) || p.purchase_number.toLowerCase().includes(q))
   }, [purchases, searchText])
 
-  const filterTabs = [
-    { key: "Todos", label: "Todos", count: purchases.length },
-    { key: "Pendientes", label: "Pendientes", count: stats.pending },
-    { key: "Pagados", label: "Pagados", count: purchases.filter((p) => p.payment_status === "PAGADO").length },
-    { key: "Pago parcial", label: "Pago parcial", count: purchases.filter((p) => p.payment_status === "PAGO PARCIAL").length },
-  ]
+  const recentPurchases = useMemo(() => [...filteredPurchases].slice(-6).reverse(), [filteredPurchases])
 
   return (
     <>
@@ -68,96 +60,154 @@ export default function PurchasesPage() {
             <CollapsibleSearchBar value={searchText} onChange={setSearchText} placeholder="Buscar por proveedor o #compra..." />
             <button
               onClick={() => {
-                if (purchases.length === 0) { addToast("No hay datos para exportar", "error"); return }
+                if (!purchases.length) { addToast("No hay datos para exportar", "error"); return }
                 exportCSV(purchases.map(p => ({ ...p, created_at: p.created_at || "" })), "compras", {
-                  purchase_number: "# Compra", supplier_name: "Proveedor", total_value: "Total",
-                  payment_status: "Estado de Pago", created_at: "Fecha"
+                  purchase_number: "# Compra", supplier_name: "Proveedor", total_value: "Total", payment_status: "Estado de Pago", created_at: "Fecha"
                 })
                 addToast("Compras exportadas", "success")
               }}
               className="p-2 rounded-full hover:bg-abyssal-surface-high transition-colors active:scale-95"
-              aria-label="Exportar compras"
             >
               <Download className="w-5 h-5 text-abyssal-text-secondary" />
             </button>
           </div>
         }
       />
-      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
-        {loading ? null : !error && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
-            <KpiCard>
-              <p className="text-label-medium text-abyssal-text-secondary font-body">Órdenes Totales</p>
-              <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{stats.total}</p>
-              <div className="flex items-center gap-1.5 mt-3">
-                <TrendingUp size={14} className="text-abyssal-primary" />
-                <span className="text-xs font-semibold text-abyssal-primary font-caption">+15.3%</span>
-                <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-              </div>
-            </KpiCard>
-            <KpiCard>
-              <p className="text-label-medium text-abyssal-text-secondary font-body">Completadas</p>
-              <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{purchases.filter(p => p.payment_status === "PAGADO").length}</p>
-              <div className="flex items-center gap-1.5 mt-3">
-                <TrendingUp size={14} className="text-abyssal-green" />
-                <span className="text-xs font-semibold text-abyssal-green font-caption">+22.1%</span>
-                <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-              </div>
-            </KpiCard>
-            <KpiCard>
-              <p className="text-label-medium text-abyssal-text-secondary font-body">En Proceso</p>
-              <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{purchases.filter(p => p.payment_status === "PAGO PARCIAL").length}</p>
-              <div className="flex items-center gap-1.5 mt-3">
-                <TrendingUp size={14} className="text-abyssal-yellow" />
-                <span className="text-xs font-semibold text-abyssal-yellow font-caption">-8.4%</span>
-                <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-              </div>
-            </KpiCard>
-            <KpiCard>
-              <p className="text-label-medium text-abyssal-text-secondary font-body">Pendientes</p>
-              <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{stats.pending}</p>
-              <div className="flex items-center gap-1.5 mt-3">
-                <span className="text-xs font-semibold text-abyssal-red font-caption">
-                  ${stats.pendingAmount.toLocaleString("es-MX", { minimumFractionDigits: 0 })}
-                </span>
-                <span className="text-xs text-abyssal-text-secondary-variant font-caption">por pagar</span>
-              </div>
-            </KpiCard>
+      <div className="p-4 lg:p-8 space-y-6">
+        <div className="hidden lg:flex items-center justify-between">
+          <div>
+            <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Órdenes de Compra</h1>
+            <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Órdenes a proveedores</p>
           </div>
-        )}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push("/purchases/new")}
+              className="px-4 py-2 bg-[#4A9FD8] text-white rounded-xl text-[13px] font-semibold flex items-center gap-1.5 hover:bg-[#4A9FD8]/90 transition-colors"
+            >
+              <Plus size={16} />
+              Nueva Compra
+            </button>
+          </div>
+        </div>
 
-        <FilterTabs tabs={filterTabs} activeKey={filter} onSelect={setFilter} />
+        {/* KPI Row */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+          <KpiCard>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Órdenes Totales</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{stats.total}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
+              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+8.2%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Completadas</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{stats.total - stats.pending}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
+              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+12.4%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">En Proceso</p>
+            <p className="text-[26px] text-[#eab308] font-heading font-bold mt-2">{stats.pending}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <TrendingUp size={14} className="text-[#eab308]" />
+              <span className="text-[13px] text-[#eab308] font-caption font-semibold">-3.1%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Pendientes</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
+              {stats.total > 0 ? Math.round((stats.pending / stats.total) * 100) : 0}%
+            </p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
+              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+5.8%</span>
+              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {[
+            { key: "Todos", label: "Todos", count: purchases.length },
+            { key: "Pendientes", label: "Pendientes", count: stats.pending },
+            { key: "Pagados", label: "Pagados", count: purchases.filter((p) => p.payment_status === "PAGADO").length },
+            { key: "Pago parcial", label: "Pago parcial", count: purchases.filter((p) => p.payment_status === "PAGO PARCIAL").length },
+          ].map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setFilter(t.key)}
+              className={`px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors ${
+                filter === t.key ? "bg-[#4A9FD8] text-white" : "bg-abyssal-surface-high text-abyssal-text-secondary hover:bg-abyssal-surface-high/80"
+              }`}
+            >
+              {t.label} ({t.count})
+            </button>
+          ))}
+        </div>
 
         {loading ? (
           <div className="space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-16 rounded-abyssal-lg" />
-            ))}
+            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16 rounded-abyssal-lg" />)}
           </div>
         ) : error ? (
-          <p className="text-center text-body-medium text-abyssal-red py-8">{error}</p>
+          <p className="text-center text-[14px] text-[#ef4444] font-body py-8">{error}</p>
         ) : purchases.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <ShoppingCart size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
-            <p className="text-title-medium text-abyssal-text-primary font-heading mb-2">No hay compras</p>
-            <p className="text-body-medium text-abyssal-text-secondary font-body mb-4">Registra tu primera compra para comenzar</p>
-            <FAB href="/purchases/new" aria-label="Registrar compra">
-              <Plus className="w-6 h-6" />
-            </FAB>
+            <CartIcon size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+            <p className="text-[16px] text-abyssal-text-primary font-heading mb-2">No hay compras</p>
+            <p className="text-[14px] text-abyssal-text-secondary font-body mb-4">Registra tu primera compra para comenzar</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {filteredPurchases.map((purchase) => (
-              <PurchaseCard
-                key={purchase.id}
-                purchase={purchase}
-                onPress={(id) => router.push(`/purchases/${id}`)}
-              />
-            ))}
+          <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg shadow-abyssal-lg overflow-hidden">
+            <div className="p-6 pb-4">
+              <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Todas las Órdenes</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-abyssal-outline">
+                    <th className="text-left px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ID</th>
+                    <th className="text-left px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">PROVEEDOR</th>
+                    <th className="text-right px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">FECHA</th>
+                    <th className="text-right px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">MONTO</th>
+                    <th className="text-right px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ESTADO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentPurchases.map((purchase) => {
+                    const status = purchase.payment_status === "PAGADO" ? "PAGADO" : purchase.payment_status === "PENDIENTE" ? "PENDIENTE" : "PAGO PARCIAL"
+                    const colors = statusColor[status] || statusColor.PENDIENTE
+                    return (
+                      <tr key={purchase.id} className="border-b border-abyssal-outline hover:bg-abyssal-surface-high/50 transition-colors cursor-pointer" onClick={() => router.push(`/purchases/${purchase.id}`)}>
+                        <td className="px-6 py-4 text-[12px] text-abyssal-text-secondary-variant font-mono">{purchase.purchase_number}</td>
+                        <td className="px-6 py-4 text-[13px] text-abyssal-text-secondary font-body">{purchase.supplier_name}</td>
+                        <td className="px-6 py-4 text-right text-[12px] text-abyssal-text-secondary-variant font-caption">
+                          {purchase.created_at ? new Date(purchase.created_at).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "2-digit" }) : "—"}
+                        </td>
+                        <td className="px-6 py-4 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">
+                          ${purchase.total_value.toLocaleString("en-US")}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium ${colors.bg} ${colors.text}`}>{status}</span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
-      <FAB href="/purchases/new" aria-label="Registrar compra">
+
+      <FAB href="/purchases/new" aria-label="Nueva compra">
         <Plus className="w-6 h-6" />
       </FAB>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
