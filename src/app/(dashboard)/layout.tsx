@@ -1,6 +1,11 @@
 "use client"
 import { usePathname } from "next/navigation"
-import { AuthGuard } from "@/components/layout/AuthGuard"
+import dynamic from "next/dynamic"
+
+const AuthGuard = dynamic(
+  () => import("@/components/layout/AuthGuard").then((mod) => mod.AuthGuard),
+  { ssr: false }
+)
 import { BottomNav } from "@/components/layout/BottomNav"
 import { Sidebar } from "@/components/layout/Sidebar"
 import {
