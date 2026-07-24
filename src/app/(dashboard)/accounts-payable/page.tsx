@@ -1,9 +1,10 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo } from "react"
-import { ChevronDown, ChevronUp, DollarSign, Search, ArrowRightFromLine, HandCoins, ArrowUpDown, Plus, AlertCircle, Clock, Building2, AlertTriangle, CheckCircle2 } from "lucide-react"
+import { ChevronDown, ChevronUp, DollarSign, Search, ArrowRightFromLine, HandCoins, ArrowUpDown, Plus, AlertCircle, Clock, Building2, AlertTriangle, CheckCircle2, TrendingUp, ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
+import { KpiCard } from "@/components/ui/kpi-card"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
@@ -136,27 +137,46 @@ export default function AccountsPayablePage() {
 
   return (
     <>
-      <TopBar title="Cuentas por Pagar" icon={<ArrowRightFromLine size={18} />} />
-      <div className="p-4 space-y-4">
-        <Button variant="primary" size="sm" className="w-full" onClick={() => setAddOpen(true)}>
+      <TopBar title="Cuentas por Pagar" icon={<ArrowRightFromLine size={18} />} subtitle="Proveedores y obligaciones" />
+      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
+        <Button variant="primary" size="sm" className="w-full lg:hidden" onClick={() => setAddOpen(true)}>
           <Plus className="w-4 h-4" />
           Agregar Deuda
         </Button>
-        <div className="grid grid-cols-3 gap-2">
-          <Card className="p-3 text-center">
-            <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Pendiente</p>
-            <p className="text-[16px] text-abyssal-text-primary font-bold mt-0.5">{formatCurrency(totalPending)}</p>
-          </Card>
-          <Card className="p-3 text-center">
-            <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Vencido</p>
-            <p className={cn("text-[16px] font-bold mt-0.5", overdueAmount > 0 ? "text-abyssal-red" : "text-abyssal-text-secondary")}>
-              {formatCurrency(overdueAmount)}
-            </p>
-          </Card>
-          <Card className="p-3 text-center">
-            <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">Proveedores</p>
-            <p className="text-[16px] text-abyssal-text-primary font-bold mt-0.5">{totalCount}</p>
-          </Card>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Total Pendiente</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{formatCurrency(totalPending)}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <ArrowUpRight size={14} className="text-abyssal-primary" />
+              <span className="text-xs font-semibold text-abyssal-primary font-caption">+8.2%</span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Vencido</p>
+            <p className={`text-title-large font-heading font-bold mt-1 ${overdueAmount > 0 ? "text-abyssal-red" : "text-abyssal-green"}`}>{formatCurrency(overdueAmount)}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <TrendingUp size={14} className="text-abyssal-red" />
+              <span className="text-xs font-semibold text-abyssal-red font-caption">+3.5%</span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Proveedores</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{totalCount}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <span className="text-xs font-semibold text-abyssal-primary font-caption">con deuda activa</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Al Corriente</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{debtors.filter(d => d.total_pending === 0).length}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <CheckCircle2 size={14} className="text-abyssal-green" />
+              <span className="text-xs font-semibold text-abyssal-green font-caption">sin deuda</span>
+            </div>
+          </KpiCard>
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-1">

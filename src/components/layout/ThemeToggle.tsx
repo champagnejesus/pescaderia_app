@@ -1,19 +1,57 @@
 "use client"
 
-import { Sun, Moon } from "lucide-react"
-import { useThemeStore } from "@/store/themeStore"
+import { useEffect, useState } from "react"
+import { Moon, Sun } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-export function ThemeToggle() {
-  const theme = useThemeStore((s) => s.theme)
-  const toggle = useThemeStore((s) => s.toggle)
+export function ThemeToggle({ className }: { className?: string }) {
+  const [dark, setDark] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    const stored = localStorage.getItem("carbon-frost-theme")
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+    const isDark = stored ? stored === "dark" : prefersDark
+    setDark(isDark)
+    document.documentElement.classList.toggle("dark", isDark)
+    setMounted(true)
+  }, [])
+
+  const toggle = () => {
+    const next = !dark
+    setDark(next)
+    document.documentElement.classList.toggle("dark", next)
+    localStorage.setItem("carbon-frost-theme", next ? "dark" : "light")
+  }
+
+  if (!mounted) {
+    return (
+      <button
+        className={cn(
+          "w-9 h-9 rounded-lg flex items-center justify-center",
+          "text-abyssal-text-secondary-variant",
+          className
+        )}
+        aria-label="Cambiar tema"
+      >
+        <div className="w-4 h-4 rounded-full bg-abyssal-text-secondary-variant/30 animate-pulse" />
+      </button>
+    )
+  }
 
   return (
     <button
       onClick={toggle}
-      className="text-abyssal-text-secondary hover:text-abyssal-text-primary transition-colors"
-      aria-label="Toggle theme"
+      className={cn(
+        "w-9 h-9 rounded-lg flex items-center justify-center",
+        "hover:bg-abyssal-surface-highest transition-all duration-200 active:scale-95",
+        dark ? "text-abyssal-yellow" : "text-abyssal-text-secondary",
+        className
+      )}
+      aria-label={dark ? "Activar modo claro" : "Activar modo oscuro"}
+      title={dark ? "Modo claro" : "Modo oscuro"}
     >
-      {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+      {dark ? <Sun size={18} /> : <Moon size={18} />}
     </button>
   )
 }

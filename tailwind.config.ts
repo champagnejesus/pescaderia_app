@@ -4,6 +4,11 @@ const config: Config = {
   darkMode: "class",
   theme: {
     extend: {
+      fontFamily: {
+        heading: ["var(--abyssal-font-heading)"],
+        body: ["var(--abyssal-font-body)"],
+        caption: ["var(--abyssal-font-caption)"],
+      },
       colors: {
         abyssal: {
           bg: "var(--abyssal-bg)",
@@ -27,10 +32,10 @@ const config: Config = {
         },
       },
       borderRadius: {
-        "abyssal-sm": "12px",
-        "abyssal-md": "16px",
-        "abyssal-lg": "20px",
-        "abyssal-xl": "24px",
+        "abyssal-sm": "4px",
+        "abyssal-md": "8px",
+        "abyssal-lg": "12px",
+        "abyssal-xl": "16px",
         "abyssal-full": "9999px",
       },
       fontSize: {
@@ -50,11 +55,11 @@ const config: Config = {
         "spin": "spin 1s linear infinite",
       },
       boxShadow: {
-        "abyssal-sm": "0 1px 3px rgba(0, 0, 0, 0.1)",
-        "abyssal-md": "0 4px 6px rgba(0, 0, 0, 0.1)",
-        "abyssal-lg": "0 10px 15px rgba(0, 0, 0, 0.1)",
-        "abyssal-primary": "0 2px 8px rgba(94, 92, 230, 0.35)",
-        "abyssal-primary-hover": "0 4px 16px rgba(94, 92, 230, 0.45)",
+        "abyssal-sm": "var(--abyssal-shadow-sm)",
+        "abyssal-md": "var(--abyssal-shadow-md)",
+        "abyssal-lg": "var(--abyssal-shadow-lg)",
+        "abyssal-primary": "0 2px 8px rgba(74, 159, 216, 0.35)",
+        "abyssal-primary-hover": "0 4px 16px rgba(74, 159, 216, 0.45)",
       },
       backdropBlur: {
         xs: "2px",

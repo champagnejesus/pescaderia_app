@@ -78,8 +78,8 @@ export default function CashRegisterPage() {
 
   return (
     <>
-      <TopBar title="Cierre de Caja" icon={<DollarSign size={18} />} />
-      <div className="p-4 space-y-4">
+      <TopBar title="Cierre de Caja" icon={<DollarSign size={18} />} subtitle="Resumen diario de transacciones" />
+      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
         {loading ? (
           <>
             <Skeleton className="h-24" />
@@ -93,7 +93,7 @@ export default function CashRegisterPage() {
           </>
         ) : error && !summary ? (
           <div className="bg-abyssal-surface glass rounded-3xl p-8 text-center">
-            <p className="text-body-large text-abyssal-red font-medium">{error}</p>
+            <p className="text-body-large text-abyssal-red font-medium font-body">{error}</p>
             <Button variant="secondary" size="md" className="mt-4" onClick={fetch}>
               Reintentar
             </Button>
@@ -117,7 +117,7 @@ export default function CashRegisterPage() {
 
             <div className="space-y-3 animate-fade-in" style={{ animationDelay: "100ms" }}>
               <div className="flex items-center justify-between">
-                <p className="text-title-medium text-abyssal-text-primary">Transacciones</p>
+                <p className="text-title-medium text-abyssal-text-primary font-heading">Transacciones</p>
                 {transactions.length > 0 && (
                   <p className="text-[12px] text-abyssal-text-secondary">
                     {filteredTransactions.length} de {transactions.length}
@@ -144,7 +144,7 @@ export default function CashRegisterPage() {
 
               {filteredTransactions.length === 0 ? (
                 <div className="bg-abyssal-surface glass rounded-2xl p-8 text-center">
-                  <p className="text-body-medium text-abyssal-text-secondary">
+                  <p className="text-body-medium text-abyssal-text-secondary font-body">
                     {selectedFilter
                       ? `No hay transacciones de tipo "${selectedFilter}"`
                       : dateRange.startDate || dateRange.endDate

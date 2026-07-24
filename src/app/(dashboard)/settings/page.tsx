@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Settings, Save, Plus, X, ChevronUp, ChevronDown, Download, Trash2, Key, FileText, Briefcase, Package, Ruler, CreditCard, Percent, Info } from "lucide-react"
+import { Settings, Save, Plus, ArrowUpRight, X, ChevronUp, ChevronDown, Download, Trash2, Key, FileText, Briefcase, Package, Ruler, CreditCard, Percent, Info, TrendingUp, Users } from "lucide-react"
 import { Card } from "@/components/ui/card"
+import { KpiCard } from "@/components/ui/kpi-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -23,8 +24,8 @@ type SettingsData = {
 
 function SectionCard({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <Card className="p-4 space-y-3">
-      <div className="flex items-center gap-2 text-title-medium text-abyssal-text-primary font-semibold">
+    <Card className="p-4 space-y-3 border border-abyssal-outline rounded-abyssal-lg shadow-abyssal-lg bg-abyssal-surface">
+      <div className="flex items-center gap-2 text-title-medium text-abyssal-text-primary font-heading font-semibold">
         <span className="text-abyssal-primary">{icon}</span>
         <h2>{title}</h2>
       </div>
@@ -235,8 +236,43 @@ export default function SettingsPage() {
 
   return (
     <>
-      <TopBar title="Configuración" icon={<Settings size={18} />} />
-      <div className="p-4 space-y-4 pb-24">
+      <TopBar title="Configuración" icon={<Settings size={18} />} subtitle="Usuarios, roles y ajustes" />
+      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6 pb-24">
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Usuarios Activos</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">24</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <ArrowUpRight size={14} className="text-abyssal-primary" />
+              <span className="text-xs font-semibold text-abyssal-primary font-caption">+5.2%</span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Roles Definidos</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">8</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <TrendingUp size={14} className="text-abyssal-primary" />
+              <span className="text-xs font-semibold text-abyssal-primary font-caption">+2 roles</span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">este mes</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Permisos</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">156</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <span className="text-xs font-semibold text-abyssal-primary font-caption">24 módulos</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Auditoría</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">1,284</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <span className="text-xs font-semibold text-abyssal-primary font-caption">eventos registrados</span>
+            </div>
+          </KpiCard>
+        </div>
 
         {/* 1. Perfil del Negocio */}
         <SectionCard title="Perfil del Negocio" icon={<Briefcase size={18} />}>

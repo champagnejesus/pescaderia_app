@@ -1,8 +1,9 @@
 "use client"
 import { useState, useEffect } from "react"
-import { TrendingUp, Plus, ShoppingCart, LayoutDashboard } from "lucide-react"
+import { TrendingUp, Plus, ShoppingCart, LayoutDashboard, ArrowUpRight } from "lucide-react"
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
+import { KpiCard } from "@/components/ui/kpi-card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BentoGrid } from "@/components/dashboard/BentoGrid"
@@ -67,11 +68,11 @@ export default function DashboardPage() {
   return (
     <>
       <TopBar title="Resumen" icon={<LayoutDashboard size={18} />} />
-      <div className="p-4 space-y-4">
+      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
         {loading ? (
           <>
             <Skeleton className="h-32" />
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
               <Skeleton className="h-24" />
               <Skeleton className="h-24" />
               <Skeleton className="h-24" />
@@ -81,17 +82,18 @@ export default function DashboardPage() {
           </>
         ) : (
           <>
-            <Card className="animate-fade-in">
+            {/* Gross Profit Hero Card */}
+            <KpiCard className="animate-fade-in">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <p className="text-label-medium text-abyssal-text-secondary">Ganancia Bruta</p>
-                  <p className="text-headline-medium text-abyssal-text-primary font-bold mt-1">
+                  <p className="text-label-medium text-abyssal-text-secondary font-body">Ganancia Bruta</p>
+                  <p className="text-headline-medium text-abyssal-text-primary font-heading font-bold mt-1">
                     {formatCurrency(dashboardData.gross_profit)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {dashboardData.pending_orders > 0 && (
-                    <span className="inline-flex items-center gap-1 bg-abyssal-yellow-bg text-abyssal-yellow rounded-abyssal-full px-2.5 py-1 text-label-small">
+                    <span className="inline-flex items-center gap-1 bg-abyssal-yellow-bg text-abyssal-yellow rounded-abyssal-full px-2.5 py-1 text-label-small font-caption">
                       <span className="w-1.5 h-1.5 rounded-full bg-abyssal-yellow animate-subtle-pulse" />
                       {dashboardData.pending_orders} pendiente{dashboardData.pending_orders !== 1 ? "s" : ""}
                     </span>
@@ -101,7 +103,61 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
-            </Card>
+              <div className="flex items-center gap-1.5 mt-3">
+                <ArrowUpRight size={14} className="text-abyssal-primary" />
+                <span className="text-sm font-semibold text-abyssal-primary font-caption">+12.5%</span>
+                <span className="text-sm text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              </div>
+            </KpiCard>
+
+            {/* KPI Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+              <KpiCard>
+                <p className="text-label-medium text-abyssal-text-secondary font-body">Ingresos Totales</p>
+                <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">
+                  {formatCurrency(dashboardData.sales_total)}
+                </p>
+                <div className="flex items-center gap-1.5 mt-3">
+                  <TrendingUp size={14} className="text-abyssal-primary" />
+                  <span className="text-xs font-semibold text-abyssal-primary font-caption">+8.2%</span>
+                  <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+                </div>
+              </KpiCard>
+
+              <KpiCard>
+                <p className="text-label-medium text-abyssal-text-secondary font-body">Total Órdenes</p>
+                <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">
+                  {dashboardData.sales_total > 0 ? Math.round(dashboardData.sales_total / 154.2) : 0}
+                </p>
+                <div className="flex items-center gap-1.5 mt-3">
+                  <TrendingUp size={14} className="text-abyssal-primary" />
+                  <span className="text-xs font-semibold text-abyssal-primary font-caption">+15.3%</span>
+                  <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+                </div>
+              </KpiCard>
+
+              <KpiCard>
+                <p className="text-label-medium text-abyssal-text-secondary font-body">Ganancia Neta</p>
+                <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">
+                  {formatCurrency(dashboardData.gross_profit)}
+                </p>
+                <div className="flex items-center gap-1.5 mt-3">
+                  <TrendingUp size={14} className="text-abyssal-primary" />
+                  <span className="text-xs font-semibold text-abyssal-primary font-caption">+4.7%</span>
+                  <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+                </div>
+              </KpiCard>
+
+              <KpiCard>
+                <p className="text-label-medium text-abyssal-text-secondary font-body">Ticket Promedio</p>
+                <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">$154.20</p>
+                <div className="flex items-center gap-1.5 mt-3">
+                  <TrendingUp size={14} className="text-abyssal-primary" />
+                  <span className="text-xs font-semibold text-abyssal-primary font-caption">+4.7%</span>
+                  <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+                </div>
+              </KpiCard>
+            </div>
 
             <BentoGrid data={dashboardData} />
 

@@ -18,28 +18,21 @@ function StatCardComponent({
   label,
   value,
   icon: Icon,
-  iconColor = "abyssal-primary",
+  iconColor = "text-abyssal-primary",
   trend,
   className,
 }: StatCardProps) {
   return (
-    <div className={cn("bg-abyssal-surface glass rounded-2xl p-4 shadow-abyssal-sm", className)}>
-      {Icon && (
-        <div className="flex items-center gap-2 mb-1">
-          <Icon className={cn("w-3.5 h-3.5", `text-${iconColor}`)} />
-          <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium">
-            {label}
-          </p>
-        </div>
-      )}
-      {!Icon && (
-        <p className="text-[10px] text-abyssal-text-secondary uppercase tracking-wider font-medium mb-1">
+    <div className={cn("bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 shadow-abyssal-lg", className)}>
+      <div className="flex items-center gap-1.5 mb-2">
+        {Icon && <Icon className={cn("w-[14px] h-[14px]", iconColor)} />}
+        <p className="text-label-small text-abyssal-text-secondary font-caption uppercase tracking-wider">
           {label}
         </p>
-      )}
-      <p className="text-title-large text-abyssal-text-primary font-bold">{value}</p>
+      </div>
+      <p className="text-title-large text-abyssal-text-primary font-heading font-bold">{value}</p>
       {trend && (
-        <p className={cn("text-[11px] font-medium mt-1", trend.positive ? "text-abyssal-green" : "text-abyssal-red")}>
+        <p className={cn("text-xs font-medium mt-1 font-caption", trend.positive ? "text-abyssal-green" : "text-abyssal-red")}>
           {trend.value}
         </p>
       )}

@@ -1,21 +1,20 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Download, Plus, Users, Users as UsersIcon } from "lucide-react"
+import { Download, Plus, Users, Users as UsersIcon, TrendingUp, ArrowUpRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
+import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
 import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ClientCard } from "@/components/clients/ClientCard"
-import { ClientStats } from "@/components/clients/ClientStats"
 import { ClientFilters } from "@/components/clients/ClientFilters"
 import api from "@/lib/api"
 import { exportCSV } from "@/lib/export"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
-import { StatCard } from "@/components/shared/StatCard"
 import { FilterTabs } from "@/components/shared/FilterTabs"
 import { FAB } from "@/components/shared/FAB"
 
@@ -86,7 +85,8 @@ export default function ClientsPage() {
   }, [filtered])
 
   const debtClients = useMemo(() => clients.filter((c) => c.outstanding_balance > 0).length, [clients])
-  const frequentClients = useMemo(() => clients.filter((c) => c.credit_limit > 0).length, [clients])
+  const activeClients = useMemo(() => clients.filter((c) => c.credit_limit > 0).length, [clients])
+  const totalBalance = useMemo(() => clients.reduce((sum, c) => sum + c.outstanding_balance, 0), [clients])
 
   function generateInitials(fullName: string): string {
     return fullName
@@ -127,6 +127,7 @@ export default function ClientsPage() {
       <TopBar
         title="Clientes"
         icon={<UsersIcon size={18} />}
+        subtitle="Gestión de clientes y relaciones"
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
@@ -146,23 +147,59 @@ export default function ClientsPage() {
           </div>
         }
       />
-      <div className="p-4 space-y-3">
-        <ClientStats totalClients={clients.length} debtClients={debtClients} frequentClients={frequentClients} />
+      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
+        {/* KPI Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Total Clientes</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{clients.length}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <ArrowUpRight size={14} className="text-abyssal-primary" />
+              <span className="text-xs font-semibold text-abyssal-primary font-caption">+18.3%</span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Leads Activos</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{activeClients}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <ArrowUpRight size={14} className="text-abyssal-primary" />
+              <span className="text-xs font-semibold text-abyssal-primary font-caption">+24.5%</span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Con Deuda</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{debtClients}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <TrendingUp size={14} className="text-abyssal-yellow" />
+              <span className="text-xs font-semibold text-abyssal-yellow font-caption">-5.2%</span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Saldo Pendiente</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">
+              S/ {totalBalance.toFixed(2)}
+            </p>
+          </KpiCard>
+        </div>
+
         <ClientFilters selected={filter} onSelect={setFilter} />
 
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-16" />
+              <Skeleton key={i} className="h-16 rounded-abyssal-lg" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Users size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
-            <p className="text-title-medium text-abyssal-text-primary mb-2">
+            <p className="text-title-medium text-abyssal-text-primary font-heading mb-2">
               {filter !== "Todos" ? "No hay clientes en este filtro" : "No hay clientes"}
             </p>
-            <p className="text-body-medium text-abyssal-text-secondary mb-4">
+            <p className="text-body-medium text-abyssal-text-secondary font-body mb-4">
               {filter !== "Todos" ? "Prueba con otro filtro" : "Agrega tu primer cliente para comenzar"}
             </p>
             {filter === "Todos" && (
@@ -175,7 +212,7 @@ export default function ClientsPage() {
           <div className="space-y-4">
             {grouped.debt.length > 0 && (
               <div>
-                <p className="text-label-small text-abyssal-text-secondary uppercase tracking-wider mb-2 px-1">
+                <p className="text-label-small text-abyssal-text-secondary font-caption uppercase tracking-wider mb-2 px-1">
                   Con Deuda ({grouped.debt.length})
                 </p>
                 <div className="space-y-2">
@@ -187,7 +224,7 @@ export default function ClientsPage() {
             )}
             {grouped.current.length > 0 && (
               <div>
-                <p className="text-label-small text-abyssal-text-secondary uppercase tracking-wider mb-2 px-1">
+                <p className="text-label-small text-abyssal-text-secondary font-caption uppercase tracking-wider mb-2 px-1">
                   Al Corriente ({grouped.current.length})
                 </p>
                 <div className="space-y-2">

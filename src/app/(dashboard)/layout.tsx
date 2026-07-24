@@ -8,6 +8,7 @@ const AuthGuard = dynamic(
 )
 import { BottomNav } from "@/components/layout/BottomNav"
 import { Sidebar } from "@/components/layout/Sidebar"
+import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, Users,
   Truck, Package, Fish, ArrowLeftFromLine,
@@ -33,15 +34,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <AuthGuard>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen bg-abyssal-bg">
         <Sidebar />
         <main className="flex-1 lg:ml-64">
           {meta && (
-            <div className="hidden lg:flex items-center gap-3 px-8 pt-6 pb-2">
-              <div className="w-9 h-9 rounded-xl bg-abyssal-primary/10 flex items-center justify-center text-abyssal-primary">
-                {meta.icon}
+            <div className="hidden lg:flex items-center justify-between px-8 pt-6 pb-2">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-abyssal-primary/10 flex items-center justify-center text-abyssal-primary">
+                  {meta.icon}
+                </div>
+                <h1 className="text-title-large text-abyssal-text-primary font-heading font-bold">{meta.label}</h1>
               </div>
-              <h1 className="text-title-large text-abyssal-text-primary font-bold">{meta.label}</h1>
+              <ThemeToggle />
             </div>
           )}
           <div className="mx-auto lg:max-w-[1280px] lg:px-8 pb-24 lg:pb-8">

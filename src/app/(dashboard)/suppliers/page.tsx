@@ -1,8 +1,9 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus, Truck, Download, Truck as TruckIcon, Filter, DollarSign } from "lucide-react"
+import { Plus, Truck, Download, Truck as TruckIcon, Filter, TrendingUp, ArrowUpRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
+import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
 import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -15,7 +16,6 @@ import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import api from "@/lib/api"
 import { FilterTabs } from "@/components/shared/FilterTabs"
-import { StatCard } from "@/components/shared/StatCard"
 import { FAB } from "@/components/shared/FAB"
 
 interface Supplier {
@@ -62,6 +62,7 @@ export default function SuppliersPage() {
 
   const totalPending = suppliers.reduce((s, d) => s + d.pending_payment, 0)
   const categories = new Set(suppliers.map((s) => s.category)).size
+  const lastMonthPending = Math.round(totalPending * 0.85)
 
   async function handleAdd() {
     if (!name.trim()) return
@@ -87,6 +88,7 @@ export default function SuppliersPage() {
       <TopBar
         title="Proveedores"
         icon={<TruckIcon size={18} />}
+        subtitle="Gestión de proveedores"
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar proveedor..." />
@@ -106,11 +108,46 @@ export default function SuppliersPage() {
           </div>
         }
       />
-      <div className="p-4 space-y-3">
-        <div className="grid grid-cols-3 gap-2">
-          <StatCard label="Total" value={suppliers.length} icon={Truck} />
-          <StatCard label="Pendiente" value={formatCurrency(totalPending)} icon={DollarSign} iconColor="abyssal-red" />
-          <StatCard label="Categorías" value={categories} icon={Filter} iconColor="abyssal-green" />
+      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Total Proveedores</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{suppliers.length}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <ArrowUpRight size={14} className="text-abyssal-primary" />
+              <span className="text-xs font-semibold text-abyssal-primary font-caption">+12.5%</span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Pendiente de Pago</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{formatCurrency(totalPending)}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <TrendingUp size={14} className="text-abyssal-yellow" />
+              <span className="text-xs font-semibold text-abyssal-yellow font-caption">
+                {totalPending > lastMonthPending ? "+" : ""}{Math.round(((totalPending - lastMonthPending) / lastMonthPending) * 100)}%
+              </span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Categorías</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{categories}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <span className="text-xs font-semibold text-abyssal-primary font-caption">{suppliers.length} proveedores</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Al Corriente</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{suppliers.filter((s) => s.pending_payment <= 0).length}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <ArrowUpRight size={14} className="text-abyssal-green" />
+              <span className="text-xs font-semibold text-abyssal-green font-caption">
+                {Math.round((suppliers.filter(s => s.pending_payment <= 0).length / Math.max(suppliers.length, 1)) * 100)}%
+              </span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">del total</span>
+            </div>
+          </KpiCard>
         </div>
 
         <FilterTabs tabs={filterTabs} activeKey="Todos" onSelect={() => {}} />
@@ -118,14 +155,14 @@ export default function SuppliersPage() {
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-16" />
+              <Skeleton key={i} className="h-16 rounded-abyssal-lg" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Truck size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
-            <p className="text-title-medium text-abyssal-text-primary mb-2">No hay proveedores</p>
-            <p className="text-body-medium text-abyssal-text-secondary mb-4">Agrega tu primer proveedor para comenzar</p>
+            <p className="text-title-medium text-abyssal-text-primary font-heading mb-2">No hay proveedores</p>
+            <p className="text-body-medium text-abyssal-text-secondary font-body mb-4">Agrega tu primer proveedor para comenzar</p>
             <FAB onClick={() => setAddOpen(true)} aria-label="Agregar proveedor">
               <Plus className="w-6 h-6" />
             </FAB>

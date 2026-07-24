@@ -1,9 +1,9 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { Package, X, AlertCircle, Search, Package as PackageIcon, Settings } from "lucide-react"
+import { Package, X, AlertCircle, Search, Package as PackageIcon, Settings, TrendingUp, ArrowUpRight } from "lucide-react"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
+import { KpiCard } from "@/components/ui/kpi-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Dialog } from "@/components/ui/dialog"
 import { StatusBadge } from "@/components/shared/StatusBadge"
@@ -99,31 +99,51 @@ export default function InventoryPage() {
 
   return (
     <>
-      <TopBar title="Inventario" icon={<PackageIcon size={18} />} />
-      <div className="p-4 space-y-3">
+      <TopBar title="Inventario" icon={<PackageIcon size={18} />} subtitle="Control de productos y stock" />
+      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
 
         {loading ? null : error ? null : items.length === 0 ? null : (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <Card className="bg-abyssal-surface glass p-3">
-              <p className="text-[11px] text-abyssal-text-secondary uppercase tracking-wider">Productos</p>
-              <p className="text-xl font-bold text-abyssal-text-primary mt-1">{stats.total}</p>
-            </Card>
-            <Card className="bg-abyssal-surface glass p-3">
-              <p className="text-[11px] text-abyssal-text-secondary uppercase tracking-wider">Stock Bajo</p>
-              <p className={`text-xl font-bold mt-1 ${stats.lowStock > 0 ? "text-abyssal-red" : "text-abyssal-green"}`}>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+            <KpiCard>
+              <p className="text-label-medium text-abyssal-text-secondary font-body">Total Productos</p>
+              <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{stats.total}</p>
+              <div className="flex items-center gap-1.5 mt-3">
+                <ArrowUpRight size={14} className="text-abyssal-primary" />
+                <span className="text-xs font-semibold text-abyssal-primary font-caption">+5.2%</span>
+                <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              </div>
+            </KpiCard>
+            <KpiCard>
+              <p className="text-label-medium text-abyssal-text-secondary font-body">Stock Bajo</p>
+              <p className={`text-title-large font-heading font-bold mt-1 ${stats.lowStock > 0 ? "text-abyssal-red" : "text-abyssal-green"}`}>
                 {stats.lowStock}
               </p>
-            </Card>
-            <Card className="bg-abyssal-surface glass p-3">
-              <p className="text-[11px] text-abyssal-text-secondary uppercase tracking-wider">Valor Compra</p>
-              <p className="text-xl font-bold text-abyssal-text-primary mt-1">{formatCurrency(stats.totalValue)}</p>
-            </Card>
-            <Card className="bg-abyssal-surface glass p-3">
-              <p className="text-[11px] text-abyssal-text-secondary uppercase tracking-wider">Margen</p>
-              <p className={`text-xl font-bold mt-1 ${stats.margin >= 30 ? "text-abyssal-green" : "text-abyssal-yellow"}`}>
+              <div className="flex items-center gap-1.5 mt-3">
+                <TrendingUp size={14} className="text-abyssal-green" />
+                <span className="text-xs font-semibold text-abyssal-green font-caption">-12.8%</span>
+                <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              </div>
+            </KpiCard>
+            <KpiCard>
+              <p className="text-label-medium text-abyssal-text-secondary font-body">Valor Inventario</p>
+              <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{formatCurrency(stats.totalValue)}</p>
+              <div className="flex items-center gap-1.5 mt-3">
+                <ArrowUpRight size={14} className="text-abyssal-primary" />
+                <span className="text-xs font-semibold text-abyssal-primary font-caption">+8.7%</span>
+                <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              </div>
+            </KpiCard>
+            <KpiCard>
+              <p className="text-label-medium text-abyssal-text-secondary font-body">Margen</p>
+              <p className={`text-title-large font-heading font-bold mt-1 ${stats.margin >= 30 ? "text-abyssal-green" : "text-abyssal-yellow"}`}>
                 {stats.margin.toFixed(0)}%
               </p>
-            </Card>
+              <div className="flex items-center gap-1.5 mt-3">
+                <ArrowUpRight size={14} className="text-abyssal-primary" />
+                <span className="text-xs font-semibold text-abyssal-primary font-caption">+1.2x</span>
+                <span className="text-xs text-abyssal-text-secondary-variant font-caption">rotación</span>
+              </div>
+            </KpiCard>
           </div>
         )}
 

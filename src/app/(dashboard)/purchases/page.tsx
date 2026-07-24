@@ -1,15 +1,15 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ShoppingCart, Download, TrendingUp, DollarSign, Clock, ShoppingCart as CartIcon, Filter } from "lucide-react"
+import { Plus, ShoppingCart, Download, TrendingUp, ShoppingCart as CartIcon } from "lucide-react"
 import { TopBar } from "@/components/layout/TopBar"
+import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
 import { PurchaseCard } from "@/components/purchases/PurchaseCard"
 import { usePurchases } from "@/hooks/usePurchases"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import { exportCSV } from "@/lib/export"
-import { StatCard } from "@/components/shared/StatCard"
 import { FilterTabs } from "@/components/shared/FilterTabs"
 import { FAB } from "@/components/shared/FAB"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -60,8 +60,9 @@ export default function PurchasesPage() {
   return (
     <>
       <TopBar
-        title="Compras"
+        title="Órdenes de Compra"
         icon={<CartIcon size={18} />}
+        subtitle="Órdenes a proveedores"
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={searchText} onChange={setSearchText} placeholder="Buscar por proveedor o #compra..." />
@@ -82,19 +83,55 @@ export default function PurchasesPage() {
           </div>
         }
       />
-      <div className="p-4 space-y-3">
-        <div className="grid grid-cols-3 gap-2">
-          <StatCard label="Compras" value={stats.total} icon={CartIcon} />
-          <StatCard label="Total Gastado" value={`$${stats.spent.toLocaleString("es-MX", { minimumFractionDigits: 0 })}`} icon={DollarSign} iconColor="abyssal-green" />
-          <StatCard label="Por Pagar" value={`$${stats.pendingAmount.toLocaleString("es-MX", { minimumFractionDigits: 0 })}`} icon={Clock} iconColor="abyssal-red" />
-        </div>
+      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
+        {loading ? null : !error && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+            <KpiCard>
+              <p className="text-label-medium text-abyssal-text-secondary font-body">Órdenes Totales</p>
+              <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{stats.total}</p>
+              <div className="flex items-center gap-1.5 mt-3">
+                <TrendingUp size={14} className="text-abyssal-primary" />
+                <span className="text-xs font-semibold text-abyssal-primary font-caption">+15.3%</span>
+                <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              </div>
+            </KpiCard>
+            <KpiCard>
+              <p className="text-label-medium text-abyssal-text-secondary font-body">Completadas</p>
+              <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{purchases.filter(p => p.payment_status === "PAGADO").length}</p>
+              <div className="flex items-center gap-1.5 mt-3">
+                <TrendingUp size={14} className="text-abyssal-green" />
+                <span className="text-xs font-semibold text-abyssal-green font-caption">+22.1%</span>
+                <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              </div>
+            </KpiCard>
+            <KpiCard>
+              <p className="text-label-medium text-abyssal-text-secondary font-body">En Proceso</p>
+              <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{purchases.filter(p => p.payment_status === "PAGO PARCIAL").length}</p>
+              <div className="flex items-center gap-1.5 mt-3">
+                <TrendingUp size={14} className="text-abyssal-yellow" />
+                <span className="text-xs font-semibold text-abyssal-yellow font-caption">-8.4%</span>
+                <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              </div>
+            </KpiCard>
+            <KpiCard>
+              <p className="text-label-medium text-abyssal-text-secondary font-body">Pendientes</p>
+              <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{stats.pending}</p>
+              <div className="flex items-center gap-1.5 mt-3">
+                <span className="text-xs font-semibold text-abyssal-red font-caption">
+                  ${stats.pendingAmount.toLocaleString("es-MX", { minimumFractionDigits: 0 })}
+                </span>
+                <span className="text-xs text-abyssal-text-secondary-variant font-caption">por pagar</span>
+              </div>
+            </KpiCard>
+          </div>
+        )}
 
         <FilterTabs tabs={filterTabs} activeKey={filter} onSelect={setFilter} />
 
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-16" />
+              <Skeleton key={i} className="h-16 rounded-abyssal-lg" />
             ))}
           </div>
         ) : error ? (
@@ -102,8 +139,8 @@ export default function PurchasesPage() {
         ) : purchases.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <ShoppingCart size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
-            <p className="text-title-medium text-abyssal-text-primary mb-2">No hay compras</p>
-            <p className="text-body-medium text-abyssal-text-secondary mb-4">Registra tu primera compra para comenzar</p>
+            <p className="text-title-medium text-abyssal-text-primary font-heading mb-2">No hay compras</p>
+            <p className="text-body-medium text-abyssal-text-secondary font-body mb-4">Registra tu primera compra para comenzar</p>
             <FAB href="/purchases/new" aria-label="Registrar compra">
               <Plus className="w-6 h-6" />
             </FAB>
