@@ -157,9 +157,9 @@ async def lifespan(app: FastAPI):
         result = await session.execute(sa_select(func.count(Transaction.id)).where(Transaction.business_id == business.id))
         if result.scalar() == 0:
             session.add_all([
-                Transaction(business_id=business.id, title="Pago recibido - Mariscos del Sur S.A.", time="10:30", type="INGRESO", amount=410000.0, status="PAGADO", created_at=datetime.now(timezone.utc)),
-                Transaction(business_id=business.id, title="Pago recibido - Distribuidora Costera", time="12:15", type="INGRESO", amount=220000.0, status="PAGADO", created_at=datetime.now(timezone.utc)),
-                Transaction(business_id=business.id, title="Compra - Pesquera Pacífico (Lote Camarón)", time="09:00", type="EGRESO", amount=350000.0, status="PAGADO", created_at=datetime.now(timezone.utc)),
+                Transaction(business_id=business.id, title="Pago recibido - Mariscos del Sur S.A.", time="10:30", type="Transferencia", amount=410000.0, status="PAGADO", created_at=datetime.now(timezone.utc)),
+                Transaction(business_id=business.id, title="Pago recibido - Distribuidora Costera", time="12:15", type="Tarjeta", amount=220000.0, status="PAGADO", created_at=datetime.now(timezone.utc)),
+                Transaction(business_id=business.id, title="Compra - Pesquera Pacífico (Lote Camarón)", time="09:00", type="Gasto", amount=-350000.0, status="PAGADO", created_at=datetime.now(timezone.utc)),
             ])
         await session.commit()
 

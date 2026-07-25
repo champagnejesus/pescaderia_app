@@ -12,12 +12,13 @@ from app.models.transaction import Transaction
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 @router.get("/recent", response_model=list[RecentActivityItem])
-async def recent_activity(db: AsyncSession = Depends(get_db)):
+async def recent_activity(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    bid = user["id"]
     items: list[RecentActivityItem] = []
     seen_pairs: set[tuple[str, float]] = set()
 
     orders_result = await db.execute(
-        select(Order).order_by(Order.created_at.desc()).limit(10)
+        select(Order).where(Order.business_id == bid).order_by(Order.created_at.desc()).limit(10)
     )
     for o in orders_result.scalars().all():
         seen_pairs.add((o.client_name, o.total_value))
@@ -34,7 +35,7 @@ async def recent_activity(db: AsyncSession = Depends(get_db)):
         ))
 
     purchases_result = await db.execute(
-        select(Purchase).order_by(Purchase.created_at.desc()).limit(10)
+        select(Purchase).where(Purchase.business_id == bid).order_by(Purchase.created_at.desc()).limit(10)
     )
     for p in purchases_result.scalars().all():
         items.append(RecentActivityItem(
@@ -50,7 +51,7 @@ async def recent_activity(db: AsyncSession = Depends(get_db)):
         ))
 
     txs_result = await db.execute(
-        select(Transaction).order_by(Transaction.created_at.desc()).limit(25)
+        select(Transaction).where(Transaction.business_id == bid).order_by(Transaction.created_at.desc()).limit(25)
     )
     for t in txs_result.scalars().all():
         if t.amount > 0 and t.type not in ("Cobro", "Gasto") and (t.title, t.amount) in seen_pairs:

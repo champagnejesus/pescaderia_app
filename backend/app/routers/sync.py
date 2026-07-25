@@ -10,21 +10,21 @@ from app.services import product_service, order_service
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 @router.post("/pull", response_model=SyncPullResponse)
-async def sync_pull(req: SyncPullRequest, db: AsyncSession = Depends(get_db)):
-    data = await pull_changes(db, req.since, limit=req.limit)
+async def sync_pull(req: SyncPullRequest, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    data = await pull_changes(db, user["id"], req.since, limit=req.limit)
     return SyncPullResponse(**data, server_time=datetime.now(timezone.utc))
 
 @router.post("/push", response_model=SyncPushResponse)
-async def sync_push(req: SyncPushRequest, db: AsyncSession = Depends(get_db)):
+async def sync_push(req: SyncPushRequest, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     accepted = 0; rejected = []
     for change in req.changes:
         savepoint = await db.begin_nested()
         try:
             if change.entity == "product" and change.action in ("create", "update"):
                 if change.action == "create":
-                    await product_service.create_product(db, change.data)
+                    await product_service.create_product(db, change.data, user["id"])
             elif change.entity == "order" and change.action == "create":
-                await order_service.create_order(db, {**change.data, "items": change.data.get("items", [])})
+                await order_service.create_order(db, {**change.data, "items": change.data.get("items", [])}, user["id"])
             accepted += 1
         except Exception as e:
             await savepoint.rollback()

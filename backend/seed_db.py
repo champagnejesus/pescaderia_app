@@ -199,15 +199,15 @@ async def seed():
         print("Creating transactions...")
         tx_ingreso1 = Transaction(
             business_id=1, title="Pago recibido - Mariscos del Sur S.A.", time="10:30",
-            type="INGRESO", amount=410000.0, status="PAGADO", created_at=datetime.now(timezone.utc)
+            type="Transferencia", amount=410000.0, status="PAGADO", created_at=datetime.now(timezone.utc)
         )
         tx_ingreso2 = Transaction(
             business_id=1, title="Pago recibido - Distribuidora Costera", time="12:15",
-            type="INGRESO", amount=220000.0, status="PAGADO", created_at=datetime.now(timezone.utc)
+            type="Tarjeta", amount=220000.0, status="PAGADO", created_at=datetime.now(timezone.utc)
         )
         tx_egreso1 = Transaction(
             business_id=1, title="Compra - Pesquera Pacífico (Lote Camarón)", time="09:00",
-            type="EGRESO", amount=350000.0, status="PAGADO", created_at=datetime.now(timezone.utc)
+            type="Gasto", amount=-350000.0, status="PAGADO", created_at=datetime.now(timezone.utc)
         )
         session.add_all([tx_ingreso1, tx_ingreso2, tx_egreso1])
         await session.commit()
