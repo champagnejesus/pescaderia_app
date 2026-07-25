@@ -161,19 +161,77 @@ export default function AccountsReceivablePage() {
             </div>
           </div>
 
-          {/* Cuentas Bancarias */}
-          <div className="w-[320px] shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
-            <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Cuentas Bancarias</h3>
-            <div className="space-y-0">
+          {/* Distribución de Ingresos */}
+          <div className="w-[320px] shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg flex flex-col justify-between">
+            <div>
+              <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Distribución de Ingresos</h3>
+              <p className="text-[12px] text-abyssal-text-secondary-variant font-caption mt-0.5">Por método de pago (hoy)</p>
+            </div>
+            
+            <div className="relative w-[130px] h-[130px] mx-auto my-6 flex items-center justify-center">
+              <svg width="130" height="130" viewBox="0 0 100 100" className="-rotate-90">
+                {/* Background ring */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="transparent"
+                  stroke="rgba(255, 255, 255, 0.03)"
+                  strokeWidth="2.5"
+                />
+                {/* Segment 1: Transferencias (60%) */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="transparent"
+                  stroke="#3b82f6"
+                  strokeWidth="2.5"
+                  strokeDasharray="150.8 100.5"
+                  strokeDashoffset="0"
+                />
+                {/* Segment 2: Efectivo (30%) */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="transparent"
+                  stroke="#10b981"
+                  strokeWidth="2.5"
+                  strokeDasharray="75.4 175.9"
+                  strokeDashoffset="-150.8"
+                />
+                {/* Segment 3: Tarjeta (10%) */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="transparent"
+                  stroke="#8b5cf6"
+                  strokeWidth="2.5"
+                  strokeDasharray="25.1 226.2"
+                  strokeDashoffset="-226.2"
+                />
+              </svg>
+              {/* Central Text */}
+              <div className="absolute flex flex-col items-center justify-center">
+                <span className="text-[16px] text-abyssal-text-primary font-heading font-bold">100%</span>
+                <span className="text-[9px] text-abyssal-text-secondary-variant uppercase tracking-wider font-semibold font-caption">Total</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
               {[
-                { name: "BCP - Corriente", number: "****4521", balance: 142500 },
-                { name: "Interbank - Ahorros", number: "****7834", balance: 89200 },
-                { name: "Scotiabank - USD", number: "****2109", balance: 45800 },
-              ].map((acct, i) => (
-                <div key={acct.name} className={`py-4 ${i < 2 ? "border-b border-abyssal-outline" : ""}`}>
-                  <p className="text-[13px] text-abyssal-text-primary font-body font-medium">{acct.name}</p>
-                  <p className="text-[11px] text-abyssal-text-secondary-variant font-caption mt-0.5">{acct.number}</p>
-                  <p className="text-[18px] text-abyssal-primary font-heading font-bold mt-1">{formatCurrency(acct.balance)}</p>
+                { name: "Transferencias", value: "60%", colorClass: "bg-blue-500" },
+                { name: "Efectivo", value: "30%", colorClass: "bg-emerald-500" },
+                { name: "Tarjeta", value: "10%", colorClass: "bg-purple-500" },
+              ].map((item) => (
+                <div key={item.name} className="flex items-center justify-between text-[13px]">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${item.colorClass}`} />
+                    <span className="text-abyssal-text-secondary font-body">{item.name}</span>
+                  </div>
+                  <span className="font-mono text-abyssal-text-primary font-semibold">{item.value}</span>
                 </div>
               ))}
             </div>
