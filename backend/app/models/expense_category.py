@@ -8,7 +8,7 @@ class ExpenseCategory(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     parent_id = Column(Integer, ForeignKey("expense_categories.id"), nullable=True)
-    business_id = Column(Integer, nullable=True)
+    business_id = Column(Integer, ForeignKey("business_config.id", ondelete="CASCADE"), nullable=True, index=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

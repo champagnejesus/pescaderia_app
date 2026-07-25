@@ -7,6 +7,7 @@ from app.models.order import Order, OrderItem
 from app.models.product import Product
 from app.models.client import Client
 from app.models.transaction import Transaction
+
 PAYMENT_TYPE_MAP = {
     "EFECTIVO": "Efectivo",
     "TARJETA": "Tarjeta",
@@ -14,25 +15,57 @@ PAYMENT_TYPE_MAP = {
     "TRANSFER": "Transfer",
 }
 
-async def create_order(db: AsyncSession, data: dict) -> Order:
+async def create_order(db: AsyncSession, data: dict, business_id: int = 1) -> Order:
+    from datetime import date, timedelta
     order_number = f"ORD-{uuid.uuid4().hex[:8].upper()}"
     items_data = data.pop("items", [])
     total_value = sum(i["subtotal"] for i in items_data)
     payment_method = data.get("payment_method", "Efectivo")
+    payment_status = data.get("payment_status", "PENDIENTE")
     client_id = data.get("client_id")
     client = None
     if client_id:
-        client = await db.get(Client, client_id)
+        result = await db.execute(select(Client).where(Client.id == client_id, Client.business_id == business_id))
+        client = result.scalar_one_or_none()
         if not client:
             raise ValueError(f"Client with id {client_id} not found")
-    order = Order(order_number=order_number, total_value=total_value, items_count=len(items_data), **data)
+        
+        if payment_status != "PAGADO":
+            if not client.allows_credit:
+                raise ValueError("El cliente no tiene autorizado crédito comercial.")
+            if (client.outstanding_balance or 0) + total_value > (client.credit_limit or 0):
+                raise ValueError("Se ha excedido el límite de crédito del cliente.")
+            
+            today_date = date.today()
+            overdue_query = select(Order).where(
+                Order.client_id == client.id,
+                Order.payment_status != "PAGADO",
+                Order.due_date < today_date,
+                Order.business_id == business_id
+            )
+            overdue_result = await db.execute(overdue_query)
+            if overdue_result.scalars().first() is not None:
+                raise ValueError("El cliente posee facturas vencidas impagadas.")
+
+    due_date = None
+    if client and payment_status != "PAGADO" and client.allows_credit:
+        due_date = date.today() + timedelta(days=client.payment_terms)
+
+    data["business_id"] = business_id
+    order = Order(
+        order_number=order_number,
+        total_value=total_value,
+        items_count=len(items_data),
+        due_date=due_date,
+        **data
+    )
     db.add(order)
     await db.flush()
     for item_data in items_data:
         item = OrderItem(order_id=order.id, **item_data)
         db.add(item)
         result = await db.execute(
-            select(Product).where(Product.id == item_data["product_id"]).with_for_update()
+            select(Product).where(Product.id == item_data["product_id"], Product.business_id == business_id).with_for_update()
         )
         product = result.scalar_one_or_none()
         if product:
@@ -40,7 +73,6 @@ async def create_order(db: AsyncSession, data: dict) -> Order:
                 raise ValueError(f"Insufficient stock for {product.name}: available {product.stock}, requested {item_data['quantity']}")
             product.stock -= item_data["quantity"]
     now = datetime.now(timezone.utc)
-    payment_status = data.get("payment_status", "PENDIENTE")
     if payment_status == "PAGADO":
         tx = Transaction(
             title=data.get('client_name', 'Mostrador'),
@@ -48,6 +80,7 @@ async def create_order(db: AsyncSession, data: dict) -> Order:
             type=PAYMENT_TYPE_MAP.get(payment_method.upper(), "Efectivo"),
             amount=total_value,
             status="PAGADO",
+            business_id=business_id,
         )
         db.add(tx)
     else:
@@ -59,14 +92,15 @@ async def create_order(db: AsyncSession, data: dict) -> Order:
             type="Cuenta por Cobrar",
             amount=total_value,
             status="PENDIENTE",
+            business_id=business_id,
         )
         db.add(tx)
     await db.flush()
     await db.refresh(order, ["items"])
     return order
 
-async def get_orders(db: AsyncSession, status: str = "", page: int = 1, limit: int = 50) -> list[Order]:
-    query = select(Order)
+async def get_orders(db: AsyncSession, business_id: int = 1, status: str = "", page: int = 1, limit: int = 50) -> list[Order]:
+    query = select(Order).where(Order.business_id == business_id)
     if status and status != "Todos":
         status_map = {"Pendientes": "PENDIENTE", "Entregados": "ENTREGADO", "Anulados": "ANULADO"}
         query = query.where(Order.status == status_map.get(status, status))
@@ -74,30 +108,34 @@ async def get_orders(db: AsyncSession, status: str = "", page: int = 1, limit: i
     result = await db.execute(query)
     return result.scalars().unique().all()
 
-async def get_order(db: AsyncSession, order_id: int) -> Order | None:
-    order = await db.get(Order, order_id)
+async def get_order(db: AsyncSession, order_id: int, business_id: int = 1) -> Order | None:
+    result = await db.execute(select(Order).where(Order.id == order_id, Order.business_id == business_id))
+    order = result.scalar_one_or_none()
     if order: await db.refresh(order, ["items"])
     return order
 
-async def update_order_status(db: AsyncSession, order_id: int, new_status: str) -> Order | None:
-    order = await db.get(Order, order_id)
+async def update_order_status(db: AsyncSession, order_id: int, new_status: str, business_id: int = 1) -> Order | None:
+    from decimal import Decimal
+    order = await get_order(db, order_id, business_id)
     if not order: return None
     old_status = order.status
     order.status = new_status
     if new_status == "ANULADO" and old_status != "ANULADO":
         items = await db.execute(select(OrderItem).where(OrderItem.order_id == order_id))
         for item in items.scalars().all():
-            product = await db.get(Product, item.product_id)
+            res = await db.execute(select(Product).where(Product.id == item.product_id, Product.business_id == business_id))
+            product = res.scalar_one_or_none()
             if product:
-                product.stock += item.quantity
+                product.stock = Decimal(str(product.stock)) + Decimal(str(item.quantity))
     elif old_status == "ANULADO" and new_status != "ANULADO":
         items = await db.execute(select(OrderItem).where(OrderItem.order_id == order_id))
         for item in items.scalars().all():
-            product = await db.get(Product, item.product_id)
+            res = await db.execute(select(Product).where(Product.id == item.product_id, Product.business_id == business_id))
+            product = res.scalar_one_or_none()
             if product:
-                if product.stock < item.quantity:
+                if Decimal(str(product.stock)) < Decimal(str(item.quantity)):
                     raise ValueError(f"Insufficient stock to reinstate order (product {product.name})")
-                product.stock -= item.quantity
+                product.stock = Decimal(str(product.stock)) - Decimal(str(item.quantity))
     await db.flush()
     await db.refresh(order, ["items"])
     return order

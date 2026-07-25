@@ -9,6 +9,8 @@ class ClientCreate(BaseModel):
     outstanding_balance: float = 0.0
     initials: str = ""
     credit_limit: float = 1500.0
+    allows_credit: bool = False
+    payment_terms: int = 0
 
 class ClientUpdate(BaseModel):
     name: str | None = None
@@ -18,6 +20,8 @@ class ClientUpdate(BaseModel):
     outstanding_balance: float | None = None
     initials: str | None = None
     credit_limit: float | None = None
+    allows_credit: bool | None = None
+    payment_terms: int | None = None
 
 class BalanceAdjust(BaseModel):
     new_balance: float
@@ -31,6 +35,8 @@ class ClientResponse(BaseModel):
     outstanding_balance: float | None = None
     initials: str | None = None
     credit_limit: float | None = None
+    allows_credit: bool
+    payment_terms: int
     created_at: datetime | None = None
     class Config: from_attributes = True
 

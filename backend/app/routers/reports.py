@@ -20,12 +20,13 @@ from app.services import pdf_service
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 @router.get("/dashboard", response_model=DashboardResponse)
-async def dashboard(db: AsyncSession = Depends(get_db)):
-    products_all = (await db.execute(select(Product))).scalars().all()
-    pending = (await db.execute(select(func.count(Order.id)).where(Order.status == "PENDIENTE"))).scalar() or 0
-    clients_count = (await db.execute(select(func.count(Client.id)))).scalar() or 0
-    suppliers_count = (await db.execute(select(func.count(Supplier.id)))).scalar() or 0
-    txs = (await db.execute(select(Transaction))).scalars().all()
+async def dashboard(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    bid = user["id"]
+    products_all = (await db.execute(select(Product).where(Product.business_id == bid))).scalars().all()
+    pending = (await db.execute(select(func.count(Order.id)).where(Order.status == "PENDIENTE", Order.business_id == bid))).scalar() or 0
+    clients_count = (await db.execute(select(func.count(Client.id)).where(Client.business_id == bid))).scalar() or 0
+    suppliers_count = (await db.execute(select(func.count(Supplier.id)).where(Supplier.business_id == bid))).scalar() or 0
+    txs = (await db.execute(select(Transaction).where(Transaction.business_id == bid))).scalars().all()
     total_sales = sum(t.amount for t in txs if t.amount > 0)
     total_expenses = sum(abs(t.amount) for t in txs if t.amount < 0)
     cash = sum(t.amount for t in txs if t.type == "Efectivo" and t.amount > 0)
@@ -45,7 +46,7 @@ async def get_sales_report(
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    return await report_service.get_sales_report(db, start_date, end_date, period)
+    return await report_service.get_sales_report(db, user["id"], start_date, end_date, period)
 
 @router.get("/products", response_model=ProductsReportResponse)
 async def get_products_report(
@@ -54,7 +55,7 @@ async def get_products_report(
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    return await report_service.get_products_report(db, start_date, end_date)
+    return await report_service.get_products_report(db, user["id"], start_date, end_date)
 
 @router.get("/clients", response_model=ClientsReportResponse)
 async def get_clients_report(
@@ -63,14 +64,14 @@ async def get_clients_report(
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    return await report_service.get_clients_report(db, start_date, end_date)
+    return await report_service.get_clients_report(db, user["id"], start_date, end_date)
 
 @router.get("/inventory", response_model=InventoryReportResponse)
 async def get_inventory_report(
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    return await report_service.get_inventory_report(db)
+    return await report_service.get_inventory_report(db, user["id"])
 
 
 @router.get("/pdf/sales")
@@ -80,7 +81,7 @@ async def download_sales_pdf(
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    pdf_bytes = await pdf_service.generate_report_pdf(db, "sales", start_date, end_date)
+    pdf_bytes = await pdf_service.generate_report_pdf(db, "sales", user["id"], start_date, end_date)
     return StreamingResponse(
         iter([pdf_bytes]),
         media_type="application/pdf",
@@ -95,7 +96,7 @@ async def download_products_pdf(
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    pdf_bytes = await pdf_service.generate_report_pdf(db, "products", start_date, end_date)
+    pdf_bytes = await pdf_service.generate_report_pdf(db, "products", user["id"], start_date, end_date)
     return StreamingResponse(
         iter([pdf_bytes]),
         media_type="application/pdf",
@@ -103,16 +104,44 @@ async def download_products_pdf(
     )
 
 
-@router.get("/pdf/transactions")
-async def download_transactions_pdf(
+@router.get("/pdf/inventory")
+async def download_inventory_pdf(
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    pdf_bytes = await pdf_service.generate_report_pdf(db, "inventory", user["id"])
+    return StreamingResponse(
+        iter([pdf_bytes]),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=reporte_inventario.pdf"},
+    )
+
+
+@router.get("/pdf/financial")
+async def download_financial_pdf(
     start_date: Optional[str] = Query(None),
     end_date: Optional[str] = Query(None),
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    pdf_bytes = await pdf_service.generate_report_pdf(db, "transactions", start_date, end_date)
+    pdf_bytes = await pdf_service.generate_report_pdf(db, "financial", user["id"], start_date, end_date)
     return StreamingResponse(
         iter([pdf_bytes]),
         media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=reporte_transacciones.pdf"},
+        headers={"Content-Disposition": "attachment; filename=reporte_financiero.pdf"},
+    )
+
+
+@router.get("/pdf/clients")
+async def download_clients_pdf(
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    pdf_bytes = await pdf_service.generate_report_pdf(db, "clients", user["id"], start_date, end_date)
+    return StreamingResponse(
+        iter([pdf_bytes]),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=reporte_clientes.pdf"},
     )

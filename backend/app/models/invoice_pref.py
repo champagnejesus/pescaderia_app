@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, func
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, func
 from app.database import Base
 
 class InvoicePref(Base):
@@ -7,6 +7,5 @@ class InvoicePref(Base):
     footer_text = Column(String(500), default="")
     show_tax_breakdown = Column(Boolean, default=True)
     default_payment_method_id = Column(Integer, nullable=True)
-    # TODO: Add ForeignKey("business_config.id") when multi-tenant support is needed
-    business_id = Column(Integer, nullable=False)
+    business_id = Column(Integer, ForeignKey("business_config.id", ondelete="CASCADE"), nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

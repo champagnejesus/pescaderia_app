@@ -19,9 +19,11 @@ async def list_transactions(
     type: str = Query(""),
     page: int = Query(1),
     limit: int = Query(50),
+    user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    query = select(Transaction)
+    bid = user["id"] if (isinstance(user, dict) and "id" in user) else 1
+    query = select(Transaction).where(Transaction.business_id == bid)
     if start_date:
         try:
             query = query.where(Transaction.created_at >= datetime.fromisoformat(start_date))
@@ -39,17 +41,19 @@ async def list_transactions(
     return result.scalars().all()
 
 @router.post("", response_model=TransactionResponse, status_code=201)
-async def create_transaction(data: TransactionCreate, db: AsyncSession = Depends(get_db)):
-    tx = Transaction(**data.model_dump())
+async def create_transaction(data: TransactionCreate, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    bid = user["id"] if (isinstance(user, dict) and "id" in user) else 1
+    tx = Transaction(business_id=bid, **data.model_dump())
     db.add(tx)
     await db.flush()
     return tx
 
 @router.get("/daily-summary", response_model=DailySummaryResponse)
-async def daily_summary(db: AsyncSession = Depends(get_db)):
+async def daily_summary(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     today_start = datetime.combine(date.today(), time.min, tzinfo=timezone.utc)
     today_end = datetime.combine(date.today(), time.max, tzinfo=timezone.utc)
-    result = await db.execute(select(Transaction).where(Transaction.created_at.between(today_start, today_end)))
+    bid = user["id"] if (isinstance(user, dict) and "id" in user) else 1
+    result = await db.execute(select(Transaction).where(Transaction.created_at.between(today_start, today_end), Transaction.business_id == bid))
     txs = result.scalars().all()
     total_collections = sum(t.amount for t in txs if t.type == "Cobro")
     total_sales = sum(t.amount for t in txs if t.amount > 0 and t.type != "Cobro")
@@ -65,14 +69,15 @@ async def daily_summary(db: AsyncSession = Depends(get_db)):
 async def close_day(data: CloseDayRequest, db: AsyncSession = Depends(get_db), user=Depends(get_current_user)):
     if len(data.pin) != 4 or not data.pin.isdigit():
         raise HTTPException(400, "PIN inválido: debe tener 4 dígitos")
-    business = await db.get(BusinessConfig, user["id"])
+    bid = user["id"] if (isinstance(user, dict) and "id" in user) else 1
+    business = await db.get(BusinessConfig, bid)
     if business and business.require_pin:
-        if not await verify_pin(db, user["id"], data.pin):
+        if not await verify_pin(db, bid, data.pin):
             raise HTTPException(403, "PIN inválido")
     now = datetime.now(timezone.utc)
     today_start = datetime.combine(now.date(), time.min, tzinfo=timezone.utc)
     today_end = datetime.combine(now.date(), time.max, tzinfo=timezone.utc)
-    result = await db.execute(select(Transaction).where(Transaction.created_at.between(today_start, today_end)))
+    result = await db.execute(select(Transaction).where(Transaction.created_at.between(today_start, today_end), Transaction.business_id == bid))
     txs = result.scalars().all()
     total_sales = sum(t.amount for t in txs if t.amount > 0 and t.type != "Cobro")
     total_expenses = sum(t.amount for t in txs if t.amount < 0)
@@ -84,6 +89,7 @@ async def close_day(data: CloseDayRequest, db: AsyncSession = Depends(get_db), u
         type="Cierre",
         amount=net,
         status="CERRADO",
+        business_id=bid,
     )
     db.add(tx_close)
     await db.flush()

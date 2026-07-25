@@ -1,15 +1,16 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, func
+from sqlalchemy import Column, Integer, String, Numeric, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 from app.database import Base
 
 class Purchase(Base):
     __tablename__ = "purchases"
     id = Column(Integer, primary_key=True, index=True)
+    business_id = Column(Integer, ForeignKey("business_config.id", ondelete="CASCADE"), nullable=False, default=1, index=True)
     purchase_number = Column(String(50), unique=True, nullable=False, index=True)
-    supplier_id = Column(Integer, ForeignKey("suppliers.id", ondelete="SET NULL"), nullable=True)
+    supplier_id = Column(Integer, ForeignKey("suppliers.id", ondelete="SET NULL"), nullable=True, index=True)
     supplier_name = Column(String(255), nullable=False)
     items_count = Column(Integer, default=0)
-    total_value = Column(Float, nullable=False)
+    total_value = Column(Numeric(12, 2), nullable=False)
     payment_status = Column(String(50), default="PENDIENTE", index=True)
     notes = Column(String(500), default="")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -18,11 +19,11 @@ class Purchase(Base):
 class PurchaseItem(Base):
     __tablename__ = "purchase_items"
     id = Column(Integer, primary_key=True, index=True)
-    purchase_id = Column(Integer, ForeignKey("purchases.id", ondelete="CASCADE"), nullable=False)
-    product_id = Column(Integer, ForeignKey("products.id", ondelete="SET NULL"), nullable=True)
+    purchase_id = Column(Integer, ForeignKey("purchases.id", ondelete="CASCADE"), nullable=False, index=True)
+    product_id = Column(Integer, ForeignKey("products.id", ondelete="SET NULL"), nullable=True, index=True)
     product_name = Column(String(255), default="")
     presentation = Column(String(50), default="Unidad")
-    quantity = Column(Float, nullable=False)
-    unit_price = Column(Float, nullable=False)
-    subtotal = Column(Float, nullable=False)
+    quantity = Column(Numeric(10, 3), nullable=False)
+    unit_price = Column(Numeric(12, 2), nullable=False)
+    subtotal = Column(Numeric(12, 2), nullable=False)
     purchase = relationship("Purchase", back_populates="items")

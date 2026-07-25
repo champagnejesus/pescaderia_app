@@ -16,7 +16,7 @@ async def download_order_pdf(
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        pdf_bytes = await pdf_service.generate_order_pdf(db, order_id)
+        pdf_bytes = await pdf_service.generate_order_pdf(db, order_id, user["id"])
         return StreamingResponse(
             BytesIO(pdf_bytes),
             media_type="application/pdf",
@@ -34,7 +34,7 @@ async def download_purchase_pdf(
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        pdf_bytes = await pdf_service.generate_purchase_pdf(db, purchase_id)
+        pdf_bytes = await pdf_service.generate_purchase_pdf(db, purchase_id, user["id"])
         return StreamingResponse(
             BytesIO(pdf_bytes),
             media_type="application/pdf",
@@ -57,7 +57,7 @@ async def download_report_pdf(
         from fastapi import HTTPException
         raise HTTPException(status_code=400, detail="Invalid report type. Use: sales, products, clients, inventory")
     
-    pdf_bytes = await pdf_service.generate_report_pdf(db, report_type, start_date, end_date)
+    pdf_bytes = await pdf_service.generate_report_pdf(db, report_type, user["id"], start_date, end_date)
     return StreamingResponse(
         BytesIO(pdf_bytes),
         media_type="application/pdf",

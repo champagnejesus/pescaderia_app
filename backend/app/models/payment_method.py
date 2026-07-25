@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, func
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, func
 from app.database import Base
 
 class PaymentMethod(Base):
@@ -7,6 +7,5 @@ class PaymentMethod(Base):
     name = Column(String(100), nullable=False)
     is_active = Column(Boolean, default=True)
     sort_order = Column(Integer, default=0)
-    # TODO: Add ForeignKey("business_config.id") when multi-tenant support is needed
-    business_id = Column(Integer, nullable=False)
+    business_id = Column(Integer, ForeignKey("business_config.id", ondelete="CASCADE"), nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

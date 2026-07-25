@@ -13,7 +13,7 @@ async def get_price_history(
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    return await purchase_price_service.get_price_history(db, product_id)
+    return await purchase_price_service.get_price_history(db, product_id, user["id"])
 
 @router.get("/{product_id}/alert", response_model=PriceAlertResponse)
 async def check_price_alert(
@@ -22,4 +22,4 @@ async def check_price_alert(
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    return await purchase_price_service.check_price_alert(db, product_id, threshold)
+    return await purchase_price_service.check_price_alert(db, product_id, user["id"], threshold)

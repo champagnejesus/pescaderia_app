@@ -11,6 +11,7 @@ async def record_price(
     supplier_id: int,
     unit_price: float,
     quantity: float,
+    business_id: int = 1,
 ):
     """Record a purchase price and update product's avg_purchase_price."""
     price_record = PurchasePrice(
@@ -19,16 +20,17 @@ async def record_price(
         supplier_id=supplier_id,
         unit_price=unit_price,
         quantity=quantity,
+        business_id=business_id,
     )
     db.add(price_record)
 
     # Update product's average purchase price
     result = await db.execute(
-        select(func.avg(PurchasePrice.unit_price)).where(PurchasePrice.product_id == product_id)
+        select(func.avg(PurchasePrice.unit_price)).where(PurchasePrice.product_id == product_id, PurchasePrice.business_id == business_id)
     )
     avg_price = result.scalar() or 0.0
 
-    product_result = await db.execute(select(Product).where(Product.id == product_id))
+    product_result = await db.execute(select(Product).where(Product.id == product_id, Product.business_id == business_id))
     product = product_result.scalar_one_or_none()
     if product:
         product.avg_purchase_price = round(avg_price, 2)
@@ -36,12 +38,12 @@ async def record_price(
     await db.flush()
     return price_record
 
-async def get_price_history(db: AsyncSession, product_id: int):
+async def get_price_history(db: AsyncSession, product_id: int, business_id: int = 1):
     """Get price history for a product with statistics."""
     query = (
         select(PurchasePrice, Supplier.name.label("supplier_name"))
         .outerjoin(Supplier, PurchasePrice.supplier_id == Supplier.id)
-        .where(PurchasePrice.product_id == product_id)
+        .where(PurchasePrice.product_id == product_id, PurchasePrice.business_id == business_id)
         .order_by(PurchasePrice.recorded_at.desc())
     )
     result = await db.execute(query)
@@ -58,7 +60,6 @@ async def get_price_history(db: AsyncSession, product_id: int):
             "supplier_id": price.supplier_id,
             "supplier_name": supplier_name,
             "unit_price": price.unit_price,
-            "quantity": price.quantity,
             "recorded_at": price.recorded_at,
         })
 
@@ -76,11 +77,11 @@ async def get_price_history(db: AsyncSession, product_id: int):
         "max_price": max_price,
     }
 
-async def check_price_alert(db: AsyncSession, product_id: int, threshold: float = 20.0):
+async def check_price_alert(db: AsyncSession, product_id: int, business_id: int = 1, threshold: float = 20.0):
     """Check if latest price varies more than threshold% from average."""
     latest_result = await db.execute(
         select(PurchasePrice)
-        .where(PurchasePrice.product_id == product_id)
+        .where(PurchasePrice.product_id == product_id, PurchasePrice.business_id == business_id)
         .order_by(PurchasePrice.recorded_at.desc())
         .limit(1)
     )
@@ -89,7 +90,7 @@ async def check_price_alert(db: AsyncSession, product_id: int, threshold: float 
         return {"has_alert": False, "current_price": 0.0, "avg_price": 0.0, "percentage_change": 0.0, "message": "No hay precios registrados"}
 
     avg_result = await db.execute(
-        select(func.avg(PurchasePrice.unit_price)).where(PurchasePrice.product_id == product_id)
+        select(func.avg(PurchasePrice.unit_price)).where(PurchasePrice.product_id == product_id, PurchasePrice.business_id == business_id)
     )
     avg_price = avg_result.scalar() or 0.0
     if avg_price == 0:

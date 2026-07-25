@@ -23,12 +23,16 @@ def get_date_range(start_date: str = None, end_date: str = None, period: str = "
     end = datetime.fromisoformat(end_date + "T23:59:59")
     return start, end
 
-async def get_sales_report(db: AsyncSession, start_date: str = None, end_date: str = None, period: str = "day"):
+async def get_sales_report(db: AsyncSession, business_id: int = 1, start_date: str = None, end_date: str = None, period: str = "day"):
     start, end = get_date_range(start_date, end_date)
 
     result = await db.execute(
         select(Transaction).where(
-            and_(Transaction.created_at >= start, Transaction.created_at <= end)
+            and_(
+                Transaction.created_at >= start,
+                Transaction.created_at <= end,
+                Transaction.business_id == business_id
+            )
         )
     )
     transactions = result.scalars().all()
@@ -65,7 +69,7 @@ async def get_sales_report(db: AsyncSession, start_date: str = None, end_date: s
         period=period,
     )
 
-async def get_products_report(db: AsyncSession, start_date: str = None, end_date: str = None):
+async def get_products_report(db: AsyncSession, business_id: int = 1, start_date: str = None, end_date: str = None):
     start, end = get_date_range(start_date, end_date)
 
     result = await db.execute(
@@ -83,6 +87,8 @@ async def get_products_report(db: AsyncSession, start_date: str = None, end_date
                 Order.created_at <= end,
                 Order.status != "ANULADO",
                 OrderItem.product_id.isnot(None),
+                Order.business_id == business_id,
+                Product.business_id == business_id,
             )
         )
         .group_by(OrderItem.product_id, Product.name)
@@ -116,7 +122,7 @@ async def get_products_report(db: AsyncSession, start_date: str = None, end_date
         total_products_sold=len(rows),
     )
 
-async def get_clients_report(db: AsyncSession, start_date: str = None, end_date: str = None):
+async def get_clients_report(db: AsyncSession, business_id: int = 1, start_date: str = None, end_date: str = None):
     start, end = get_date_range(start_date, end_date)
 
     result = await db.execute(
@@ -133,6 +139,8 @@ async def get_clients_report(db: AsyncSession, start_date: str = None, end_date:
                 Order.created_at <= end,
                 Order.status != "ANULADO",
                 Order.client_id.isnot(None),
+                Order.business_id == business_id,
+                Client.business_id == business_id,
             )
         )
         .group_by(Order.client_id, Client.name)
@@ -152,7 +160,7 @@ async def get_clients_report(db: AsyncSession, start_date: str = None, end_date:
     ]
 
     receivable_result = await db.execute(
-        select(func.sum(Client.outstanding_balance))
+        select(func.sum(Client.outstanding_balance)).where(Client.business_id == business_id)
     )
     total_receivable = receivable_result.scalar() or 0.0
 
@@ -163,6 +171,7 @@ async def get_clients_report(db: AsyncSession, start_date: str = None, end_date:
                 Order.created_at >= start,
                 Order.created_at <= end,
                 Order.client_id.isnot(None),
+                Order.business_id == business_id,
             )
         )
     )
@@ -174,8 +183,8 @@ async def get_clients_report(db: AsyncSession, start_date: str = None, end_date:
         active_clients=active_clients,
     )
 
-async def get_inventory_report(db: AsyncSession):
-    result = await db.execute(select(Product).options(selectinload(Product.category_rel)))
+async def get_inventory_report(db: AsyncSession, business_id: int = 1):
+    result = await db.execute(select(Product).where(Product.business_id == business_id).options(selectinload(Product.category_rel)))
     products = result.scalars().unique().all()
 
     total_value = sum(p.stock * p.price_venta for p in products)

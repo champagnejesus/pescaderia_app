@@ -176,18 +176,20 @@ export default function DashboardPage() {
 
           <KpiCard>
             <div className="flex items-center justify-between">
-              <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">Ticket Promedio</span>
-              <svg width="80" height="36" viewBox="0 0 80 36" className="text-abyssal-primary">
-                <path d="M0 29l7-6 8 11 7-19 7 6 7 8 8-16 7 5 7-11 7 8 8-5 7-8v34H0z" fill="currentColor" opacity="0.2" />
-              </svg>
+              <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">Tasa de Mermas</span>
+              <div className="text-[#EF4444] px-1.5 py-0.5 rounded bg-[#EF4444]/10 text-[10px] font-bold">Crítico</div>
             </div>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              ${totalOrders > 0 ? (dashboardData.sales_total / totalOrders).toLocaleString("en-US", { minimumFractionDigits: 2 }) : "154.20"}
+            <p className="text-[26px] text-[#EF4444] font-heading font-bold mt-2">
+              2.4%
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">4.7%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+            <div className="mt-3">
+              <div className="h-1.5 w-full bg-abyssal-outline rounded-full overflow-hidden">
+                <div className="h-full bg-[#EF4444]" style={{ width: "24%" }} />
+              </div>
+              <div className="flex justify-between text-[11px] text-abyssal-text-secondary-variant mt-1.5">
+                <span>Merma: 12.5 kg</span>
+                <span>Límite: 3.0%</span>
+              </div>
             </div>
           </KpiCard>
         </div>
@@ -234,29 +236,29 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Top Productos */}
+          {/* Margen de Contribución por Producto */}
           <div className="w-[300px] shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
-            <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Top Productos</h3>
-            <p className="text-[13px] text-abyssal-text-secondary-variant font-body mt-1">Por ingresos del mes actual</p>
+            <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Margen de Contribución</h3>
+            <p className="text-[13px] text-abyssal-text-secondary-variant font-body mt-1">Margen real diario (Top 5 hoy)</p>
             <div className="mt-4 space-y-5">
               {[
-                { name: "Camarón Premium", value: "$45,200", pct: 100 },
-                { name: "Filete de Pescado", value: "$38,400", pct: 85 },
-                { name: "Pulpo Congelado", value: "$29,100", pct: 64 },
-                { name: "Langostino Entero", value: "$23,500", pct: 52 },
-                { name: "Mero Fresco", value: "$18,700", pct: 41 },
+                { name: "Camarón Premium", value: "32.4%", pct: 100, color: "#22c55e" },
+                { name: "Filete de Pescado", value: "28.1%", pct: 85, color: "#22c55e" },
+                { name: "Pulpo Congelado", value: "24.5%", pct: 75, color: "#22c55e" },
+                { name: "Langostino Entero", value: "18.7%", pct: 58, color: "#eab308" },
+                { name: "Mero Fresco", value: "12.2%", pct: 38, color: "#EF4444" },
               ].map((p, i) => (
                 <div key={i}>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">{p.name}</span>
-                    <span className="text-[13px] text-abyssal-text-primary font-body font-semibold">{p.value}</span>
+                    <span className="text-[13px] font-body font-semibold" style={{ color: p.color }}>{p.value}</span>
                   </div>
                   <div className="h-[6px] bg-abyssal-outline rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all"
                       style={{
                         width: `${p.pct}%`,
-                        background: i === 0 ? "#4A9FD8" : i === 1 ? "#6AB4E3" : i === 2 ? "#A8D5F0" : i === 3 ? "#C5E3F7" : "#DEEDF9",
+                        backgroundColor: p.color,
                       }}
                     />
                   </div>

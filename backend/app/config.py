@@ -17,10 +17,4 @@ class Settings(BaseSettings):
             raise ValueError("SECRET_KEY is set to default value 'change-this-in-production'. Set a strong random key in production.")
         return self
 
-# TODO: In production, this try/except should be removed so a missing SECRET_KEY crashes startup.
-try:
-    settings = Settings().validate()
-except ValueError as e:
-    import logging
-    logging.warning(str(e))
-    settings = Settings()
+settings = Settings().validate()

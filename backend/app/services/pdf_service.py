@@ -13,8 +13,8 @@ from app.models.product import Product
 from app.models.business import BusinessConfig
 
 
-async def get_business_info(db: AsyncSession):
-    result = await db.execute(select(BusinessConfig).limit(1))
+async def get_business_info(db: AsyncSession, business_id: int):
+    result = await db.execute(select(BusinessConfig).where(BusinessConfig.id == business_id))
     return result.scalar_one_or_none()
 
 
@@ -37,9 +37,9 @@ def create_styles():
     return styles
 
 
-async def generate_order_pdf(db: AsyncSession, order_id: int) -> bytes:
+async def generate_order_pdf(db: AsyncSession, order_id: int, business_id: int) -> bytes:
     result = await db.execute(
-        select(Order).where(Order.id == order_id).options(selectinload(Order.items))
+        select(Order).where(Order.id == order_id, Order.business_id == business_id).options(selectinload(Order.items))
     )
     order = result.scalar_one_or_none()
     if not order:
@@ -48,7 +48,7 @@ async def generate_order_pdf(db: AsyncSession, order_id: int) -> bytes:
     items = order.items
 
     # Get business info
-    business = await get_business_info(db)
+    business = await get_business_info(db, business_id)
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
@@ -78,7 +78,7 @@ async def generate_order_pdf(db: AsyncSession, order_id: int) -> bytes:
     for item in items:
         product_name = item.presentation or f"Item #{item.product_id}"
         if item.product_id:
-            prod_result = await db.execute(select(Product.name).where(Product.id == item.product_id))
+            prod_result = await db.execute(select(Product.name).where(Product.id == item.product_id, Product.business_id == business_id))
             prod_name = prod_result.scalar()
             if prod_name:
                 product_name = prod_name
@@ -113,9 +113,9 @@ async def generate_order_pdf(db: AsyncSession, order_id: int) -> bytes:
     return buffer.getvalue()
 
 
-async def generate_purchase_pdf(db: AsyncSession, purchase_id: int) -> bytes:
+async def generate_purchase_pdf(db: AsyncSession, purchase_id: int, business_id: int) -> bytes:
     result = await db.execute(
-        select(Purchase).where(Purchase.id == purchase_id).options(selectinload(Purchase.items))
+        select(Purchase).where(Purchase.id == purchase_id, Purchase.business_id == business_id).options(selectinload(Purchase.items))
     )
     purchase = result.scalar_one_or_none()
     if not purchase:
@@ -123,7 +123,7 @@ async def generate_purchase_pdf(db: AsyncSession, purchase_id: int) -> bytes:
 
     items = purchase.items
 
-    business = await get_business_info(db)
+    business = await get_business_info(db, business_id)
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
@@ -170,7 +170,7 @@ async def generate_purchase_pdf(db: AsyncSession, purchase_id: int) -> bytes:
     return buffer.getvalue()
 
 
-async def generate_report_pdf(db: AsyncSession, report_type: str, start_date: str = None, end_date: str = None) -> bytes:
+async def generate_report_pdf(db: AsyncSession, report_type: str, business_id: int, start_date: str = None, end_date: str = None) -> bytes:
     from .report_service import get_sales_report, get_products_report, get_clients_report, get_inventory_report
 
     buffer = BytesIO()
@@ -178,7 +178,7 @@ async def generate_report_pdf(db: AsyncSession, report_type: str, start_date: st
     styles = create_styles()
     story = []
 
-    business = await get_business_info(db)
+    business = await get_business_info(db, business_id)
     if business:
         story.append(Paragraph(business.business_name, styles['BusinessName']))
         story.append(Spacer(1, 12))
@@ -187,13 +187,13 @@ async def generate_report_pdf(db: AsyncSession, report_type: str, start_date: st
     story.append(Paragraph(f"Período: {start_date or 'Inicio'} al {end_date or 'Hoy'}", styles['Normal']))
     story.append(Spacer(1, 12))
 
-    if report_type == "sales":
-        data = await get_sales_report(db, start_date, end_date)
+    if report_type in ("sales", "financial"):
+        data = await get_sales_report(db, business_id, start_date, end_date)
         story.append(Paragraph(f"Total Ingresos: ${data.total_sales:.2f}", styles['Normal']))
         story.append(Paragraph(f"Total Gastos: ${data.total_expenses:.2f}", styles['Normal']))
         story.append(Paragraph(f"Ganancia Neta: ${data.net_profit:.2f}", styles['Normal']))
     elif report_type == "products":
-        data = await get_products_report(db, start_date, end_date)
+        data = await get_products_report(db, business_id, start_date, end_date)
         table_data = [['Producto', 'Unidades', 'Ingresos']]
         for p in data.top_products:
             table_data.append([p.product_name, str(p.quantity_sold), f"${p.revenue:.2f}"])
@@ -209,7 +209,7 @@ async def generate_report_pdf(db: AsyncSession, report_type: str, start_date: st
             ]))
             story.append(table)
     elif report_type == "clients":
-        data = await get_clients_report(db, start_date, end_date)
+        data = await get_clients_report(db, business_id, start_date, end_date)
         table_data = [['Cliente', 'Compras', 'Pedidos']]
         for c in data.top_clients:
             table_data.append([c.client_name, f"${c.total_purchases:.2f}", str(c.order_count)])
@@ -225,7 +225,7 @@ async def generate_report_pdf(db: AsyncSession, report_type: str, start_date: st
             ]))
             story.append(table)
     elif report_type == "inventory":
-        data = await get_inventory_report(db)
+        data = await get_inventory_report(db, business_id)
         story.append(Paragraph(f"Valor Total del Inventario: ${data.total_value:.2f}", styles['Normal']))
         story.append(Paragraph(f"Total Productos: {data.total_products}", styles['Normal']))
         story.append(Paragraph(f"Stock Bajo: {data.low_stock_count}", styles['Normal']))

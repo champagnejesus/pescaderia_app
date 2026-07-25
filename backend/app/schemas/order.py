@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, date
 
 class OrderItemCreate(BaseModel):
     product_id: int
@@ -39,6 +39,7 @@ class OrderResponse(BaseModel):
     payment_method: str = "Efectivo"
     payment_status: str = "PENDIENTE"
     total_value: float
+    due_date: date | None = None
     created_at: datetime | None = None
     delivered_at: datetime | None = None
     items: list[OrderItemResponse] = []
