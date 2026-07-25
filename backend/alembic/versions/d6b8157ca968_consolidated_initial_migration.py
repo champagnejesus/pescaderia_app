@@ -30,7 +30,7 @@ def upgrade() -> None:
     sa.Column('address', sa.String(length=500), nullable=True),
     sa.Column('close_day_pin', sa.String(length=255), nullable=True),
     sa.Column('require_pin', sa.Boolean(), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_business_config_email'), 'business_config', ['email'], unique=True)
@@ -39,7 +39,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('business_id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name', 'business_id', name='uq_category_name_business')
@@ -56,8 +56,8 @@ def upgrade() -> None:
     sa.Column('outstanding_balance', sa.Numeric(precision=12, scale=2), nullable=True),
     sa.Column('initials', sa.String(length=10), nullable=True),
     sa.Column('credit_limit', sa.Numeric(precision=12, scale=2), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -69,7 +69,7 @@ def upgrade() -> None:
     sa.Column('parent_id', sa.Integer(), nullable=True),
     sa.Column('business_id', sa.Integer(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['parent_id'], ['expense_categories.id'], ),
     sa.PrimaryKeyConstraint('id'),
@@ -83,7 +83,7 @@ def upgrade() -> None:
     sa.Column('show_tax_breakdown', sa.Boolean(), nullable=True),
     sa.Column('default_payment_method_id', sa.Integer(), nullable=True),
     sa.Column('business_id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -99,7 +99,7 @@ def upgrade() -> None:
     sa.Column('amount', sa.Numeric(precision=12, scale=2), nullable=False),
     sa.Column('pending_amount', sa.Numeric(precision=12, scale=2), nullable=False),
     sa.Column('status', sa.String(length=50), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -113,7 +113,7 @@ def upgrade() -> None:
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('sort_order', sa.Integer(), nullable=True),
     sa.Column('business_id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -127,8 +127,8 @@ def upgrade() -> None:
     sa.Column('pending_payment', sa.Numeric(precision=12, scale=2), nullable=True),
     sa.Column('status', sa.String(length=50), nullable=True),
     sa.Column('image_url', sa.String(length=1000), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -141,7 +141,7 @@ def upgrade() -> None:
     sa.Column('rate', sa.Numeric(precision=5, scale=2), nullable=True),
     sa.Column('included_in_price', sa.Boolean(), nullable=True),
     sa.Column('business_id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -152,7 +152,7 @@ def upgrade() -> None:
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('abbreviation', sa.String(length=10), nullable=False),
     sa.Column('business_id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name', 'business_id', name='uq_unit_name_business')
@@ -171,7 +171,7 @@ def upgrade() -> None:
     sa.Column('payment_method', sa.String(length=50), nullable=True),
     sa.Column('payment_status', sa.String(length=50), nullable=True),
     sa.Column('total_value', sa.Numeric(precision=12, scale=2), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.Column('delivered_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['client_id'], ['clients.id'], ondelete='SET NULL'),
@@ -198,8 +198,8 @@ def upgrade() -> None:
     sa.Column('description', sa.String(length=2000), nullable=True),
     sa.Column('is_extra_quality', sa.Boolean(), nullable=True),
     sa.Column('low_stock_threshold', sa.Numeric(precision=10, scale=3), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['category_id'], ['categories.id'], ondelete='SET NULL'),
     sa.PrimaryKeyConstraint('id')
@@ -218,7 +218,7 @@ def upgrade() -> None:
     sa.Column('total_value', sa.Numeric(precision=12, scale=2), nullable=False),
     sa.Column('payment_status', sa.String(length=50), nullable=True),
     sa.Column('notes', sa.String(length=500), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['supplier_id'], ['suppliers.id'], ondelete='SET NULL'),
     sa.PrimaryKeyConstraint('id')
@@ -237,7 +237,7 @@ def upgrade() -> None:
     sa.Column('amount', sa.Numeric(precision=12, scale=2), nullable=False),
     sa.Column('status', sa.String(length=50), nullable=True),
     sa.Column('expense_category_id', sa.Integer(), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['expense_category_id'], ['expense_categories.id'], ondelete='SET NULL'),
     sa.PrimaryKeyConstraint('id')
@@ -257,7 +257,7 @@ def upgrade() -> None:
     sa.Column('reason', sa.String(length=100), nullable=False),
     sa.Column('notes', sa.Text(), nullable=True),
     sa.Column('created_by', sa.Integer(), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='RESTRICT'),
     sa.PrimaryKeyConstraint('id')
@@ -304,7 +304,7 @@ def upgrade() -> None:
     sa.Column('supplier_id', sa.Integer(), nullable=True),
     sa.Column('unit_price', sa.Numeric(precision=12, scale=2), nullable=False),
     sa.Column('quantity', sa.Numeric(precision=10, scale=3), nullable=False),
-    sa.Column('recorded_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('recorded_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
     sa.ForeignKeyConstraint(['business_id'], ['business_config.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='RESTRICT'),
     sa.ForeignKeyConstraint(['purchase_id'], ['purchases.id'], ondelete='CASCADE'),
