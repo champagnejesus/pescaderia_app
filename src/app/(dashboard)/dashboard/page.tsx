@@ -110,6 +110,35 @@ export default function DashboardPage() {
     .sort((a, b) => parseFloat(b.value) - parseFloat(a.value))
     .slice(0, 5)
 
+  // Calculate dynamic growth percentages compared to previous month
+  const now = new Date()
+  const thisMonth = now.getMonth()
+  const thisYear = now.getFullYear()
+  const prevMonth = thisMonth === 0 ? 11 : thisMonth - 1
+  const prevMonthYear = thisMonth === 0 ? thisYear - 1 : thisYear
+
+  let thisMonthSales = 0
+  let prevMonthSales = 0
+  let thisMonthOrders = 0
+  let prevMonthOrders = 0
+
+  orders.forEach(o => {
+    const d = new Date(o.created_at || o.delivery_date)
+    const m = d.getMonth()
+    const y = d.getFullYear()
+    if (y === thisYear && m === thisMonth) {
+      thisMonthSales += o.total_value || 0
+      thisMonthOrders += 1
+    } else if (y === prevMonthYear && m === prevMonth) {
+      prevMonthSales += o.total_value || 0
+      prevMonthOrders += 1
+    }
+  })
+
+  const salesGrowth = prevMonthSales === 0 ? null : ((thisMonthSales - prevMonthSales) / prevMonthSales) * 100
+  const ordersGrowth = prevMonthOrders === 0 ? null : ((thisMonthOrders - prevMonthOrders) / prevMonthOrders) * 100
+  const profitGrowth = salesGrowth
+
   // Calculate monthly sales for the graph dynamically
   const monthlyData = Array(12).fill(0)
   const currentYear = new Date().getFullYear()
@@ -203,11 +232,21 @@ export default function DashboardPage() {
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
               {formatCurrency(dashboardData.sales_total ?? 0)}
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-abyssal-primary" />
-              <span className="text-[13px] text-abyssal-primary font-caption font-semibold">12.5%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
+            {salesGrowth !== null ? (
+              <div className="flex items-center gap-1.5 mt-3">
+                <TrendingUp size={14} className={salesGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
+                <span className={`text-[13px] font-caption font-semibold ${salesGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"}`}>
+                  {salesGrowth >= 0 ? "+" : ""}{salesGrowth.toFixed(1)}%
+                </span>
+                <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              </div>
+            ) : (
+              <div className="flex items-center mt-3">
+                <span className="inline-block px-2 py-0.5 rounded text-[11px] font-caption font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                  Sin datos previos
+                </span>
+              </div>
+            )}
           </KpiCard>
 
           <KpiCard>
@@ -220,11 +259,21 @@ export default function DashboardPage() {
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
               {totalOrders ?? 0}
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-abyssal-primary" />
-              <span className="text-[13px] text-abyssal-primary font-caption font-semibold">8.2%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
+            {ordersGrowth !== null ? (
+              <div className="flex items-center gap-1.5 mt-3">
+                <TrendingUp size={14} className={ordersGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
+                <span className={`text-[13px] font-caption font-semibold ${ordersGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"}`}>
+                  {ordersGrowth >= 0 ? "+" : ""}{ordersGrowth.toFixed(1)}%
+                </span>
+                <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              </div>
+            ) : (
+              <div className="flex items-center mt-3">
+                <span className="inline-block px-2 py-0.5 rounded text-[11px] font-caption font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                  Sin datos previos
+                </span>
+              </div>
+            )}
           </KpiCard>
 
           <KpiCard>
@@ -237,11 +286,21 @@ export default function DashboardPage() {
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
               {formatCurrency(dashboardData.gross_profit ?? 0)}
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-abyssal-primary" />
-              <span className="text-[13px] text-abyssal-primary font-caption font-semibold">15.3%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
+            {profitGrowth !== null ? (
+              <div className="flex items-center gap-1.5 mt-3">
+                <TrendingUp size={14} className={profitGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
+                <span className={`text-[13px] font-caption font-semibold ${profitGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"}`}>
+                  {profitGrowth >= 0 ? "+" : ""}{profitGrowth.toFixed(1)}%
+                </span>
+                <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              </div>
+            ) : (
+              <div className="flex items-center mt-3">
+                <span className="inline-block px-2 py-0.5 rounded text-[11px] font-caption font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                  Sin datos previos
+                </span>
+              </div>
+            )}
           </KpiCard>
           <KpiCard>
             <div className="flex items-center justify-between">
