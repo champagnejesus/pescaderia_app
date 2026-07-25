@@ -17,10 +17,121 @@ from app.middleware.request_id import RequestIDMiddleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Deduplicate business_config rows
     from app.models.business import BusinessConfig
+    from app.models.category import Category
+    from app.models.unit import Unit
+    from app.models.payment_method import PaymentMethod
+    from app.models.client import Client
+    from app.models.supplier import Supplier
+    from app.models.product import Product
+    from app.models.order import Order, OrderItem
+    from app.models.transaction import Transaction
+    from app.models.expense_category import ExpenseCategory
+    from app.services.auth_service import hash_password
     from sqlalchemy import func, select as sa_select
     from app.database import async_session
+    from datetime import datetime, date, timezone
+
+    # Create all tables if they don't exist
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    # Seed default data if business_config is empty
+    async with async_session() as session:
+        result = await session.execute(sa_select(func.count(BusinessConfig.id)))
+        if result.scalar() == 0:
+            # Create default business
+            business = BusinessConfig(
+                id=1, business_name="Pescadería El Ancla", owner_name="Juan Pérez",
+                email="admin@pescaderia.com", password_hash=hash_password("admin123"),
+                phone="+56912345678", address="Terminal Pesquero local 42, Santiago",
+                require_pin=False
+            )
+            session.add(business)
+            await session.flush()
+
+            # Create default categories
+            session.add_all([
+                Category(id=1, business_id=1, name="Mariscos"),
+                Category(id=2, business_id=1, name="Pescado Fresco"),
+                Category(id=3, business_id=1, name="Congelados"),
+            ])
+            await session.flush()
+
+            # Create default units
+            session.add_all([
+                Unit(id=1, business_id=1, name="kg", abbreviation="kg"),
+                Unit(id=2, business_id=1, name="unidad", abbreviation="ud"),
+                Unit(id=3, business_id=1, name="bandeja", abbreviation="bdj"),
+            ])
+            await session.flush()
+
+            # Create default payment methods
+            session.add_all([
+                PaymentMethod(id=1, business_id=1, name="Efectivo"),
+                PaymentMethod(id=2, business_id=1, name="Transferencia"),
+                PaymentMethod(id=3, business_id=1, name="Tarjeta"),
+            ])
+            await session.flush()
+
+            # Seed default expense categories
+            from app.services.expense_category_service import seed_default_categories
+            await seed_default_categories(session, business_id=1)
+            await session.flush()
+
+            # Create default products
+            session.add_all([
+                Product(id=1, business_id=1, name="Camarón Premium", category="Mariscos", category_id=1, stock=150.5, unit="kg", price_compra=8500.0, price_venta=15000.0, avg_purchase_price=8500.0, price=15000.0, description="Camarón ecuatoriano pelado y desvenado", low_stock_threshold=10.0),
+                Product(id=2, business_id=1, name="Filete de Merluza", category="Pescado Fresco", category_id=2, stock=85.0, unit="kg", price_compra=4200.0, price_venta=7800.0, avg_purchase_price=4200.0, price=7800.0, description="Filete de merluza fresca del día", low_stock_threshold=15.0),
+                Product(id=3, business_id=1, name="Pulpo Congelado", category="Congelados", category_id=3, stock=45.0, unit="kg", price_compra=12000.0, price_venta=22000.0, avg_purchase_price=12000.0, price=22000.0, description="Pulpo entero congelado I.Q.F.", low_stock_threshold=5.0),
+                Product(id=4, business_id=1, name="Salmón Fresco", category="Pescado Fresco", category_id=2, stock=3.5, unit="kg", price_compra=15000.0, price_venta=28000.0, avg_purchase_price=15000.0, price=28000.0, description="Salmón fresco entero o porciones", low_stock_threshold=8.0),
+                Product(id=5, business_id=1, name="Mero Fresco", category="Pescado Fresco", category_id=2, stock=0.0, unit="kg", price_compra=9000.0, price_venta=18500.0, avg_purchase_price=9000.0, price=18500.0, description="Filete de mero fresco", low_stock_threshold=10.0),
+            ])
+            await session.flush()
+
+            # Create default clients
+            session.add_all([
+                Client(id=1, business_id=1, name="Restaurante El Puerto", phone="+56987654321", email="contacto@elpuerto.com", address="Av. Costanera 123, Valparaíso", outstanding_balance=173000.0, credit_limit=2000000.0, allows_credit=True),
+                Client(id=2, business_id=1, name="Mariscos del Sur S.A.", phone="+56911223344", email="ventas@mariscosdelsur.com", address="Camino Industrial 450, Puerto Montt", outstanding_balance=0.0, credit_limit=5000000.0, allows_credit=True),
+                Client(id=3, business_id=1, name="Distribuidora Costera", phone="+56955667788", email="costera@gmail.com", address="Gran Vía 890, Viña del Mar", outstanding_balance=0.0, credit_limit=1500000.0, allows_credit=False),
+            ])
+            await session.flush()
+
+            # Create default suppliers
+            session.add_all([
+                Supplier(id=1, business_id=1, name="Pesquera Pacífico", category="Mariscos", pending_payment=350000.0, status="ACTIVO"),
+                Supplier(id=2, business_id=1, name="Distribuidora del Mar", category="Pescados", pending_payment=0.0, status="ACTIVO"),
+            ])
+            await session.flush()
+
+            # Create default orders
+            order1 = Order(id=1, business_id=1, order_number="PED-001284", client_id=2, client_name="Mariscos del Sur S.A.", delivery_date="2026-07-24", items_count=2, status="ENTREGADO", payment_method="Transferencia", payment_status="PAGADO", total_value=410000.0, created_at=datetime.now(timezone.utc), delivered_at=datetime.now(timezone.utc), due_date=date.today())
+            session.add(order1)
+            await session.flush()
+            session.add_all([OrderItem(order_id=1, product_id=1, presentation="kg", quantity=20.0, unit_price=15000.0, subtotal=300000.0), OrderItem(order_id=1, product_id=3, presentation="kg", quantity=5.0, unit_price=22000.0, subtotal=110000.0)])
+            await session.flush()
+
+            order2 = Order(id=2, business_id=1, order_number="PED-001285", client_id=1, client_name="Restaurante El Puerto", delivery_date="2026-07-26", items_count=2, status="PENDIENTE", payment_method="Efectivo", payment_status="PENDIENTE", total_value=173000.0, created_at=datetime.now(timezone.utc), due_date=date.today())
+            session.add(order2)
+            await session.flush()
+            session.add_all([OrderItem(order_id=2, product_id=2, presentation="kg", quantity=15.0, unit_price=7800.0, subtotal=117000.0), OrderItem(order_id=2, product_id=4, presentation="kg", quantity=2.0, unit_price=28000.0, subtotal=56000.0)])
+            await session.flush()
+
+            order3 = Order(id=3, business_id=1, order_number="PED-001286", client_id=3, client_name="Distribuidora Costera", delivery_date="2026-07-25", items_count=1, status="PROCESANDO", payment_method="Tarjeta", payment_status="PAGADO", total_value=220000.0, created_at=datetime.now(timezone.utc), due_date=date.today())
+            session.add(order3)
+            await session.flush()
+            session.add_all([OrderItem(order_id=3, product_id=3, presentation="kg", quantity=10.0, unit_price=22000.0, subtotal=220000.0)])
+            await session.flush()
+
+            # Create default transactions
+            session.add_all([
+                Transaction(business_id=1, title="Pago recibido - Mariscos del Sur S.A.", time="10:30", type="INGRESO", amount=410000.0, status="PAGADO", created_at=datetime.now(timezone.utc)),
+                Transaction(business_id=1, title="Pago recibido - Distribuidora Costera", time="12:15", type="INGRESO", amount=220000.0, status="PAGADO", created_at=datetime.now(timezone.utc)),
+                Transaction(business_id=1, title="Compra - Pesquera Pacífico (Lote Camarón)", time="09:00", type="EGRESO", amount=350000.0, status="PAGADO", created_at=datetime.now(timezone.utc)),
+            ])
+            await session.commit()
+
+    # Deduplicate business_config rows
     async with engine.begin() as conn:
         dupes = await conn.execute(
             sa_select(BusinessConfig.email, func.count(BusinessConfig.id).label("cnt"), func.min(BusinessConfig.id).label("keep_id"))
@@ -33,8 +144,8 @@ async def lifespan(app: FastAPI):
                 text("DELETE FROM business_config WHERE email = :email AND id != :keep_id"),
                 {"email": row.email, "keep_id": keep_id}
             )
-    # Seed default expense categories if none exist
-    from app.models.expense_category import ExpenseCategory
+
+    # Seed default expense categories if none exist (legacy fallback)
     async with engine.begin() as conn:
         result = await conn.execute(sa_select(func.count(ExpenseCategory.id)))
         if result.scalar() == 0:
