@@ -19,9 +19,20 @@ from app.middleware.request_id import RequestIDMiddleware
 
 
 def run_alembic_migrations():
-    alembic_cfg = Config("alembic.ini")
-    alembic_cfg.set_main_option("sqlalchemy.url", settings.database_url)
-    command.upgrade(alembic_cfg, "head")
+    import traceback
+    import sys
+    try:
+        alembic_cfg = Config("alembic.ini")
+        alembic_cfg.set_main_option("sqlalchemy.url", settings.database_url)
+        command.upgrade(alembic_cfg, "head")
+    except Exception as e:
+        print("!!! ALEMBIC MIGRATION EXCEPTION DETECTED !!!", flush=True)
+        print(f"Error class: {e.__class__.__name__}", flush=True)
+        print(f"Error detail: {str(e)}", flush=True)
+        traceback.print_exc(file=sys.stdout)
+        sys.stdout.flush()
+        sys.stderr.flush()
+        raise e
 
 
 @asynccontextmanager
@@ -43,7 +54,14 @@ async def lifespan(app: FastAPI):
 
     # Run Alembic migrations to bring schema up to date (in thread to avoid event loop conflict)
     loop = asyncio.get_running_loop()
-    await loop.run_in_executor(None, run_alembic_migrations)
+    try:
+        await loop.run_in_executor(None, run_alembic_migrations)
+    except Exception as e:
+        print("!!! LIFESPAN MIGRATION RUNNER CRASHED !!!", flush=True)
+        import traceback
+        traceback.print_exc(file=sys.stdout)
+        sys.stdout.flush()
+        raise e
 
     # Ensure remaining tables exist (catches any tables not in migrations)
     async with engine.begin() as conn:
