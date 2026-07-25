@@ -78,7 +78,7 @@ export default function PurchasesPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.push("/purchases/new")}
-              className="px-4 py-2 bg-[#4A9FD8] text-white rounded-xl text-[13px] font-semibold flex items-center gap-1.5 hover:bg-[#4A9FD8]/90 transition-colors"
+              className="px-4 py-2 bg-abyssal-primary text-white rounded-xl text-[13px] font-semibold flex items-center gap-1.5 hover:bg-abyssal-primary/90 transition-colors"
             >
               <Plus size={16} />
               Nueva Compra
@@ -120,7 +120,7 @@ export default function PurchasesPage() {
               key={t.key}
               onClick={() => setFilter(t.key)}
               className={`px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors ${
-                filter === t.key ? "bg-[#4A9FD8] text-white" : "bg-abyssal-surface-high text-abyssal-text-secondary hover:bg-abyssal-surface-high/80"
+                filter === t.key ? "bg-abyssal-primary text-white" : "bg-abyssal-surface-high text-abyssal-text-secondary hover:bg-abyssal-surface-high/80"
               }`}
             >
               {t.label} ({t.count})

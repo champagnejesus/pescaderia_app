@@ -1,18 +1,9 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
 import api from "@/lib/api"
+import { Order } from "@/lib/types"
 
-export interface Order {
-  id: number
-  order_number: string
-  client_id: number
-  client_name: string
-  delivery_date: string
-  items_count: number
-  status: string
-  total_value: number
-  created_at: string
-}
+export type { Order }
 
 export function useOrders(statusFilter?: string) {
   const [data, setData] = useState<Order[]>([])

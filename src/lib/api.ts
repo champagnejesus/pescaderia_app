@@ -10,7 +10,29 @@ api.interceptors.response.use((r) => {
   retryCounts.delete(key)
   return r
 }, async (err) => {
-  if (err.response?.status === 401) { localStorage.removeItem("abyssal-token"); window.location.href = "/login"; return Promise.reject(err) }
+  if (err.response?.status === 401) {
+    const refreshToken = localStorage.getItem("abyssal-refresh-token")
+    const originalRequest = err.config
+    if (refreshToken && !originalRequest._retry) {
+      originalRequest._retry = true
+      try {
+        const { data } = await axios.post(`${api.defaults.baseURL}/auth/refresh`, { refresh_token: refreshToken })
+        localStorage.setItem("abyssal-token", data.access_token)
+        localStorage.setItem("abyssal-refresh-token", data.refresh_token)
+        originalRequest.headers.Authorization = `Bearer ${data.access_token}`
+        return api(originalRequest)
+      } catch {
+        localStorage.removeItem("abyssal-token")
+        localStorage.removeItem("abyssal-refresh-token")
+        window.location.href = "/login"
+        return Promise.reject(err)
+      }
+    }
+    localStorage.removeItem("abyssal-token")
+    localStorage.removeItem("abyssal-refresh-token")
+    window.location.href = "/login"
+    return Promise.reject(err)
+  }
   const isNetworkError = !err.response && err.code !== "ERR_CANCELED"
   const isServerError = err.response?.status >= 500
   const method = err.config?.method?.toLowerCase()

@@ -160,7 +160,7 @@ export default function ClientsPage() {
               key={t.key}
               onClick={() => setFilter(t.key)}
               className={`px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors ${
-                filter === t.key ? "bg-[#4A9FD8] text-white" : "bg-abyssal-surface-high text-abyssal-text-secondary hover:bg-abyssal-surface-high/80"
+                filter === t.key ? "bg-abyssal-primary text-white" : "bg-abyssal-surface-high text-abyssal-text-secondary hover:bg-abyssal-surface-high/80"
               }`}
             >
               {t.label} ({t.count})
@@ -185,7 +185,7 @@ export default function ClientsPage() {
             <div className="p-6 pb-4">
               <div className="flex items-center justify-between mb-1">
                 <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Clientes Recientes</h3>
-                <span className="text-[12px] text-[#4A9FD8] font-body font-medium">Ver todos</span>
+                <span className="text-[12px] text-abyssal-primary font-body font-medium">Ver todos</span>
               </div>
             </div>
             <div className="overflow-x-auto">

@@ -173,7 +173,7 @@ export default function AccountsReceivablePage() {
                 <div key={acct.name} className={`py-4 ${i < 2 ? "border-b border-abyssal-outline" : ""}`}>
                   <p className="text-[13px] text-abyssal-text-primary font-body font-medium">{acct.name}</p>
                   <p className="text-[11px] text-abyssal-text-secondary-variant font-caption mt-0.5">{acct.number}</p>
-                  <p className="text-[18px] text-[#4A9FD8] font-heading font-bold mt-1">{formatCurrency(acct.balance)}</p>
+                  <p className="text-[18px] text-abyssal-primary font-heading font-bold mt-1">{formatCurrency(acct.balance)}</p>
                 </div>
               ))}
             </div>

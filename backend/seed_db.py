@@ -177,7 +177,7 @@ async def seed():
         await session.commit()
         
         item2_1 = OrderItem(order_id=2, product_id=2, presentation="kg", quantity=15.0, unit_price=7800.0, subtotal=117000.0)
-        item2_2 = OrderItem(order_id=2, product_id=4, presentation="kg", quantity=2.0, unit_price=28000.0, subtotal=560000.0)
+        item2_2 = OrderItem(order_id=2, product_id=4, presentation="kg", quantity=2.0, unit_price=28000.0, subtotal=56000.0)
         session.add_all([item2_1, item2_2])
         await session.commit()
 

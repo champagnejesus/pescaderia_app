@@ -14,6 +14,7 @@ export function useAuth() {
     try {
       const { data } = await api.post("/auth/login", { email, password })
       localStorage.setItem("abyssal-token", data.access_token)
+      localStorage.setItem("abyssal-refresh-token", data.refresh_token)
       localStorage.setItem("abyssal-business-name", data.business_name)
       localStorage.setItem("abyssal-owner-name", data.owner_name)
       router.push("/dashboard")
@@ -27,6 +28,7 @@ export function useAuth() {
     try {
       const { data } = await api.post("/auth/register", { business_name: businessName, owner_name: ownerName, email, password, phone })
       localStorage.setItem("abyssal-token", data.access_token)
+      localStorage.setItem("abyssal-refresh-token", data.refresh_token)
       localStorage.setItem("abyssal-business-name", data.business_name)
       localStorage.setItem("abyssal-owner-name", data.owner_name)
       router.push("/dashboard")

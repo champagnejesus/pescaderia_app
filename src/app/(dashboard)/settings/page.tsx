@@ -26,7 +26,7 @@ function SectionCard({ title, icon, children }: { title: string; icon: React.Rea
   return (
     <Card className="p-4 space-y-3 border border-abyssal-outline rounded-abyssal-lg shadow-abyssal-lg bg-abyssal-surface">
       <div className="flex items-center gap-2 text-[16px] text-abyssal-text-primary font-heading font-semibold">
-        <span className="text-[#4A9FD8]">{icon}</span>
+        <span className="text-abyssal-primary">{icon}</span>
         <h2>{title}</h2>
       </div>
       {children}
@@ -363,7 +363,7 @@ export default function SettingsPage() {
                 <div key={pm.id} className="flex items-center justify-between p-2 bg-abyssal-surface-high rounded-xl">
                   <span className="text-[13px] text-abyssal-text-primary">{pm.name}</span>
                   <button onClick={() => togglePaymentMethod(pm.id, !pm.is_active)}
-                    className={`w-10 h-6 rounded-full transition-colors ${pm.is_active ? 'bg-[#4A9FD8]' : 'bg-abyssal-surface-highest'}`}>
+                    className={`w-10 h-6 rounded-full transition-colors ${pm.is_active ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
                     <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${pm.is_active ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
                   </button>
                 </div>
@@ -376,7 +376,7 @@ export default function SettingsPage() {
               <label className="flex items-center justify-between">
                 <span className="text-[13px] text-abyssal-text-primary">Aplicar impuesto</span>
                 <button onClick={() => setTaxForm(t => ({ ...t, is_enabled: !t.is_enabled }))}
-                  className={`w-10 h-6 rounded-full transition-colors ${taxForm.is_enabled ? 'bg-[#4A9FD8]' : 'bg-abyssal-surface-highest'}`}>
+                  className={`w-10 h-6 rounded-full transition-colors ${taxForm.is_enabled ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
                   <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${taxForm.is_enabled ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
                 </button>
               </label>
@@ -389,7 +389,7 @@ export default function SettingsPage() {
                   <label className="flex items-center justify-between">
                     <span className="text-[13px] text-abyssal-text-primary">Los precios ya incluyen impuesto</span>
                     <button onClick={() => setTaxForm(t => ({ ...t, included_in_price: !t.included_in_price }))}
-                      className={`w-10 h-6 rounded-full transition-colors ${taxForm.included_in_price ? 'bg-[#4A9FD8]' : 'bg-abyssal-surface-highest'}`}>
+                      className={`w-10 h-6 rounded-full transition-colors ${taxForm.included_in_price ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
                       <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${taxForm.included_in_price ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
                     </button>
                   </label>
@@ -411,7 +411,7 @@ export default function SettingsPage() {
                   <label className="flex items-center justify-between">
                     <span className="text-[13px] text-abyssal-text-primary">Requerir PIN para cerrar caja</span>
                     <button onClick={() => setPinForm(p => ({ ...p, require_pin: !p.require_pin }))}
-                      className={`w-10 h-6 rounded-full transition-colors ${pinForm.require_pin ? 'bg-[#4A9FD8]' : 'bg-abyssal-surface-highest'}`}>
+                      className={`w-10 h-6 rounded-full transition-colors ${pinForm.require_pin ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
                       <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${pinForm.require_pin ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
                     </button>
                   </label>
@@ -430,14 +430,14 @@ export default function SettingsPage() {
             <div className="space-y-3">
               <div>
                 <label className="text-[13px] text-abyssal-text-secondary block">Footer del ticket</label>
-                <textarea className="w-full bg-abyssal-surface-high text-abyssal-text-primary rounded-xl p-3 text-[13px] resize-none h-20 outline-none ring-1 ring-abyssal-primary/20 focus:ring-[#4A9FD8]"
+                <textarea className="w-full bg-abyssal-surface-high text-abyssal-text-primary rounded-xl p-3 text-[13px] resize-none h-20 outline-none ring-1 ring-abyssal-primary/20 focus:ring-abyssal-primary"
                   value={invoiceForm.footer_text} onChange={e => setInvoiceForm(f => ({ ...f, footer_text: e.target.value }))}
                   placeholder="Texto al pie de cada factura..." />
               </div>
               <label className="flex items-center justify-between">
                 <span className="text-[13px] text-abyssal-text-primary">Mostrar desglose de impuesto</span>
                 <button onClick={() => setInvoiceForm(f => ({ ...f, show_tax_breakdown: !f.show_tax_breakdown }))}
-                  className={`w-10 h-6 rounded-full transition-colors ${invoiceForm.show_tax_breakdown ? 'bg-[#4A9FD8]' : 'bg-abyssal-surface-highest'}`}>
+                  className={`w-10 h-6 rounded-full transition-colors ${invoiceForm.show_tax_breakdown ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
                   <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${invoiceForm.show_tax_breakdown ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
                 </button>
               </label>

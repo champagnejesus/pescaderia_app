@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { TrendingUp, Search, Bell, Plus, ShoppingCart } from "lucide-react"
+import { TrendingUp, Search, Bell, Plus, FileText, DollarSign, Package, UserPlus, Info, Check } from "lucide-react"
 import Link from "next/link"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { Button } from "@/components/ui/button"
@@ -28,9 +28,18 @@ interface ActivityItem {
 }
 
 const statusColor: Record<string, { bg: string; text: string }> = {
-  COMPLETADO: { bg: "bg-[rgba(34,197,94,0.1)]", text: "text-[#22c55e]" },
-  PROCESANDO: { bg: "bg-[rgba(74,159,216,0.1)]", text: "text-[#4A9FD8]" },
+  COMPLETADO: { bg: "bg-[rgba(34,197,94,0.1)]", text: "text-abyssal-green" },
+  PROCESANDO: { bg: "bg-[rgba(74,159,216,0.1)]", text: "text-abyssal-primary" },
   PENDIENTE: { bg: "bg-[rgba(234,179,8,0.1)]", text: "text-[#eab308]" },
+}
+
+const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  "file-text": FileText,
+  "dollar-sign": DollarSign,
+  "package": Package,
+  "user-plus": UserPlus,
+  "info": Info,
+  "check": Check,
 }
 
 export default function DashboardPage() {
@@ -78,7 +87,7 @@ export default function DashboardPage() {
         <TopBar title="Dashboard" icon={<TrendingUp size={18} />} />
         <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
           <div className="hidden lg:block"><Skeleton className="h-[64px] w-full" /></div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
             {[1,2,3,4].map(i => <Skeleton key={i} className="h-[130px] rounded-abyssal-lg" />)}
           </div>
           <Skeleton className="h-[350px] rounded-abyssal-lg" />
@@ -134,8 +143,8 @@ export default function DashboardPage() {
               {formatCurrency(dashboardData.sales_total ?? 0)}
             </p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">12.5%</span>
+              <TrendingUp size={14} className="text-abyssal-primary" />
+              <span className="text-[13px] text-abyssal-primary font-caption font-semibold">12.5%</span>
               <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
           </KpiCard>
@@ -151,8 +160,8 @@ export default function DashboardPage() {
               {totalOrders ?? 0}
             </p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">8.2%</span>
+              <TrendingUp size={14} className="text-abyssal-primary" />
+              <span className="text-[13px] text-abyssal-primary font-caption font-semibold">8.2%</span>
               <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
           </KpiCard>
@@ -168,8 +177,8 @@ export default function DashboardPage() {
               {formatCurrency(dashboardData.gross_profit ?? 0)}
             </p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">15.3%</span>
+              <TrendingUp size={14} className="text-abyssal-primary" />
+              <span className="text-[13px] text-abyssal-primary font-caption font-semibold">15.3%</span>
               <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
           </KpiCard>
@@ -204,7 +213,7 @@ export default function DashboardPage() {
                 <p className="text-[13px] text-abyssal-text-secondary-variant font-caption mt-0.5">Ingresos mensuales en miles USD</p>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded bg-[#4A9FD8]" />
+                <div className="w-2 h-2 rounded bg-abyssal-primary" />
                 <span className="text-[12px] text-abyssal-text-secondary-variant font-caption">Este año</span>
               </div>
             </div>
@@ -213,14 +222,14 @@ export default function DashboardPage() {
               <svg width="100%" height="180" viewBox="0 0 540 180" className="mt-2" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#4A9FD8" stopOpacity="0.15" />
-                    <stop offset="100%" stopColor="#4A9FD8" stopOpacity="0" />
+                    <stop offset="0%" stopColor="var(--abyssal-primary)" stopOpacity="0.15" />
+                    <stop offset="100%" stopColor="var(--abyssal-primary)" stopOpacity="0" />
                   </linearGradient>
                 </defs>
                 <path d="M0 90l49.1-14 49.1 8 49.1-28 49.1 8 49.1-24 49 10 49.1-14 49.1 8 49.1-20 49.1-8 49.1-16v180H0z" fill="url(#chartGrad)" />
-                <path d="M0 90l49.1-14 49.1 8 49.1-28 49.1 8 49.1-24 49 10 49.1-14 49.1 8 49.1-20 49.1-8 49.1-16" fill="none" stroke="#4A9FD8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M0 90l49.1-14 49.1 8 49.1-28 49.1 8 49.1-24 49 10 49.1-14 49.1 8 49.1-20 49.1-8 49.1-16" fill="none" stroke="var(--abyssal-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 {[37, 86.09, 135.18, 184.27, 233.36, 282.45, 331.55, 380.64, 429.73, 478.82, 527.91, 577].map((x, i) => (
-                  <circle key={i} cx={x} cy={[90, 76, 84, 56, 64, 40, 50, 36, 44, 24, 16, 0][i]} r="3" fill="#4A9FD8" />
+                  <circle key={i} cx={x} cy={[90, 76, 84, 56, 64, 40, 50, 36, 44, 24, 16, 0][i]} r="3" fill="var(--abyssal-primary)" />
                 ))}
                 <text x="0" y="174" fill="#999" fontSize="10" fontFamily="Geist">0k</text>
                 <text x="0" y="114" fill="#999" fontSize="10" fontFamily="Geist">30k</text>
@@ -274,7 +283,7 @@ export default function DashboardPage() {
           <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Órdenes Recientes</h3>
-              <Link href="/orders" className="text-[12px] text-[#4A9FD8] font-body font-medium">Ver todas</Link>
+              <Link href="/orders" className="text-[12px] text-abyssal-primary font-body font-medium">Ver todas</Link>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -320,20 +329,21 @@ export default function DashboardPage() {
           <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Registro de Actividad</h3>
-              <Link href="/reports" className="text-[12px] text-[#4A9FD8] font-body font-medium">Ver todo</Link>
+              <Link href="/reports" className="text-[12px] text-abyssal-primary font-body font-medium">Ver todo</Link>
             </div>
             <div className="space-y-0">
               {activity.length > 0 ? activity.slice(0, 6).map((item, i) => {
                 const icons: Record<string, string> = { "Nueva orden": "file-text", "Pago recibido": "dollar-sign", "Inventario actualizado": "package", "Nuevo usuario": "user-plus", "Alerta de stock": "info", "Orden enviada": "check" }
-                const icon = icons[item.title] || "file-text"
+                const iconName = icons[item.title] || "file-text"
+                const IconComponent = iconMap[iconName] || FileText
                 const isGreen = item.title === "Pago recibido" || item.title === "Nuevo usuario"
                 const isYellow = item.title === "Alerta de stock"
                 const iconBg = isGreen ? "bg-[rgba(34,197,94,0.1)]" : isYellow ? "bg-[rgba(234,179,8,0.1)]" : "bg-[rgba(74,159,216,0.1)]"
-                const iconColor = isGreen ? "text-[#22c55e]" : isYellow ? "text-[#eab308]" : "text-[#4A9FD8]"
+                const iconColor = isGreen ? "text-abyssal-green" : isYellow ? "text-[#eab308]" : "text-abyssal-primary"
                 return (
                   <div key={item.id || i} className={`flex items-center gap-3 py-3 ${i < 5 ? "border-b border-abyssal-outline" : ""}`}>
                     <div className={`w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center shrink-0`}>
-                      <div className={`w-4 h-4 ${iconColor}`} dangerouslySetInnerHTML={{ __html: getLucideSVG(icon) }} />
+                      <IconComponent size={16} className={iconColor} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">{item.title}</p>
@@ -356,7 +366,7 @@ export default function DashboardPage() {
         {/* FAB for mobile */}
         <div className="lg:hidden fixed bottom-20 right-4 z-40">
           <Link href="/orders/new">
-            <button className="w-14 h-14 rounded-full bg-[#4A9FD8] text-white shadow-lg flex items-center justify-center active:scale-95 transition-transform">
+            <button className="w-14 h-14 rounded-full bg-abyssal-primary text-white shadow-lg flex items-center justify-center active:scale-95 transition-transform">
               <Plus size={24} />
             </button>
           </Link>
@@ -365,18 +375,6 @@ export default function DashboardPage() {
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   )
-}
-
-function getLucideSVG(icon: string): string {
-  const icons: Record<string, string> = {
-    "file-text": '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
-    "dollar-sign": '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
-    "package": '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>',
-    "user-plus": '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>',
-    "info": '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
-    "check": '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
-  }
-  return icons[icon] || icons["file-text"]
 }
 
 function timeAgo(date: string): string {

@@ -128,7 +128,7 @@ export default function InventoryPage() {
           </div>
           <button
             onClick={() => setShowPhysicalCountModal(true)}
-            className="px-4 py-2 bg-[rgba(74,159,216,0.1)] text-[#4A9FD8] border border-[rgba(74,159,216,0.3)] rounded-xl text-[13px] font-medium hover:bg-[rgba(74,159,216,0.2)] transition-colors"
+            className="px-4 py-2 bg-[rgba(74,159,216,0.1)] text-abyssal-primary border border-[rgba(74,159,216,0.3)] rounded-xl text-[13px] font-medium hover:bg-[rgba(74,159,216,0.2)] transition-colors"
           >
             Conteo Físico
           </button>
@@ -238,7 +238,7 @@ export default function InventoryPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar producto o categoría..."
-              className="w-full bg-abyssal-surface-high text-abyssal-text-primary rounded-xl py-2.5 pl-9 pr-9 text-[14px] outline-none ring-1 ring-abyssal-primary/20 focus:ring-[#4A9FD8] transition-all placeholder:text-abyssal-text-secondary/60"
+              className="w-full bg-abyssal-surface-high text-abyssal-text-primary rounded-xl py-2.5 pl-9 pr-9 text-[14px] outline-none ring-1 ring-abyssal-primary/20 focus:ring-abyssal-primary transition-all placeholder:text-abyssal-text-secondary/60"
             />
             {search && (
               <button onClick={() => { setSearch(""); searchRef.current?.focus() }} className="absolute right-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary hover:text-abyssal-text-primary">
@@ -260,7 +260,7 @@ export default function InventoryPage() {
               key={t.key}
               onClick={() => setActiveFilter(t.key)}
               className={`px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors ${
-                activeFilter === t.key ? "bg-[#4A9FD8] text-white" : "bg-abyssal-surface-high text-abyssal-text-secondary hover:bg-abyssal-surface-high/80"
+                activeFilter === t.key ? "bg-abyssal-primary text-white" : "bg-abyssal-surface-high text-abyssal-text-secondary hover:bg-abyssal-surface-high/80"
               }`}
             >
               {t.label} {t.count !== undefined ? `(${t.count})` : ""}
@@ -329,7 +329,7 @@ export default function InventoryPage() {
                     </td>
                     <td className="py-4 text-center">
                       <button onClick={(e) => { e.stopPropagation(); setAdjustmentProduct(item); setShowAdjustmentModal(true); }}
-                        className="text-abyssal-text-secondary hover:text-[#4A9FD8] transition-colors">
+                        className="text-abyssal-text-secondary hover:text-abyssal-primary transition-colors">
                         <Settings size={16} />
                       </button>
                     </td>
@@ -385,7 +385,7 @@ export default function InventoryPage() {
                 <div key={`${mov.type}-${mov.id}`} className="flex items-center justify-between bg-abyssal-surface-high rounded-xl p-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${mov.type === "compra" ? "bg-[#22c55e]" : "bg-[#4A9FD8]"}`} />
+                      <span className={`w-2 h-2 rounded-full ${mov.type === "compra" ? "bg-[#22c55e]" : "bg-abyssal-primary"}`} />
                       <p className="text-[13px] text-abyssal-text-primary font-body font-medium">{mov.type === "compra" ? "Compra" : "Venta"}</p>
                       <span className="text-[11px] text-abyssal-text-secondary font-mono">{mov.reference}</span>
                     </div>

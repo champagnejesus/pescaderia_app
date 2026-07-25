@@ -77,7 +77,7 @@ export default function ReportsPage() {
           {reportCards.map((card) => (
             <div key={card.title} className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg flex flex-col gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[rgba(74,159,216,0.1)] flex items-center justify-center text-[#4A9FD8]">
+                <div className="w-10 h-10 rounded-xl bg-[rgba(74,159,216,0.1)] flex items-center justify-center text-abyssal-primary">
                   {card.icon}
                 </div>
                 <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">{card.title}</h3>
@@ -92,7 +92,7 @@ export default function ReportsPage() {
                     addToast("Error al descargar reporte", "error")
                   }
                 }}
-                className="h-8 bg-[#4A9FD8] text-white rounded-lg text-[12px] font-semibold px-4 flex items-center justify-center gap-1.5 hover:bg-[#4A9FD8]/90 transition-colors"
+                className="h-8 bg-abyssal-primary text-white rounded-lg text-[12px] font-semibold px-4 flex items-center justify-center gap-1.5 hover:bg-abyssal-primary/90 transition-colors"
               >
                 <Download size={14} />
                 Generar Reporte
