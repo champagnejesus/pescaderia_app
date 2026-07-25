@@ -9,7 +9,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const stored = localStorage.getItem("carbon-frost-theme")
+    const stored = localStorage.getItem("abyssal-theme")
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
     const isDark = stored ? stored === "dark" : prefersDark
     setDark(isDark)
@@ -21,7 +21,7 @@ export function ThemeToggle({ className }: { className?: string }) {
     const next = !dark
     setDark(next)
     document.documentElement.classList.toggle("dark", next)
-    localStorage.setItem("carbon-frost-theme", next ? "dark" : "light")
+    localStorage.setItem("abyssal-theme", next ? "dark" : "light")
   }
 
   if (!mounted) {

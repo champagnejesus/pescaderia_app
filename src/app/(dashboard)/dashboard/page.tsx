@@ -131,7 +131,7 @@ export default function DashboardPage() {
               </svg>
             </div>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              {formatCurrency(dashboardData.sales_total || 284520)}
+              {formatCurrency(dashboardData.sales_total ?? 0)}
             </p>
             <div className="flex items-center gap-1.5 mt-3">
               <TrendingUp size={14} className="text-[#4A9FD8]" />
@@ -148,7 +148,7 @@ export default function DashboardPage() {
               </svg>
             </div>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              {totalOrders || 1847}
+              {totalOrders ?? 0}
             </p>
             <div className="flex items-center gap-1.5 mt-3">
               <TrendingUp size={14} className="text-[#4A9FD8]" />
@@ -165,7 +165,7 @@ export default function DashboardPage() {
               </svg>
             </div>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              {formatCurrency(dashboardData.gross_profit || 98340)}
+              {formatCurrency(dashboardData.gross_profit ?? 0)}
             </p>
             <div className="flex items-center gap-1.5 mt-3">
               <TrendingUp size={14} className="text-[#4A9FD8]" />
@@ -305,28 +305,11 @@ export default function DashboardPage() {
                       </tr>
                     )
                   }) : (
-                    <>
-                      {[
-                        { id: "PED-001284", client: "Mariscos del Sur S.A.", amount: "$12,480", status: "COMPLETADO" },
-                        { id: "PED-001285", client: "Distribuidora Costera", amount: "$8,750", status: "PROCESANDO" },
-                        { id: "PED-001286", client: "Restaurante El Puerto", amount: "$3,200", status: "PENDIENTE" },
-                        { id: "PED-001287", client: "Exportaciones Pacífico", amount: "$22,150", status: "COMPLETADO" },
-                        { id: "PED-001288", client: "Pescadería La Red", amount: "$4,890", status: "PROCESANDO" },
-                        { id: "PED-001289", client: "Grupo Alimenticio Marino", amount: "$15,670", status: "COMPLETADO" },
-                      ].map((o, i) => {
-                        const colors = statusColor[o.status] || statusColor.PROCESANDO
-                        return (
-                          <tr key={i} className="border-b border-abyssal-outline">
-                            <td className="py-3 text-[12px] text-abyssal-text-secondary-variant font-mono">{o.id}</td>
-                            <td className="py-3 text-[13px] text-abyssal-text-secondary font-body">{o.client}</td>
-                            <td className="py-3 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">{o.amount}</td>
-                            <td className="py-3 text-right">
-                              <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium ${colors.bg} ${colors.text}`}>{o.status}</span>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </>
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center text-[13px] text-abyssal-text-secondary-variant font-body">
+                        No hay órdenes registradas.
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </table>
@@ -362,31 +345,9 @@ export default function DashboardPage() {
                   </div>
                 )
               }) : (
-                <>
-                  {[
-                    { icon: "file-text", action: "Nueva orden", desc: "Pedido PED-001290 creado por Cliente Premium", time: "Hace 5 min", isAccent: true },
-                    { icon: "dollar-sign", action: "Pago recibido", desc: "Transferencia bancaria por $12,480.00", time: "Hace 28 min", isGreen: true },
-                    { icon: "package", action: "Inventario actualizado", desc: "Entrada de 2,500 kg de camarón fresco", time: "Hace 1 hora" },
-                    { icon: "user-plus", action: "Nuevo usuario", desc: "María López registrada como Analista de Ventas", time: "Hace 2 horas", isGreen: true },
-                    { icon: "info", action: "Alerta de stock", desc: "Producto 'Mero Fresco' por debajo del mínimo", time: "Hace 3 horas", isYellow: true },
-                    { icon: "check", action: "Orden enviada", desc: "PED-001284 marcado como completado", time: "Hace 4 horas", isAccent: true },
-                  ].map((a, i) => {
-                    const iconBg = a.isGreen ? "bg-[rgba(34,197,94,0.1)]" : a.isYellow ? "bg-[rgba(234,179,8,0.1)]" : "bg-[rgba(74,159,216,0.1)]"
-                    const iconColor = a.isGreen ? "text-[#22c55e]" : a.isYellow ? "text-[#eab308]" : "text-[#4A9FD8]"
-                    return (
-                      <div key={i} className={`flex items-center gap-3 py-3 ${i < 5 ? "border-b border-abyssal-outline" : ""}`}>
-                        <div className={`w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center shrink-0`}>
-                          <div className={`w-4 h-4 ${iconColor}`} dangerouslySetInnerHTML={{ __html: getLucideSVG(a.icon) }} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">{a.action}</p>
-                          <p className="text-[11px] text-abyssal-text-secondary-variant font-caption truncate">{a.desc}</p>
-                        </div>
-                        <span className="text-[11px] text-abyssal-text-secondary-variant font-caption shrink-0">{a.time}</span>
-                      </div>
-                    )
-                  })}
-                </>
+                <div className="py-8 text-center text-[13px] text-abyssal-text-secondary-variant font-body">
+                  No hay actividad registrada.
+                </div>
               )}
             </div>
           </div>
