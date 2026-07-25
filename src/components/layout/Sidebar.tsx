@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { memo } from "react"
+import { memo, useState, useEffect } from "react"
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, Users,
   Truck, Package, Fish, ArrowLeftFromLine,
@@ -55,6 +55,35 @@ const SidebarItem = memo(function SidebarItem({
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const [user, setUser] = useState({ name: "Carlos Aguirre", email: "c.aguirre@pescamar.pe" })
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const name = localStorage.getItem("abyssal-owner-name") || "Carlos Aguirre"
+      let email = localStorage.getItem("abyssal-user-email")
+      if (!email) {
+        const token = localStorage.getItem("abyssal-token")
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split(".")[1]))
+            email = payload.email || "c.aguirre@pescamar.pe"
+          } catch (e) {
+            email = "c.aguirre@pescamar.pe"
+          }
+        } else {
+          email = "c.aguirre@pescamar.pe"
+        }
+      }
+      setUser({ name, email })
+    }
+  }, [])
+
+  const getInitials = (name: string): string => {
+    if (!name) return "U"
+    const parts = name.trim().split(/\s+/)
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase()
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  }
 
   const handleLogout = () => {
     const keysToRemove = [
@@ -62,6 +91,7 @@ export function Sidebar() {
       "abyssal-refresh-token",
       "abyssal-business-name",
       "abyssal-owner-name",
+      "abyssal-user-email",
     ]
     keysToRemove.forEach((key) => localStorage.removeItem(key))
     sessionStorage.clear()
@@ -98,15 +128,22 @@ export function Sidebar() {
       </nav>
 
       <div className="px-2 py-3 border-t border-abyssal-outline">
-        <div className="flex items-center gap-3 px-3 py-2 mb-2">
-          <div className="w-9 h-9 rounded-full bg-abyssal-primary/10 flex items-center justify-center text-abyssal-primary text-xs font-semibold">
-            CA
+        <div className="flex items-center gap-2 mb-2 px-1">
+          <Link
+            href="/configuracion"
+            className="flex flex-1 items-center gap-3 px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors rounded-md cursor-pointer min-w-0"
+          >
+            <div className="w-9 h-9 rounded-full bg-abyssal-primary/10 flex items-center justify-center text-abyssal-primary text-xs font-semibold shrink-0">
+              {getInitials(user.name)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-abyssal-text-primary font-medium truncate">{user.name}</p>
+              <p className="text-[11px] text-abyssal-text-secondary-variant font-caption truncate">{user.email}</p>
+            </div>
+          </Link>
+          <div className="shrink-0">
+            <ThemeToggle />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm text-abyssal-text-primary font-medium truncate">Carlos Aguirre</p>
-            <p className="text-[11px] text-abyssal-text-secondary-variant font-caption truncate">c.aguirre@pescamar.pe</p>
-          </div>
-          <ThemeToggle />
         </div>
         <button
           onClick={handleLogout}

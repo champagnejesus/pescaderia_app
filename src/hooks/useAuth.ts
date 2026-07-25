@@ -17,6 +17,7 @@ export function useAuth() {
       localStorage.setItem("abyssal-refresh-token", data.refresh_token)
       localStorage.setItem("abyssal-business-name", data.business_name)
       localStorage.setItem("abyssal-owner-name", data.owner_name)
+      localStorage.setItem("abyssal-user-email", email)
       router.push("/dashboard")
     } catch (err: any) {
       setState({ loading: false, error: err.response?.data?.detail || "Error al iniciar sesión" })
@@ -31,6 +32,7 @@ export function useAuth() {
       localStorage.setItem("abyssal-refresh-token", data.refresh_token)
       localStorage.setItem("abyssal-business-name", data.business_name)
       localStorage.setItem("abyssal-owner-name", data.owner_name)
+      localStorage.setItem("abyssal-user-email", email)
       router.push("/dashboard")
     } catch (err: any) {
       setState({ loading: false, error: err.response?.data?.detail || "Error al registrarse" })
