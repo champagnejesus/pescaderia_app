@@ -57,8 +57,15 @@ export function Sidebar() {
   const router = useRouter()
 
   const handleLogout = () => {
-    localStorage.removeItem("abyssal-token")
-    router.push("/login")
+    const keysToRemove = [
+      "abyssal-token",
+      "abyssal-refresh-token",
+      "abyssal-business-name",
+      "abyssal-owner-name",
+    ]
+    keysToRemove.forEach((key) => localStorage.removeItem(key))
+    sessionStorage.clear()
+    window.location.href = "/login"
   }
 
   return (
