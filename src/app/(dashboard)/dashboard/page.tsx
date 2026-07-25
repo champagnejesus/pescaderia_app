@@ -46,9 +46,10 @@ export default function DashboardPage() {
   const router = useRouter()
   const [activity, setActivity] = useState<ActivityItem[]>([])
   const [activityLoading, setActivityLoading] = useState(true)
-  const { lowStockCount, loading: productsLoading } = useProducts()
+  const { data: products, lowStockCount, loading: productsLoading } = useProducts()
   const { data: orders, loading: ordersLoading } = useOrders()
   const { data: summary, loading: txsLoading } = useTransactions()
+  const [adjustments, setAdjustments] = useState<any[]>([])
 
   const loading = productsLoading || ordersLoading || txsLoading
   const { toasts, addToast, removeToast } = useToast()
@@ -58,6 +59,10 @@ export default function DashboardPage() {
       .then((res) => setActivity(res.data))
       .catch(() => {})
       .finally(() => setActivityLoading(false))
+
+    api.get("/inventory/adjustments")
+      .then((res) => setAdjustments(res.data.adjustments || []))
+      .catch(() => {})
   }, [])
 
   const dashboardData = {
@@ -75,6 +80,62 @@ export default function DashboardPage() {
   const pendingOrders = orders.filter((o) => o.status === "PENDIENTE")
   const recentOrders = orders.slice(-6).reverse()
   const totalOrders = orders.length
+
+  // Calculate dynamic Shrinkage Rate (Mermas)
+  const totalStock = products.reduce((acc, curr) => acc + (curr.stock || 0), 0)
+  const mermas = adjustments.filter(adj => (adj.reason || "").toLowerCase().includes("merma"))
+  const totalMermaQty = mermas.reduce((acc, curr) => acc + Math.abs(curr.quantity_adjusted || 0), 0)
+  const shrinkageRate = (totalStock + totalMermaQty) > 0 ? (totalMermaQty / (totalStock + totalMermaQty)) * 100 : 0
+  const shrinkageWeight = totalMermaQty
+  const shrinkageStatusLabel = shrinkageRate > 3.0 ? "Crítico" : "Normal"
+  const shrinkageBadgeColor = shrinkageRate > 3.0 ? "text-[#EF4444] bg-[#EF4444]/10" : "text-[#22c55e] bg-[#22c55e]/10"
+  const shrinkageTextColor = shrinkageRate > 3.0 ? "text-[#EF4444]" : "text-[#22c55e]"
+  const shrinkageBarColor = shrinkageRate > 3.0 ? "bg-[#EF4444]" : "bg-[#22c55e]"
+  const shrinkageBarWidth = `${Math.min((shrinkageRate / 3.0) * 100, 100)}%`
+
+  // Calculate dynamic top margin products (Contribution Margin)
+  const topProducts = products
+    .filter(p => (p.price_venta || 0) > 0)
+    .map(p => {
+      const pcompra = p.price_compra || 0
+      const pventa = p.price_venta || 0
+      const margin = ((pventa - pcompra) / pventa) * 100
+      return {
+        name: p.name,
+        value: `${margin.toFixed(1)}%`,
+        pct: Math.min(Math.max(margin, 0), 100),
+        color: margin >= 30 ? "#22c55e" : margin >= 15 ? "#eab308" : "#EF4444"
+      }
+    })
+    .sort((a, b) => parseFloat(b.value) - parseFloat(a.value))
+    .slice(0, 5)
+
+  // Calculate monthly sales for the graph dynamically
+  const monthlyData = Array(12).fill(0)
+  const currentYear = new Date().getFullYear()
+  orders.forEach((o) => {
+    const d = new Date(o.created_at || o.delivery_date)
+    if (d.getFullYear() === currentYear) {
+      const month = d.getMonth()
+      monthlyData[month] += o.total_value || 0
+    }
+  })
+
+  const maxSales = Math.max(...monthlyData, 1000)
+
+  const xCoords = [37, 86.09, 135.18, 184.27, 233.36, 282.45, 331.55, 380.64, 429.73, 478.82, 527.91, 577]
+  const points = monthlyData.map((val, i) => {
+    const x = xCoords[i]
+    const y = 160 - (val / maxSales) * 140
+    return { x, y }
+  })
+
+  const pathD = points.length > 0 
+    ? `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ")
+    : ""
+  const areaD = points.length > 0
+    ? `M ${points[0].x} 160 L ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ") + ` L ${points[points.length - 1].x} 160 Z`
+    : ""
 
   function handleActivityPress(item: ActivityItem) {
     if (item.type === "pedido") router.push(`/orders/${item.reference_id}`)
@@ -182,21 +243,22 @@ export default function DashboardPage() {
               <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
           </KpiCard>
-
           <KpiCard>
             <div className="flex items-center justify-between">
               <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">Tasa de Mermas</span>
-              <div className="text-[#EF4444] px-1.5 py-0.5 rounded bg-[#EF4444]/10 text-[10px] font-bold">Crítico</div>
+              <div className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${shrinkageBadgeColor}`}>
+                {shrinkageStatusLabel}
+              </div>
             </div>
-            <p className="text-[26px] text-[#EF4444] font-heading font-bold mt-2">
-              2.4%
+            <p className={`text-[26px] font-heading font-bold mt-2 ${shrinkageTextColor}`}>
+              {shrinkageRate.toFixed(1)}%
             </p>
             <div className="mt-3">
               <div className="h-1.5 w-full bg-abyssal-outline rounded-full overflow-hidden">
-                <div className="h-full bg-[#EF4444]" style={{ width: "24%" }} />
+                <div className={`h-full transition-all ${shrinkageBarColor}`} style={{ width: shrinkageBarWidth }} />
               </div>
               <div className="flex justify-between text-[11px] text-abyssal-text-secondary-variant mt-1.5">
-                <span>Merma: 12.5 kg</span>
+                <span>Merma: {shrinkageWeight.toFixed(1)} kg</span>
                 <span>Límite: 3.0%</span>
               </div>
             </div>
@@ -218,30 +280,41 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="h-[220px] relative">
-              {/* SVG Chart matching the PENCIL design */}
-              <svg width="100%" height="180" viewBox="0 0 540 180" className="mt-2" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--abyssal-primary)" stopOpacity="0.15" />
-                    <stop offset="100%" stopColor="var(--abyssal-primary)" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                <path d="M0 90l49.1-14 49.1 8 49.1-28 49.1 8 49.1-24 49 10 49.1-14 49.1 8 49.1-20 49.1-8 49.1-16v180H0z" fill="url(#chartGrad)" />
-                <path d="M0 90l49.1-14 49.1 8 49.1-28 49.1 8 49.1-24 49 10 49.1-14 49.1 8 49.1-20 49.1-8 49.1-16" fill="none" stroke="var(--abyssal-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                {[37, 86.09, 135.18, 184.27, 233.36, 282.45, 331.55, 380.64, 429.73, 478.82, 527.91, 577].map((x, i) => (
-                  <circle key={i} cx={x} cy={[90, 76, 84, 56, 64, 40, 50, 36, 44, 24, 16, 0][i]} r="3" fill="var(--abyssal-primary)" />
-                ))}
-                <text x="0" y="174" fill="#999" fontSize="10" fontFamily="Geist">0k</text>
-                <text x="0" y="114" fill="#999" fontSize="10" fontFamily="Geist">30k</text>
-                <text x="0" y="56" fill="#999" fontSize="10" fontFamily="Geist">59k</text>
-                <text x="0" y="-6" fill="#999" fontSize="10" fontFamily="Geist">90k</text>
-                <text x="28" y="184" fill="#999" fontSize="10" fontFamily="Geist">Ene</text>
-                <text x="126.18" y="184" fill="#999" fontSize="10" fontFamily="Geist">Mar</text>
-                <text x="224.36" y="184" fill="#999" fontSize="10" fontFamily="Geist">May</text>
-                <text x="322.55" y="184" fill="#999" fontSize="10" fontFamily="Geist">Jul</text>
-                <text x="420.73" y="184" fill="#999" fontSize="10" fontFamily="Geist">Sep</text>
-                <text x="518.91" y="184" fill="#999" fontSize="10" fontFamily="Geist">Nov</text>
-              </svg>
+              {orders.length === 0 ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                  <TrendingUp size={36} className="text-abyssal-text-secondary-variant/40 mb-2" />
+                  <p className="text-[14px] text-abyssal-text-secondary font-medium">Sin datos de ventas</p>
+                  <p className="text-[12px] text-abyssal-text-secondary-variant mt-0.5">Registra pedidos para ver tu rendimiento</p>
+                </div>
+              ) : (
+                <svg width="100%" height="180" viewBox="0 0 540 180" className="mt-2" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--abyssal-primary)" stopOpacity="0.15" />
+                      <stop offset="100%" stopColor="var(--abyssal-primary)" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  {pathD && (
+                    <>
+                      <path d={areaD} fill="url(#chartGrad)" />
+                      <path d={pathD} fill="none" stroke="var(--abyssal-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </>
+                  )}
+                  {points.map((p, i) => (
+                    <circle key={i} cx={p.x} cy={p.y} r="3" fill="var(--abyssal-primary)" />
+                  ))}
+                  <text x="0" y="174" fill="#999" fontSize="10" fontFamily="Geist">0k</text>
+                  <text x="0" y="114" fill="#999" fontSize="10" fontFamily="Geist">{(maxSales * 0.33 / 1000).toFixed(0)}k</text>
+                  <text x="0" y="56" fill="#999" fontSize="10" fontFamily="Geist">{(maxSales * 0.66 / 1000).toFixed(0)}k</text>
+                  <text x="0" y="-6" fill="#999" fontSize="10" fontFamily="Geist">{(maxSales / 1000).toFixed(0)}k</text>
+                  <text x="28" y="184" fill="#999" fontSize="10" fontFamily="Geist">Ene</text>
+                  <text x="126.18" y="184" fill="#999" fontSize="10" fontFamily="Geist">Mar</text>
+                  <text x="224.36" y="184" fill="#999" fontSize="10" fontFamily="Geist">May</text>
+                  <text x="322.55" y="184" fill="#999" fontSize="10" fontFamily="Geist">Jul</text>
+                  <text x="420.73" y="184" fill="#999" fontSize="10" fontFamily="Geist">Sep</text>
+                  <text x="518.91" y="184" fill="#999" fontSize="10" fontFamily="Geist">Nov</text>
+                </svg>
+              )}
             </div>
           </div>
 
@@ -249,31 +322,33 @@ export default function DashboardPage() {
           <div className="w-[300px] shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
             <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Margen de Contribución</h3>
             <p className="text-[13px] text-abyssal-text-secondary-variant font-body mt-1">Margen real diario (Top 5 hoy)</p>
-            <div className="mt-4 space-y-5">
-              {[
-                { name: "Camarón Premium", value: "32.4%", pct: 100, color: "#22c55e" },
-                { name: "Filete de Pescado", value: "28.1%", pct: 85, color: "#22c55e" },
-                { name: "Pulpo Congelado", value: "24.5%", pct: 75, color: "#22c55e" },
-                { name: "Langostino Entero", value: "18.7%", pct: 58, color: "#eab308" },
-                { name: "Mero Fresco", value: "12.2%", pct: 38, color: "#EF4444" },
-              ].map((p, i) => (
-                <div key={i}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">{p.name}</span>
-                    <span className="text-[13px] font-body font-semibold" style={{ color: p.color }}>{p.value}</span>
+            {topProducts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center text-center py-12">
+                <Package size={32} className="text-abyssal-text-secondary-variant/40 mb-2" />
+                <p className="text-[13px] text-abyssal-text-secondary font-medium">Sin datos de productos</p>
+                <p className="text-[11px] text-abyssal-text-secondary-variant mt-0.5">Agrega precios de compra y venta</p>
+              </div>
+            ) : (
+              <div className="mt-4 space-y-5">
+                {topProducts.map((p, i) => (
+                  <div key={i}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[13px] text-abyssal-text-secondary font-body font-medium truncate max-w-[180px]">{p.name}</span>
+                      <span className="text-[13px] font-body font-semibold" style={{ color: p.color }}>{p.value}</span>
+                    </div>
+                    <div className="h-[6px] bg-abyssal-outline rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{
+                          width: `${p.pct}%`,
+                          backgroundColor: p.color,
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-[6px] bg-abyssal-outline rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{
-                        width: `${p.pct}%`,
-                        backgroundColor: p.color,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

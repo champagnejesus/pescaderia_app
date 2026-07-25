@@ -17,8 +17,13 @@ from app.models.order import Order
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 @router.get("", response_model=list[InventoryItemResponse])
-async def list_inventory(search: str = Query(""), db: AsyncSession = Depends(get_db)):
-    query = select(Product).options(selectinload(Product.category_rel))
+async def list_inventory(
+    search: str = Query(""),
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    bid = user["id"]
+    query = select(Product).options(selectinload(Product.category_rel)).where(Product.business_id == bid)
     if search:
         query = query.where(Product.name.ilike(f"%{search}%"))
     query = query.order_by(Product.name.asc())
@@ -40,9 +45,14 @@ async def list_inventory(search: str = Query(""), db: AsyncSession = Depends(get
     ]
 
 @router.get("/{product_id}/movements", response_model=list[InventoryMovementResponse])
-async def get_product_movements(product_id: int, db: AsyncSession = Depends(get_db)):
+async def get_product_movements(
+    product_id: int,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    bid = user["id"]
     product = await db.get(Product, product_id)
-    if not product:
+    if not product or product.business_id != bid:
         return []
     movements = []
     purchase_items = await db.execute(
@@ -122,6 +132,6 @@ async def list_adjustments(
     db: AsyncSession = Depends(get_db),
 ):
     adjustments, total = await inventory_service.get_adjustments(
-        db, product_id, adjustment_type, limit, offset
+        db, user.get("id"), product_id, adjustment_type, limit, offset
     )
     return AdjustmentListResponse(adjustments=adjustments, total=total)

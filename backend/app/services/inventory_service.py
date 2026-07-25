@@ -5,8 +5,8 @@ from app.models.product import Product
 from ..schemas.inventory import AdjustStockRequest, PhysicalCountRequest
 
 
-async def adjust_stock(db: AsyncSession, data: AdjustStockRequest, user_id: int = None):
-    result = await db.execute(select(Product).where(Product.id == data.product_id))
+async def adjust_stock(db: AsyncSession, data: AdjustStockRequest, user_id: int):
+    result = await db.execute(select(Product).where(Product.id == data.product_id, Product.business_id == user_id))
     product = result.scalar_one_or_none()
     if not product:
         raise ValueError("Product not found")
@@ -20,6 +20,7 @@ async def adjust_stock(db: AsyncSession, data: AdjustStockRequest, user_id: int 
     product.stock = quantity_after
 
     adjustment = InventoryAdjustment(
+        business_id=user_id,
         product_id=data.product_id,
         type="Ajuste Manual",
         quantity_before=quantity_before,
@@ -35,8 +36,8 @@ async def adjust_stock(db: AsyncSession, data: AdjustStockRequest, user_id: int 
     return adjustment
 
 
-async def physical_count(db: AsyncSession, data: PhysicalCountRequest, user_id: int = None):
-    result = await db.execute(select(Product).where(Product.id == data.product_id))
+async def physical_count(db: AsyncSession, data: PhysicalCountRequest, user_id: int):
+    result = await db.execute(select(Product).where(Product.id == data.product_id, Product.business_id == user_id))
     product = result.scalar_one_or_none()
     if not product:
         raise ValueError("Product not found")
@@ -50,6 +51,7 @@ async def physical_count(db: AsyncSession, data: PhysicalCountRequest, user_id: 
     product.stock = data.actual_quantity
 
     adjustment = InventoryAdjustment(
+        business_id=user_id,
         product_id=data.product_id,
         type="Conteo Físico",
         quantity_before=quantity_before,
@@ -67,6 +69,7 @@ async def physical_count(db: AsyncSession, data: PhysicalCountRequest, user_id: 
 
 async def get_adjustments(
     db: AsyncSession,
+    business_id: int,
     product_id: int = None,
     adjustment_type: str = None,
     limit: int = 50,
@@ -75,6 +78,7 @@ async def get_adjustments(
     query = (
         select(InventoryAdjustment, Product.name.label("product_name"))
         .join(Product, InventoryAdjustment.product_id == Product.id)
+        .where(InventoryAdjustment.business_id == business_id)
         .order_by(InventoryAdjustment.created_at.desc())
     )
     if product_id:
@@ -82,7 +86,7 @@ async def get_adjustments(
     if adjustment_type:
         query = query.where(InventoryAdjustment.type == adjustment_type)
 
-    count_query = select(func.count(InventoryAdjustment.id))
+    count_query = select(func.count(InventoryAdjustment.id)).where(InventoryAdjustment.business_id == business_id)
     if product_id:
         count_query = count_query.where(InventoryAdjustment.product_id == product_id)
     if adjustment_type:
