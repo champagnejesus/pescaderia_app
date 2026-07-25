@@ -1,8 +1,11 @@
+import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
+from alembic.config import Config
+from alembic import command
 from app.database import engine, Base
 from app.routers import auth, products, clients, suppliers, orders, transactions, reports, sync, purchases, inventory, accounts, activity, business, categories, units, payment_methods, tax_config, invoice_prefs, export, data, expense_categories, purchase_prices, pdf
 from app.config import settings
@@ -13,6 +16,12 @@ from app.models.tax_config import TaxConfig
 from app.models.invoice_pref import InvoicePref
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.request_id import RequestIDMiddleware
+
+
+def run_alembic_migrations():
+    alembic_cfg = Config("alembic.ini")
+    alembic_cfg.set_main_option("sqlalchemy.url", settings.database_url)
+    command.upgrade(alembic_cfg, "head")
 
 
 @asynccontextmanager
@@ -32,7 +41,11 @@ async def lifespan(app: FastAPI):
     from app.database import async_session
     from datetime import datetime, date, timezone
 
-    # Create all tables if they don't exist
+    # Run Alembic migrations to bring schema up to date (in thread to avoid event loop conflict)
+    loop = asyncio.get_running_loop()
+    await loop.run_in_executor(None, run_alembic_migrations)
+
+    # Ensure remaining tables exist (catches any tables not in migrations)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
