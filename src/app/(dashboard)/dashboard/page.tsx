@@ -33,7 +33,7 @@ const statusColor: Record<string, { bg: string; text: string }> = {
   PENDIENTE: { bg: "bg-[rgba(234,179,8,0.1)]", text: "text-[#eab308]" },
 }
 
-const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+const iconMap: Record<string, React.FC<any>> = {
   "file-text": FileText,
   "dollar-sign": DollarSign,
   "package": Package,
