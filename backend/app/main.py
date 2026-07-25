@@ -59,6 +59,31 @@ async def lifespan(app: FastAPI):
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(None, run_alembic_migrations)
 
+        # Auto-repair schema if database tables exist but lack multi-tenancy columns
+        tables_needing_business_id = [
+            "categories", "clients", "expense_categories", "invoice_prefs", 
+            "manual_entries", "payment_methods", "suppliers", "tax_config", 
+            "units", "orders", "products", "purchases", "transactions", 
+            "inventory_adjustments", "purchase_prices"
+        ]
+        async with engine.begin() as conn:
+            def check_and_repair(sync_conn):
+                import sqlalchemy as sa
+                inspector = sa.inspect(sync_conn)
+                existing_tables = inspector.get_table_names()
+                if 'business_config' not in existing_tables:
+                    return
+                for table in tables_needing_business_id:
+                    if table in existing_tables:
+                        columns = [c['name'] for c in inspector.get_columns(table)]
+                        if 'business_id' not in columns:
+                            sync_conn.execute(sa.text(f'ALTER TABLE "{table}" ADD COLUMN business_id INTEGER NOT NULL DEFAULT 1'))
+                            try:
+                                sync_conn.execute(sa.text(f'ALTER TABLE "{table}" ADD CONSTRAINT fk_{table}_business_id FOREIGN KEY (business_id) REFERENCES business_config(id) ON DELETE CASCADE'))
+                            except Exception:
+                                pass
+            await conn.run_sync(check_and_repair)
+
         # Ensure remaining tables exist (catches any tables not in migrations)
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
