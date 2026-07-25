@@ -130,7 +130,7 @@ export function Sidebar() {
       <div className="px-2 py-3 border-t border-abyssal-outline">
         <div className="flex items-center gap-2 mb-2 px-1">
           <Link
-            href="/configuracion"
+            href="/settings"
             className="flex flex-1 items-center gap-3 px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors rounded-md cursor-pointer min-w-0"
           >
             <div className="w-9 h-9 rounded-full bg-abyssal-primary/10 flex items-center justify-center text-abyssal-primary text-xs font-semibold shrink-0">
