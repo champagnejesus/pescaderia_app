@@ -125,7 +125,7 @@ export default function ClientsPage() {
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Clientes</h1>
             <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Gestión de clientes y relaciones</p>
           </div>
-          <Button variant="primary" size="sm" className="gap-1.5" onClick={() => setAddOpen(true)}>
+          <Button variant="primary" size="sm" className="gap-1.5" onClick={() => router.push("/clients/new")}>
             <Plus size={16} />
             Nuevo Cliente
           </Button>
@@ -220,7 +220,7 @@ export default function ClientsPage() {
         )}
       </div>
 
-      <FAB onClick={() => setAddOpen(true)} aria-label="Agregar cliente">
+      <FAB onClick={() => router.push("/clients/new")} aria-label="Agregar cliente">
         <Plus className="w-6 h-6" />
       </FAB>
 
