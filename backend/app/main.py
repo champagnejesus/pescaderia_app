@@ -106,22 +106,29 @@ async def lifespan(app: FastAPI):
                 await session.flush()
 
             # Create default categories if empty
+            cat_map = {}
             result = await session.execute(sa_select(func.count(Category.id)).where(Category.business_id == business.id))
             if result.scalar() == 0:
-                session.add_all([
-                    Category(id=1, business_id=business.id, name="Mariscos"),
-                    Category(id=2, business_id=business.id, name="Pescado Fresco"),
-                    Category(id=3, business_id=business.id, name="Congelados"),
-                ])
+                cat1 = Category(business_id=business.id, name="Mariscos")
+                cat2 = Category(business_id=business.id, name="Pescado Fresco")
+                cat3 = Category(business_id=business.id, name="Congelados")
+                session.add_all([cat1, cat2, cat3])
                 await session.flush()
+                cat_map["Mariscos"] = cat1.id
+                cat_map["Pescado Fresco"] = cat2.id
+                cat_map["Congelados"] = cat3.id
+            else:
+                db_cats = await session.execute(sa_select(Category).where(Category.business_id == business.id))
+                for c in db_cats.scalars():
+                    cat_map[c.name] = c.id
 
             # Create default units if empty
             result = await session.execute(sa_select(func.count(Unit.id)).where(Unit.business_id == business.id))
             if result.scalar() == 0:
                 session.add_all([
-                    Unit(id=1, business_id=business.id, name="kg", abbreviation="kg"),
-                    Unit(id=2, business_id=business.id, name="unidad", abbreviation="ud"),
-                    Unit(id=3, business_id=business.id, name="bandeja", abbreviation="bdj"),
+                    Unit(business_id=business.id, name="kg", abbreviation="kg"),
+                    Unit(business_id=business.id, name="unidad", abbreviation="ud"),
+                    Unit(business_id=business.id, name="bandeja", abbreviation="bdj"),
                 ])
                 await session.flush()
 
@@ -129,9 +136,9 @@ async def lifespan(app: FastAPI):
             result = await session.execute(sa_select(func.count(PaymentMethod.id)).where(PaymentMethod.business_id == business.id))
             if result.scalar() == 0:
                 session.add_all([
-                    PaymentMethod(id=1, business_id=business.id, name="Efectivo"),
-                    PaymentMethod(id=2, business_id=business.id, name="Transferencia"),
-                    PaymentMethod(id=3, business_id=business.id, name="Tarjeta"),
+                    PaymentMethod(business_id=business.id, name="Efectivo"),
+                    PaymentMethod(business_id=business.id, name="Transferencia"),
+                    PaymentMethod(business_id=business.id, name="Tarjeta"),
                 ])
                 await session.flush()
 
@@ -143,53 +150,79 @@ async def lifespan(app: FastAPI):
                 await session.flush()
 
             # Create default products if empty
+            product_map = {}
             result = await session.execute(sa_select(func.count(Product.id)).where(Product.business_id == business.id))
             if result.scalar() == 0:
-                session.add_all([
-                    Product(id=1, business_id=business.id, name="Camarón Premium", category="Mariscos", category_id=1, stock=150.5, unit="kg", price_compra=8500.0, price_venta=15000.0, avg_purchase_price=8500.0, price=15000.0, description="Camarón ecuatoriano pelado y desvenado", low_stock_threshold=10.0),
-                    Product(id=2, business_id=business.id, name="Filete de Merluza", category="Pescado Fresco", category_id=2, stock=85.0, unit="kg", price_compra=4200.0, price_venta=7800.0, avg_purchase_price=4200.0, price=7800.0, description="Filete de merluza fresca del día", low_stock_threshold=15.0),
-                    Product(id=3, business_id=business.id, name="Pulpo Congelado", category="Congelados", category_id=3, stock=45.0, unit="kg", price_compra=12000.0, price_venta=22000.0, avg_purchase_price=12000.0, price=22000.0, description="Pulpo entero congelado I.Q.F.", low_stock_threshold=5.0),
-                    Product(id=4, business_id=business.id, name="Salmón Fresco", category="Pescado Fresco", category_id=2, stock=3.5, unit="kg", price_compra=15000.0, price_venta=28000.0, avg_purchase_price=15000.0, price=28000.0, description="Salmón fresco entero o porciones", low_stock_threshold=8.0),
-                    Product(id=5, business_id=business.id, name="Mero Fresco", category="Pescado Fresco", category_id=2, stock=0.0, unit="kg", price_compra=9000.0, price_venta=18500.0, avg_purchase_price=9000.0, price=18500.0, description="Filete de mero fresco", low_stock_threshold=10.0),
-                ])
+                p1 = Product(business_id=business.id, name="Camarón Premium", category="Mariscos", category_id=cat_map.get("Mariscos"), stock=150.5, unit="kg", price_compra=8500.0, price_venta=15000.0, avg_purchase_price=8500.0, price=15000.0, description="Camarón ecuatoriano pelado y desvenado", low_stock_threshold=10.0)
+                p2 = Product(business_id=business.id, name="Filete de Merluza", category="Pescado Fresco", category_id=cat_map.get("Pescado Fresco"), stock=85.0, unit="kg", price_compra=4200.0, price_venta=7800.0, avg_purchase_price=4200.0, price=7800.0, description="Filete de merluza fresca del día", low_stock_threshold=15.0)
+                p3 = Product(business_id=business.id, name="Pulpo Congelado", category="Congelados", category_id=cat_map.get("Congelados"), stock=45.0, unit="kg", price_compra=12000.0, price_venta=22000.0, avg_purchase_price=12000.0, price=22000.0, description="Pulpo entero congelado I.Q.F.", low_stock_threshold=5.0)
+                p4 = Product(business_id=business.id, name="Salmón Fresco", category="Pescado Fresco", category_id=cat_map.get("Pescado Fresco"), stock=3.5, unit="kg", price_compra=15000.0, price_venta=28000.0, avg_purchase_price=15000.0, price=28000.0, description="Salmón fresco entero o porciones", low_stock_threshold=8.0)
+                p5 = Product(business_id=business.id, name="Mero Fresco", category="Pescado Fresco", category_id=cat_map.get("Pescado Fresco"), stock=0.0, unit="kg", price_compra=9000.0, price_venta=18500.0, avg_purchase_price=9000.0, price=18500.0, description="Filete de mero fresco", low_stock_threshold=10.0)
+                session.add_all([p1, p2, p3, p4, p5])
                 await session.flush()
+                product_map["Camarón Premium"] = p1.id
+                product_map["Filete de Merluza"] = p2.id
+                product_map["Pulpo Congelado"] = p3.id
+                product_map["Salmón Fresco"] = p4.id
+                product_map["Mero Fresco"] = p5.id
+            else:
+                db_prods = await session.execute(sa_select(Product).where(Product.business_id == business.id))
+                for p in db_prods.scalars():
+                    product_map[p.name] = p.id
 
             # Create default clients if empty
+            client_map = {}
             result = await session.execute(sa_select(func.count(Client.id)).where(Client.business_id == business.id))
             if result.scalar() == 0:
-                session.add_all([
-                    Client(id=1, business_id=business.id, name="Restaurante El Puerto", phone="+56987654321", email="contacto@elpuerto.com", address="Av. Costanera 123, Valparaíso", outstanding_balance=173000.0, credit_limit=2000000.0, allows_credit=True),
-                    Client(id=2, business_id=business.id, name="Mariscos del Sur S.A.", phone="+56911223344", email="ventas@mariscosdelsur.com", address="Camino Industrial 450, Puerto Montt", outstanding_balance=0.0, credit_limit=5000000.0, allows_credit=True),
-                    Client(id=3, business_id=business.id, name="Distribuidora Costera", phone="+56955667788", email="costera@gmail.com", address="Gran Vía 890, Viña del Mar", outstanding_balance=0.0, credit_limit=1500000.0, allows_credit=False),
-                ])
+                c1 = Client(business_id=business.id, name="Restaurante El Puerto", phone="+56987654321", email="contacto@elpuerto.com", address="Av. Costanera 123, Valparaíso", outstanding_balance=173000.0, credit_limit=2000000.0, allows_credit=True)
+                c2 = Client(business_id=business.id, name="Mariscos del Sur S.A.", phone="+56911223344", email="ventas@mariscosdelsur.com", address="Camino Industrial 450, Puerto Montt", outstanding_balance=0.0, credit_limit=5000000.0, allows_credit=True)
+                c3 = Client(business_id=business.id, name="Distribuidora Costera", phone="+56955667788", email="costera@gmail.com", address="Gran Vía 890, Viña del Mar", outstanding_balance=0.0, credit_limit=1500000.0, allows_credit=False)
+                session.add_all([c1, c2, c3])
                 await session.flush()
+                client_map["Restaurante El Puerto"] = c1.id
+                client_map["Mariscos del Sur S.A."] = c2.id
+                client_map["Distribuidora Costera"] = c3.id
+            else:
+                db_clients = await session.execute(sa_select(Client).where(Client.business_id == business.id))
+                for c in db_clients.scalars():
+                    client_map[c.name] = c.id
 
             # Create default suppliers if empty
             result = await session.execute(sa_select(func.count(Supplier.id)).where(Supplier.business_id == business.id))
             if result.scalar() == 0:
                 session.add_all([
-                    Supplier(id=1, business_id=business.id, name="Pesquera Pacífico", category="Mariscos", pending_payment=350000.0, status="ACTIVO"),
-                    Supplier(id=2, business_id=business.id, name="Distribuidora del Mar", category="Pescados", pending_payment=0.0, status="ACTIVO"),
+                    Supplier(business_id=business.id, name="Pesquera Pacífico", category="Mariscos", pending_payment=350000.0, status="ACTIVO"),
+                    Supplier(business_id=business.id, name="Distribuidora del Mar", category="Pescados", pending_payment=0.0, status="ACTIVO"),
                 ])
                 await session.flush()
 
             # Create default orders if empty
             result = await session.execute(sa_select(func.count(Order.id)).where(Order.business_id == business.id))
             if result.scalar() == 0:
-                order1 = Order(id=1, business_id=business.id, order_number="PED-001284", client_id=2, client_name="Mariscos del Sur S.A.", delivery_date="2026-07-24", items_count=2, status="ENTREGADO", payment_method="Transferencia", payment_status="PAGADO", total_value=410000.0, created_at=datetime.now(timezone.utc), delivered_at=datetime.now(timezone.utc), due_date=date.today())
+                order1 = Order(business_id=business.id, order_number="PED-001284", client_id=client_map.get("Mariscos del Sur S.A."), client_name="Mariscos del Sur S.A.", delivery_date="2026-07-24", items_count=2, status="ENTREGADO", payment_method="Transferencia", payment_status="PAGADO", total_value=410000.0, created_at=datetime.now(timezone.utc), delivered_at=datetime.now(timezone.utc), due_date=date.today())
                 session.add(order1)
                 await session.flush()
-                session.add_all([OrderItem(order_id=1, product_id=1, presentation="kg", quantity=20.0, unit_price=15000.0, subtotal=300000.0), OrderItem(order_id=1, product_id=3, presentation="kg", quantity=5.0, unit_price=22000.0, subtotal=110000.0)])
+                session.add_all([
+                    OrderItem(order_id=order1.id, product_id=product_map.get("Camarón Premium"), presentation="kg", quantity=20.0, unit_price=15000.0, subtotal=300000.0), 
+                    OrderItem(order_id=order1.id, product_id=product_map.get("Pulpo Congelado"), presentation="kg", quantity=5.0, unit_price=22000.0, subtotal=110000.0)
+                ])
                 await session.flush()
-                order2 = Order(id=2, business_id=business.id, order_number="PED-001285", client_id=1, client_name="Restaurante El Puerto", delivery_date="2026-07-26", items_count=2, status="PENDIENTE", payment_method="Efectivo", payment_status="PENDIENTE", total_value=173000.0, created_at=datetime.now(timezone.utc), due_date=date.today())
+                
+                order2 = Order(business_id=business.id, order_number="PED-001285", client_id=client_map.get("Restaurante El Puerto"), client_name="Restaurante El Puerto", delivery_date="2026-07-26", items_count=2, status="PENDIENTE", payment_method="Efectivo", payment_status="PENDIENTE", total_value=173000.0, created_at=datetime.now(timezone.utc), due_date=date.today())
                 session.add(order2)
                 await session.flush()
-                session.add_all([OrderItem(order_id=2, product_id=2, presentation="kg", quantity=15.0, unit_price=7800.0, subtotal=117000.0), OrderItem(order_id=2, product_id=4, presentation="kg", quantity=2.0, unit_price=28000.0, subtotal=56000.0)])
+                session.add_all([
+                    OrderItem(order_id=order2.id, product_id=product_map.get("Filete de Merluza"), presentation="kg", quantity=15.0, unit_price=7800.0, subtotal=117000.0), 
+                    OrderItem(order_id=order2.id, product_id=product_map.get("Salmón Fresco"), presentation="kg", quantity=2.0, unit_price=28000.0, subtotal=56000.0)
+                ])
                 await session.flush()
-                order3 = Order(id=3, business_id=business.id, order_number="PED-001286", client_id=3, client_name="Distribuidora Costera", delivery_date="2026-07-25", items_count=1, status="PROCESANDO", payment_method="Tarjeta", payment_status="PAGADO", total_value=220000.0, created_at=datetime.now(timezone.utc), due_date=date.today())
+                
+                order3 = Order(business_id=business.id, order_number="PED-001286", client_id=client_map.get("Distribuidora Costera"), client_name="Distribuidora Costera", delivery_date="2026-07-25", items_count=1, status="PROCESANDO", payment_method="Tarjeta", payment_status="PAGADO", total_value=220000.0, created_at=datetime.now(timezone.utc), due_date=date.today())
                 session.add(order3)
                 await session.flush()
-                session.add_all([OrderItem(order_id=3, product_id=3, presentation="kg", quantity=10.0, unit_price=22000.0, subtotal=220000.0)])
+                session.add_all([
+                    OrderItem(order_id=order3.id, product_id=product_map.get("Pulpo Congelado"), presentation="kg", quantity=10.0, unit_price=22000.0, subtotal=220000.0)
+                ])
                 await session.flush()
 
             # Create default transactions if empty
