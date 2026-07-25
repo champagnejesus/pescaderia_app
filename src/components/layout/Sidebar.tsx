@@ -60,7 +60,7 @@ export function Sidebar() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const name = localStorage.getItem("abyssal-owner-name") || "Carlos Aguirre"
-      let email = localStorage.getItem("abyssal-user-email")
+      let email = localStorage.getItem("abyssal-user-email") || ""
       if (!email) {
         const token = localStorage.getItem("abyssal-token")
         if (token) {
