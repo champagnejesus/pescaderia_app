@@ -1,7 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ShoppingCart, Download, TrendingUp, ArrowUpRight, ShoppingCart as CartIcon } from "lucide-react"
+import { Plus, ShoppingCart, Download } from "lucide-react"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
@@ -11,12 +11,8 @@ import { ToastContainer } from "@/components/ui/ToastContainer"
 import { exportCSV } from "@/lib/export"
 import { FAB } from "@/components/shared/FAB"
 import { Skeleton } from "@/components/ui/skeleton"
-
-const statusColor: Record<string, { bg: string; text: string }> = {
-  PAGADO: { bg: "bg-[rgba(34,197,94,0.1)]", text: "text-[#22c55e]" },
-  PENDIENTE: { bg: "bg-[rgba(234,179,8,0.1)]", text: "text-[#eab308]" },
-  "PAGO PARCIAL": { bg: "bg-[rgba(74,159,216,0.1)]", text: "text-[#4A9FD8]" },
-}
+import { formatCurrency } from "@/lib/formatters"
+import { statusColor } from "@/lib/status-colors"
 
 export default function PurchasesPage() {
   const [filter, setFilter] = useState("Todos")
@@ -53,7 +49,7 @@ export default function PurchasesPage() {
     <>
       <TopBar
         title="Órdenes de Compra"
-        icon={<CartIcon size={18} />}
+        icon={<ShoppingCart size={18} />}
         subtitle="Órdenes a proveedores"
         rightAction={
           <div className="flex items-center gap-1">
@@ -95,40 +91,20 @@ export default function PurchasesPage() {
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Órdenes Totales</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{stats.total}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+8.2%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Completadas</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{stats.total - stats.pending}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+12.4%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">En Proceso</p>
             <p className="text-[26px] text-[#eab308] font-heading font-bold mt-2">{stats.pending}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-[#eab308]" />
-              <span className="text-[13px] text-[#eab308] font-caption font-semibold">-3.1%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Pendientes</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
               {stats.total > 0 ? Math.round((stats.pending / stats.total) * 100) : 0}%
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+5.8%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
         </div>
 
@@ -160,7 +136,7 @@ export default function PurchasesPage() {
           <p className="text-center text-[14px] text-[#ef4444] font-body py-8">{error}</p>
         ) : purchases.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <CartIcon size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+            <ShoppingCart size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-[16px] text-abyssal-text-primary font-heading mb-2">No hay compras</p>
             <p className="text-[14px] text-abyssal-text-secondary font-body mb-4">Registra tu primera compra para comenzar</p>
           </div>
@@ -192,7 +168,7 @@ export default function PurchasesPage() {
                           {purchase.created_at ? new Date(purchase.created_at).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "2-digit" }) : "—"}
                         </td>
                         <td className="px-6 py-4 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">
-                          ${purchase.total_value.toLocaleString("en-US")}
+                          {formatCurrency(purchase.total_value)}
                         </td>
                         <td className="px-6 py-4 text-right">
                           <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium ${colors.bg} ${colors.text}`}>{status}</span>

@@ -59,7 +59,9 @@ export default function AccountsReceivablePage() {
     const totalPending = debtors.reduce((s, d) => s + d.total_pending, 0)
     const totalPaid = debtors.reduce((s, d) => s + d.entries.reduce((ss, e) => ss + e.paid_amount, 0), 0)
     const totalOwed = totalPending + totalPaid
-    return { total: debtors.length, totalOwed, totalPaid, totalPending }
+    const hasData = debtors.length > 0
+    const margin = totalOwed > 0 ? (((totalPaid - totalPending) / totalOwed) * 100) : 0
+    return { total: debtors.length, totalOwed, totalPaid, totalPending, hasData, margin }
   }, [debtors])
 
   const filtered = useMemo(() => {
@@ -99,41 +101,21 @@ export default function AccountsReceivablePage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Ingresos Mensuales</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{formatCurrency(stats.totalPaid || 284520)}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+12.5%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{formatCurrency(stats.totalPaid)}</p>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Gastos</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{formatCurrency(stats.totalPending || 186180)}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+8.1%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{formatCurrency(stats.totalPending)}</p>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Margen Neto</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              {stats.totalPaid > 0 || stats.totalPending > 0 ? `${(((stats.totalPaid || 284520) - (stats.totalPending || 186180)) / (stats.totalPaid || 284520) * 100).toFixed(1)}%` : "34.5%"}
+              {stats.hasData ? `${stats.margin.toFixed(1)}%` : "--"}
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+4.2%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Cuentas por Pagar</p>
-            <p className="text-[26px] text-[#22c55e] font-heading font-bold mt-2">{formatCurrency(stats.totalOwed || 43200)}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-[#22c55e]" />
-              <span className="text-[13px] text-[#22c55e] font-caption font-semibold">-6.7%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
+            <p className="text-[26px] text-[#22c55e] font-heading font-bold mt-2">{formatCurrency(stats.totalOwed)}</p>
           </KpiCard>
         </div>
 
@@ -148,23 +130,32 @@ export default function AccountsReceivablePage() {
                   <tr className="border-b border-abyssal-outline">
                     <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">CONCEPTO</th>
                     <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ACTUAL</th>
-                    <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">PROYECTADO</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { concept: "Ingresos Brutos", actual: formatCurrency(stats.totalPaid || 284520), projected: formatCurrency(Math.round((stats.totalPaid || 284520) * 1.15)) },
-                    { concept: "Costo de Ventas", actual: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.45)), projected: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.5)) },
-                    { concept: "Gastos Operativos", actual: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.2)), projected: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.22)) },
-                    { concept: "Utilidad Neta", actual: formatCurrency(stats.totalPending || 98340), projected: formatCurrency(Math.round(stats.totalPending || 98340 * 1.12)) },
-                    { concept: "Impuestos", actual: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.18)), projected: formatCurrency(Math.round((stats.totalPaid || 284520) * 0.18 * 1.05)) },
-                  ].map((row, i) => (
-                    <tr key={row.concept} className="border-b border-abyssal-outline">
-                      <td className="py-4 text-[13px] text-abyssal-text-primary font-body">{row.concept}</td>
-                      <td className="py-4 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">{row.actual}</td>
-                      <td className="py-4 text-right text-[13px] text-abyssal-text-secondary-variant font-body">{row.projected}</td>
+                  {stats.hasData ? (() => {
+                    const income = stats.totalPaid
+                    const costOfSales = Math.round(income * 0.45)
+                    const operating = Math.round(income * 0.2)
+                    const net = income - costOfSales - operating
+                    const taxes = Math.round(income * 0.18)
+                    return [
+                      { concept: "Ingresos Brutos", actual: formatCurrency(income) },
+                      { concept: "Costo de Ventas", actual: formatCurrency(costOfSales) },
+                      { concept: "Gastos Operativos", actual: formatCurrency(operating) },
+                      { concept: "Utilidad Neta", actual: formatCurrency(net) },
+                      { concept: "Impuestos", actual: formatCurrency(taxes) },
+                    ].map((row) => (
+                      <tr key={row.concept} className="border-b border-abyssal-outline">
+                        <td className="py-4 text-[13px] text-abyssal-text-primary font-body">{row.concept}</td>
+                        <td className="py-4 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">{row.actual}</td>
+                      </tr>
+                    ))
+                  })() : (
+                    <tr>
+                      <td colSpan={2} className="py-8 text-center text-[14px] text-abyssal-text-secondary font-body">Sin datos financieros disponibles</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

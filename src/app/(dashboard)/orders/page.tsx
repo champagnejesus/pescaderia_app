@@ -1,7 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, Download, ClipboardList as OrdersIcon, TrendingUp, ArrowUpRight } from "lucide-react"
+import { Plus, Download, ClipboardList as OrdersIcon } from "lucide-react"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
@@ -11,15 +11,8 @@ import { ToastContainer } from "@/components/ui/ToastContainer"
 import { exportCSV } from "@/lib/export"
 import { FAB } from "@/components/shared/FAB"
 import { Skeleton } from "@/components/ui/skeleton"
-
-const statusColor: Record<string, { bg: string; text: string }> = {
-  PAGADO: { bg: "bg-[rgba(34,197,94,0.1)]", text: "text-[#22c55e]" },
-  Pendiente: { bg: "bg-[rgba(234,179,8,0.1)]", text: "text-[#eab308]" },
-  PROCESANDO: { bg: "bg-[rgba(74,159,216,0.1)]", text: "text-[#4A9FD8]" },
-  COMPLETADO: { bg: "bg-[rgba(34,197,94,0.1)]", text: "text-[#22c55e]" },
-  PENDIENTE: { bg: "bg-[rgba(234,179,8,0.1)]", text: "text-[#eab308]" },
-  ANULADO: { bg: "bg-[rgba(239,68,68,0.1)]", text: "text-[#ef4444]" },
-}
+import { formatCurrency } from "@/lib/formatters"
+import { statusColor } from "@/lib/status-colors"
 
 export default function OrdersPage() {
   const [filter, setFilter] = useState("Todos")
@@ -104,46 +97,26 @@ export default function OrdersPage() {
         {/* KPI Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
           <KpiCard>
-            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Facturación Mensual</p>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Total Facturado</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              ${totalValue.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              {formatCurrency(totalValue)}
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+12.5%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Comisiones</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              ${(totalValue * 0.1).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              {formatCurrency(totalValue * 0.1)}
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+8.3%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Facturas Pendientes</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{pendingCount}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-[#eab308]" />
-              <span className="text-[13px] text-[#eab308] font-caption font-semibold">-5.2%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Ticket Promedio</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              ${orders.length > 0 ? (totalValue / orders.length).toLocaleString("en-US", { minimumFractionDigits: 2 }) : "154.20"}
+              {orders.length > 0 ? formatCurrency(totalValue / orders.length) : "--"}
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+4.7%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
         </div>
 
@@ -197,17 +170,17 @@ export default function OrdersPage() {
                 </thead>
                 <tbody>
                   {recentOrders.map((order) => {
-                    const status = order.status === "ENTREGADO" ? "COMPLETADO" : order.status === "PENDIENTE" ? "PENDIENTE" : order.status === "ANULADO" ? "ANULADO" : "PROCESANDO"
-                    const colors = statusColor[status] || statusColor.PROCESANDO
+                    const status = order.status
+                    const colors = statusColor[status] || { bg: "bg-[rgba(74,159,216,0.1)]", text: "text-[#4A9FD8]" }
                     return (
                       <tr key={order.id} className="border-b border-abyssal-outline hover:bg-abyssal-surface-high/50 transition-colors cursor-pointer" onClick={() => router.push(`/orders/${order.id}`)}>
                         <td className="px-6 py-4 text-[12px] text-abyssal-text-secondary-variant font-mono">{order.order_number}</td>
                         <td className="px-6 py-4 text-[13px] text-abyssal-text-secondary font-body">{order.client_name}</td>
                         <td className="px-6 py-4 text-right text-[12px] text-abyssal-text-secondary-variant font-caption">
-                          {order.created_at ? new Date(order.created_at).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "2-digit" }) : "—"}
+                          {order.created_at ? new Date(order.created_at).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "2-digit" }) : "--"}
                         </td>
                         <td className="px-6 py-4 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">
-                          ${order.total_value.toLocaleString("en-US")}
+                          {formatCurrency(order.total_value)}
                         </td>
                         <td className="px-6 py-4 text-right">
                           <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium ${colors.bg} ${colors.text}`}>{status}</span>

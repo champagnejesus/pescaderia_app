@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { Package, X, AlertCircle, Search, Settings, TrendingUp, ArrowUpRight, Package as PackageIcon } from "lucide-react"
+import { Package, X, AlertCircle, Search, Settings, Package as PackageIcon } from "lucide-react"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
@@ -139,40 +139,20 @@ export default function InventoryPage() {
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Total Productos</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{stats.total}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+5.2%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Stock Bajo</p>
             <p className={`text-[26px] font-heading font-bold mt-2 ${stats.lowStock > 0 ? "text-[#ef4444]" : "text-[#22c55e]"}`}>{stats.lowStock}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-[#22c55e]" />
-              <span className="text-[13px] text-[#22c55e] font-caption font-semibold">-12.8%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Valor Inventario</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{formatCurrency(stats.totalValue)}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+8.7%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Rotación Stock</p>
             <p className={`text-[26px] font-heading font-bold mt-2 ${stats.margin >= 30 ? "text-abyssal-text-primary" : "text-[#eab308]"}`}>
-              {stats.margin > 0 ? (stats.totalVenta / (stats.totalValue || 1)).toFixed(1) : "3.4"}x
+              {stats.margin > 0 ? (stats.totalVenta / (stats.totalValue || 1)).toFixed(1) : "--"}x
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+1.2x</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
         </div>
 

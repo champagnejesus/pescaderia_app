@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { Download, TrendingUp, ArrowUpRight, BarChart3, Package, DollarSign, Users, FileText, CheckCircle, AlertCircle } from "lucide-react"
+import { Download, BarChart3, Package, DollarSign, Users, FileText, CheckCircle, AlertCircle } from "lucide-react"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -10,12 +10,7 @@ import { ToastContainer } from "@/components/ui/ToastContainer"
 import { useReports } from "@/hooks/useReports"
 import api from "@/lib/api"
 import { formatCurrency } from "@/lib/formatters"
-
-const statusColor: Record<string, { bg: string; text: string }> = {
-  COMPLETADO: { bg: "bg-[rgba(34,197,94,0.1)]", text: "text-[#22c55e]" },
-  PROCESANDO: { bg: "bg-[rgba(74,159,216,0.1)]", text: "text-[#4A9FD8]" },
-  PENDIENTE: { bg: "bg-[rgba(234,179,8,0.1)]", text: "text-[#eab308]" },
-}
+import { statusColor } from "@/lib/status-colors"
 
 const reportCards = [
   { icon: <BarChart3 size={22} />, title: "Ventas Mensuales", desc: "Análisis de ventas", endpoint: "sales", filename: "reporte_ventas.pdf" },
@@ -33,28 +28,18 @@ const recentReportsData = [
 ]
 
 async function downloadPdf(endpoint: string, filename: string) {
-  const url = `${api.defaults.baseURL}/reports/pdf/${endpoint}`
-  const token = localStorage.getItem("abyssal-token")
-  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
-  if (!response.ok) throw new Error("Error downloading PDF")
-  const blob = await response.blob()
+  const response = await api.get(`/reports/pdf/${endpoint}`, { responseType: "blob" })
+  const url = window.URL.createObjectURL(new Blob([response.data]))
   const a = document.createElement("a")
-  a.href = URL.createObjectURL(blob)
+  a.href = url
   a.download = filename
   a.click()
-  URL.revokeObjectURL(a.href)
+  window.URL.revokeObjectURL(url)
 }
 
 export default function ReportsPage() {
-  const { salesData, loading } = useReports()
+  const { loading } = useReports()
   const { toasts, addToast, removeToast } = useToast()
-
-  const stats = {
-    total: 156,
-    downloads: 892,
-    activeUsers: 48,
-    scheduled: 12,
-  }
 
   return (
     <>
@@ -71,39 +56,19 @@ export default function ReportsPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Reportes Generados</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{stats.total}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+22.3%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">4</p>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Descargas</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{stats.downloads}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+15.7%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">23</p>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Usuarios Activos</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{stats.activeUsers}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+9.3%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">12</p>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Reportes Programados</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{stats.scheduled}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+33.3%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">1</p>
           </KpiCard>
         </div>
 
@@ -151,7 +116,7 @@ export default function ReportsPage() {
                 </tr>
               </thead>
               <tbody>
-                {recentReportsData.map((r, i) => {
+                {recentReportsData.length > 0 ? recentReportsData.map((r, i) => {
                   const colors = statusColor[r.status] || statusColor.COMPLETADO
                   return (
                     <tr key={i} className="border-b border-abyssal-outline hover:bg-abyssal-surface-high/50 transition-colors">
@@ -162,7 +127,11 @@ export default function ReportsPage() {
                       </td>
                     </tr>
                   )
-                })}
+                }) : (
+                  <tr>
+                    <td colSpan={3} className="px-6 py-8 text-center text-[14px] text-abyssal-text-secondary font-body">Sin reportes recientes</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

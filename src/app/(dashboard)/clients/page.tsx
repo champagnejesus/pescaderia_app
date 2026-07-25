@@ -1,6 +1,6 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Download, Plus, Users as UsersIcon, TrendingUp, ArrowUpRight, Search } from "lucide-react"
+import { Download, Plus, Users as UsersIcon, Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/useToast"
 import api from "@/lib/api"
 import { exportCSV } from "@/lib/export"
 import { FAB } from "@/components/shared/FAB"
+import { statusColor } from "@/lib/status-colors"
 
 interface Client {
   id: number
@@ -24,12 +25,6 @@ interface Client {
   status?: string
   outstanding_balance: number
   credit_limit: number
-}
-
-const statusColor: Record<string, { bg: string; text: string }> = {
-  Activo: { bg: "bg-[rgba(34,197,94,0.1)]", text: "text-[#22c55e]" },
-  Pendiente: { bg: "bg-[rgba(234,179,8,0.1)]", text: "text-[#eab308]" },
-  Inactivo: { bg: "bg-[rgba(239,68,68,0.1)]", text: "text-[#ef4444]" },
 }
 
 export default function ClientsPage() {
@@ -58,9 +53,15 @@ export default function ClientsPage() {
 
   useEffect(() => { fetch() }, [fetch])
 
-  const debtClients = useMemo(() => clients.filter((c) => c.outstanding_balance > 0).length, [clients])
-  const activeClients = useMemo(() => clients.filter((c) => c.credit_limit > 0).length, [clients])
-  const totalBalance = useMemo(() => clients.reduce((sum, c) => sum + c.outstanding_balance, 0), [clients])
+  const { total: totalClients, debtClients, activeClients, totalBalance } = useMemo(() => {
+    let debtCount = 0, activeCount = 0, balance = 0
+    for (const c of clients) {
+      if (c.outstanding_balance > 0) debtCount++
+      if (c.credit_limit > 0) activeCount++
+      balance += c.outstanding_balance
+    }
+    return { total: clients.length, debtClients: debtCount, activeClients: activeCount, totalBalance: balance }
+  }, [clients])
 
   const filtered = useMemo(() => {
     let result = clients
@@ -83,6 +84,10 @@ export default function ClientsPage() {
 
   async function handleAdd() {
     if (!name.trim()) return
+    if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      addToast("Email inválido", "error")
+      return
+    }
     try {
       await api.post("/clients", { name: name.trim(), phone: phone.trim(), email: email.trim() })
       setName(""); setPhone(""); setEmail(""); setAddOpen(false)
@@ -131,40 +136,20 @@ export default function ClientsPage() {
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Total Clientes</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{clients.length}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+18.3%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Leads Activos</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{activeClients}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+24.5%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Oportunidades</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{debtClients}</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+32.1%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Tasa Conversión</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              {clients.length > 0 ? ((activeClients / clients.length) * 100).toFixed(1) : "18.4"}%
+              {clients.length > 0 ? ((activeClients / clients.length) * 100).toFixed(1) : "--"}%
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+4.2%</span>
-              <span className="text-[13px] text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
           </KpiCard>
         </div>
 

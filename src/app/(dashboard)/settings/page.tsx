@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Settings, Save, Plus, ArrowUpRight, X, ChevronUp, ChevronDown, Download, Trash2, Key, FileText, Briefcase, Package, Ruler, CreditCard, Percent, Info, TrendingUp, Users } from "lucide-react"
+import { Settings, Save, Plus, X, ChevronUp, ChevronDown, Download, Trash2, Key, FileText, Briefcase, Package, Ruler, CreditCard, Percent, Info, TrendingUp, Users } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { Button } from "@/components/ui/button"
@@ -70,7 +70,7 @@ export default function SettingsPage() {
       }
       if (taxRes.data) setTaxForm({ is_enabled: taxRes.data.is_enabled, name: taxRes.data.name, rate: taxRes.data.rate, included_in_price: taxRes.data.included_in_price })
       if (invRes.data) setInvoiceForm({ footer_text: invRes.data.footer_text, show_tax_breakdown: invRes.data.show_tax_breakdown, default_payment_method_id: invRes.data.default_payment_method_id })
-    } catch { addToast("Error al cargar configuración", "error") }
+    } catch (e) { addToast("Error al cargar configuración", "error"); console.error("Failed to load settings", e) }
     finally { setLoading(false) }
   }, [addToast])
 
@@ -78,7 +78,7 @@ export default function SettingsPage() {
 
   const saveProfile = async () => {
     setSaving("profile")
-    try { await api.put("/business/profile", profileForm); addToast("Perfil actualizado", "success") }
+    try { await api.put("/business/profile", profileForm); addToast("Perfil actualizado", "success"); fetchAll() }
     catch { addToast("Error al guardar perfil", "error") }
     finally { setSaving(null) }
   }
@@ -145,14 +145,14 @@ export default function SettingsPage() {
 
   const saveTaxConfig = async () => {
     setSaving("tax")
-    try { const res = await api.put("/tax-config", taxForm); setData(prev => ({ ...prev, taxConfig: res.data })); addToast("Configuración de impuesto guardada", "success") }
+    try { const res = await api.put("/tax-config", taxForm); setData(prev => ({ ...prev, taxConfig: res.data })); addToast("Configuración de impuesto guardada", "success"); fetchAll() }
     catch { addToast("Error al guardar impuesto", "error") }
     finally { setSaving(null) }
   }
 
   const saveInvoicePrefs = async () => {
     setSaving("inv")
-    try { const res = await api.put("/invoice-prefs", invoiceForm); setData(prev => ({ ...prev, invoicePrefs: res.data })); addToast("Preferencias de factura guardadas", "success") }
+    try { const res = await api.put("/invoice-prefs", invoiceForm); setData(prev => ({ ...prev, invoicePrefs: res.data })); addToast("Preferencias de factura guardadas", "success"); fetchAll() }
     catch { addToast("Error al guardar preferencias", "error") }
     finally { setSaving(null) }
   }
@@ -169,7 +169,7 @@ export default function SettingsPage() {
   const clearAllData = async () => {
     if (clearConfirmText !== "BORRAR") { addToast('Escribe "BORRAR" para confirmar', "error"); return }
     setSaving("clear")
-    try { await api.delete("/data/clear-all"); addToast("Todos los datos han sido eliminados", "success"); setShowClearConfirm(false); setClearConfirmText("") }
+    try { await api.delete("/data/clear-all"); addToast("Todos los datos han sido eliminados", "success"); setShowClearConfirm(false); setClearConfirmText(""); fetchAll() }
     catch { addToast("Error al limpiar datos", "error") }
     finally { setSaving(null) }
   }
@@ -217,31 +217,18 @@ export default function SettingsPage() {
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Usuarios Activos</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">24</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-[#4A9FD8]" />
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+2 este mes</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Roles Definidos</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">8</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">+0 este mes</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Permisos</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">156</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">24 módulos</span>
-            </div>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Auditoría</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">1,284</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <span className="text-[13px] text-[#4A9FD8] font-caption font-semibold">eventos registrados</span>
-            </div>
           </KpiCard>
         </div>
 
