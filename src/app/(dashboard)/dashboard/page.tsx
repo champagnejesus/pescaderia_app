@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { TrendingUp, Search, Bell, Plus, FileText, DollarSign, Package, UserPlus, Info, Check } from "lucide-react"
+import { TrendingUp, Search, Bell, Plus, FileText, DollarSign, Package, UserPlus, Info, Check, Wallet, ShoppingCart, BarChart3 } from "lucide-react"
 import Link from "next/link"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { Button } from "@/components/ui/button"
@@ -223,11 +223,11 @@ export default function DashboardPage() {
         {/* KPI Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
           <KpiCard>
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
               <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">Ingresos Totales</span>
-              <svg width="80" height="36" viewBox="0 0 80 36" className="text-abyssal-primary">
-                <path d="M0 34l7-13 8 5 7-11 7 4 7-10 8 4 7-3 7-3 7 3 8-5 7-3v34H0z" fill="currentColor" opacity="0.2" />
-              </svg>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-500/10 text-blue-400 shrink-0">
+                <Wallet size={16} />
+              </div>
             </div>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
               {formatCurrency(dashboardData.sales_total ?? 0)}
@@ -250,11 +250,11 @@ export default function DashboardPage() {
           </KpiCard>
 
           <KpiCard>
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
               <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">Total de Órdenes</span>
-              <svg width="80" height="36" viewBox="0 0 80 36" className="text-abyssal-primary">
-                <path d="M0 29l7 5 8-16 7 5 7-10 7 7 8-13 7 6 7 3 7-7 8-4 7-3v34H0z" fill="currentColor" opacity="0.2" />
-              </svg>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-purple-500/10 text-purple-400 shrink-0">
+                <ShoppingCart size={16} />
+              </div>
             </div>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
               {totalOrders ?? 0}
@@ -277,11 +277,11 @@ export default function DashboardPage() {
           </KpiCard>
 
           <KpiCard>
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
               <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">Ganancia Bruta</span>
-              <svg width="80" height="36" viewBox="0 0 80 36" className="text-abyssal-primary">
-                <path d="M0 34l7-13 8 5 7-11 7 4 7-10 8 4 7-3 7-3 7 3 8-5 7-3v34H0z" fill="currentColor" opacity="0.2" />
-              </svg>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-500/10 text-emerald-400 shrink-0">
+                <BarChart3 size={16} />
+              </div>
             </div>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
               {formatCurrency(dashboardData.gross_profit ?? 0)}
