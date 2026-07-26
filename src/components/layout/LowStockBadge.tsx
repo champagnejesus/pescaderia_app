@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell } from '@phosphor-icons/react';
 import { useLowStock } from '@/hooks/useLowStock';
 import Link from 'next/link';
 

@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { Fish, Mail, Lock, Store, User, Phone, Eye, EyeOff } from "lucide-react"
+import { Fish, Envelope, Lock, Storefront, User, Phone, Eye, EyeSlash } from "@phosphor-icons/react"
 import { FilterChip } from "@/components/shared/FilterChip"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -46,7 +46,7 @@ export default function LoginPage() {
           {isRegister && (
             <>
               <div className="relative">
-                <Store size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-abyssal-text-secondary pointer-events-none" />
+                <Storefront size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-abyssal-text-secondary pointer-events-none" />
                 <Input
                   placeholder="Nombre del negocio"
                   value={businessName}
@@ -78,7 +78,7 @@ export default function LoginPage() {
           )}
 
           <div className="relative">
-            <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-abyssal-text-secondary pointer-events-none" />
+            <Envelope size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-abyssal-text-secondary pointer-events-none" />
             <Input
               type="email"
               placeholder="Correo electrónico"
@@ -105,7 +105,7 @@ export default function LoginPage() {
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-abyssal-text-secondary hover:text-abyssal-text-primary transition-colors"
               tabIndex={-1}
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
             </button>
           </div>
 

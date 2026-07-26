@@ -10,21 +10,21 @@ import { BottomNav } from "@/components/layout/BottomNav"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import {
-  LayoutDashboard, ShoppingCart, ClipboardList, Users,
-  Truck, Package, Fish, ArrowLeftFromLine,
-  ArrowRightFromLine, DollarSign, BarChart3
-} from "lucide-react"
+  Layout, ShoppingCart, ClipboardText, Users,
+  Truck, Package, Fish, ArrowLineLeft,
+  ArrowSquareRight, CurrencyDollar, ChartBar
+} from "@phosphor-icons/react"
 
 const pageMeta: Record<string, { label: string; icon: React.ReactNode }> = {
-  "/dashboard": { label: "Panel", icon: <LayoutDashboard size={18} /> },
+  "/dashboard": { label: "Panel", icon: <Layout size={18} /> },
   "/purchases": { label: "Compras", icon: <ShoppingCart size={18} /> },
-  "/orders": { label: "Ventas", icon: <ClipboardList size={18} /> },
+  "/orders": { label: "Ventas", icon: <ClipboardText size={18} /> },
   "/clients": { label: "Clientes", icon: <Users size={18} /> },
   "/suppliers": { label: "Proveedores", icon: <Truck size={18} /> },
   "/inventory": { label: "Inventario", icon: <Package size={18} /> },
   "/products": { label: "Productos", icon: <Fish size={18} /> },
-  "/finances": { label: "Finanzas", icon: <DollarSign size={18} /> },
-  "/reports": { label: "Reportes", icon: <BarChart3 size={18} /> },
+  "/finances": { label: "Finanzas", icon: <CurrencyDollar size={18} /> },
+  "/reports": { label: "Reportes", icon: <ChartBar size={18} /> },
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

@@ -1,13 +1,13 @@
 import { memo } from "react"
-import { ArrowUpCircle, ArrowDownCircle, Banknote, CreditCard, Truck } from "lucide-react"
+import { ArrowCircleUp, ArrowCircleDown, Money, CreditCard, Truck } from "@phosphor-icons/react"
 import type { Transaction } from "@/lib/types"
 
 interface TransactionRowProps {
   transaction: Transaction
 }
 
-const typeIcons: Record<string, typeof Banknote> = {
-  Efectivo: Banknote,
+const typeIcons: Record<string, typeof Money> = {
+  Efectivo: Money,
   Tarjeta: CreditCard,
   Transfer: Truck,
   Transferencia: Truck,
@@ -19,7 +19,7 @@ function TransactionRowComponent({ transaction }: TransactionRowProps) {
   const iconColor = isIncome ? "text-abyssal-green" : "text-abyssal-red"
   const bgColor = isIncome ? "bg-abyssal-green/12" : "bg-abyssal-red/12"
   const TypeIcon = typeIcons[transaction.type]
-  const Icon = isExpense ? ArrowDownCircle : TypeIcon || ArrowUpCircle
+  const Icon = isExpense ? ArrowCircleDown : TypeIcon || ArrowCircleUp
 
   return (
     <div className="flex items-center gap-3 p-3.5 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg contain-render">

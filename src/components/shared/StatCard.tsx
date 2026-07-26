@@ -1,11 +1,11 @@
 import { memo } from "react"
 import { cn } from "@/lib/utils"
-import type { LucideIcon } from "lucide-react"
+import type { Icon } from "@phosphor-icons/react"
 
 interface StatCardProps {
   label: string
   value: string | number
-  icon?: LucideIcon
+  icon?: Icon
   iconColor?: string
   trend?: {
     value: string

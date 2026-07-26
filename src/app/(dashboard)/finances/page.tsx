@@ -1,10 +1,10 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo } from "react"
 import {
-  ChevronDown, ChevronUp, Search, TrendingUp, ArrowUpRight,
-  DollarSign, Plus, X, Building2, Users, Wallet, Clock,
-  ArrowUpDown, CheckCircle2, AlertCircle, AlertTriangle, HandCoins
-} from "lucide-react"
+  CaretDown, CaretUp, MagnifyingGlass, TrendUp, ArrowUpRight,
+  CurrencyDollar, Plus, X, Building, Users, Wallet, Clock,
+  ArrowsDownUp, CheckCircle, WarningCircle, Warning, HandCoins
+} from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
@@ -142,7 +142,7 @@ export default function FinancesPage() {
     }
   }, [receivables, payables])
 
-  // Filter & Sort for Client Debtors (Cuentas por Cobrar)
+  // Funnel & Sort for Client Debtors (Cuentas por Cobrar)
   const filteredReceivables = useMemo(() => {
     let result = receivables.map((d) => ({
       ...d,
@@ -173,7 +173,7 @@ export default function FinancesPage() {
     return result;
   }, [receivables, search, sortBy, filterBy])
 
-  // Filter & Sort for Supplier Debtors (Cuentas por Pagar)
+  // Funnel & Sort for Supplier Debtors (Cuentas por Pagar)
   const filteredPayables = useMemo(() => {
     let result = payables.map((d) => ({
       ...d,
@@ -206,7 +206,7 @@ export default function FinancesPage() {
 
   return (
     <>
-      <TopBar title="Finanzas" icon={<DollarSign size={18} />} subtitle="Resumen financiero y gestión de deudas" />
+      <TopBar title="Finanzas" icon={<CurrencyDollar size={18} />} subtitle="Resumen financiero y gestión de deudas" />
       <div className="p-4 lg:p-8 space-y-6">
         
         {/* Encabezado */}
@@ -255,7 +255,7 @@ export default function FinancesPage() {
           {[
             { id: "resumen", label: "Resumen", icon: <Wallet size={16} /> },
             { id: "cobrar", label: "Cuentas por Cobrar", icon: <Users size={16} /> },
-            { id: "pagar", label: "Cuentas por Pagar", icon: <Building2 size={16} /> },
+            { id: "pagar", label: "Cuentas por Pagar", icon: <Building size={16} /> },
           ].map((tab) => {
             const isActive = activeTab === tab.id
             return (
@@ -419,14 +419,14 @@ export default function FinancesPage() {
                   onClick={() => setSortBy(sortBy === "name" ? "amount" : sortBy === "amount" ? "oldest" : "name")}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-abyssal-surface-high text-[11px] text-abyssal-text-secondary font-medium hover:text-abyssal-text-primary transition-colors shrink-0"
                 >
-                  <ArrowUpDown className="w-3.5 h-3.5" />
+                  <ArrowsDownUp className="w-3.5 h-3.5" />
                   {sortBy === "name" ? "A-Z" : sortBy === "amount" ? "Monto" : "Antigüedad"}
                 </button>
               </div>
             </div>
 
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary" />
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary" />
               <input
                 type="text"
                 placeholder={activeTab === "cobrar" ? "Buscar cliente..." : "Buscar proveedor..."}
@@ -463,13 +463,13 @@ export default function FinancesPage() {
                               <p className="text-[15px] text-abyssal-text-primary font-medium">{debtor.name}</p>
                               {debtor.isOverdue && (
                                 <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-abyssal-red/12 text-[10px] font-semibold text-abyssal-red">
-                                  <AlertTriangle className="w-3 h-3" />
+                                  <Warning className="w-3 h-3" />
                                   Vencido
                                 </span>
                               )}
                               {isFullyPaid && (
                                 <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-abyssal-green/12 text-[10px] font-semibold text-abyssal-green">
-                                  <CheckCircle2 className="w-3 h-3" />
+                                  <CheckCircle className="w-3 h-3" />
                                   Cobrado
                                 </span>
                               )}
@@ -513,9 +513,9 @@ export default function FinancesPage() {
                             </button>
                           )}
                           {expandedId === debtor.id ? (
-                            <ChevronUp className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
+                            <CaretUp className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
                           ) : (
-                            <ChevronDown className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
+                            <CaretDown className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
                           )}
                         </button>
 
@@ -600,13 +600,13 @@ export default function FinancesPage() {
                               <p className="text-[15px] text-abyssal-text-primary font-medium">{debtor.name}</p>
                               {debtor.isOverdue && (
                                 <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-abyssal-red/12 text-[10px] font-semibold text-abyssal-red">
-                                  <AlertTriangle className="w-3 h-3" />
+                                  <Warning className="w-3 h-3" />
                                   Vencido
                                 </span>
                               )}
                               {isFullyPaid && (
                                 <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-abyssal-green/12 text-[10px] font-semibold text-abyssal-green">
-                                  <CheckCircle2 className="w-3 h-3" />
+                                  <CheckCircle className="w-3 h-3" />
                                   Pagado
                                 </span>
                               )}
@@ -650,9 +650,9 @@ export default function FinancesPage() {
                             </button>
                           )}
                           {expandedId === debtor.id ? (
-                            <ChevronUp className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
+                            <CaretUp className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
                           ) : (
-                            <ChevronDown className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
+                            <CaretDown className="w-5 h-5 text-abyssal-text-secondary shrink-0 ml-1" />
                           )}
                         </button>
 

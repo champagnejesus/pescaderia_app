@@ -1,6 +1,6 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus, Truck, Truck as TruckIcon, Filter, TrendingUp, ArrowUpRight } from "lucide-react"
+import { Plus, Truck, Truck as TruckIcon, Funnel, TrendUp, ArrowUpRight } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
@@ -117,7 +117,7 @@ export default function SuppliersPage() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Pendiente de Pago</p>
             <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{formatCurrency(totalPending)}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-abyssal-yellow" />
+              <TrendUp size={14} className="text-abyssal-yellow" />
               <span className="text-xs font-semibold text-abyssal-yellow font-caption">
                 {totalPending > lastMonthPending ? "+" : ""}{Math.round(((totalPending - lastMonthPending) / lastMonthPending) * 100)}%
               </span>

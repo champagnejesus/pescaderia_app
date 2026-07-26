@@ -1,6 +1,6 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus, Users as UsersIcon, Search } from "lucide-react"
+import { Plus, Users as UsersIcon, MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
@@ -150,7 +150,7 @@ export default function ClientsPage() {
           </KpiCard>
         </div>
 
-        {/* Filter tabs */}
+        {/* Funnel tabs */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {filterTabs.map((t) => (
             <button

@@ -1,6 +1,6 @@
 "use client"
 import { useState, useRef, useEffect } from "react"
-import { Search, X } from "lucide-react"
+import { MagnifyingGlass, X } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 interface SearchBarProps {
@@ -40,7 +40,7 @@ export function SearchBar({ value, onChange, placeholder = "Buscar...", classNam
     <div ref={containerRef} className={cn("flex items-center justify-end", className)}>
       {open ? (
         <div className="relative w-full animate-fade-in">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
+          <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
           <input
             ref={inputRef}
             type="text"
@@ -63,7 +63,7 @@ export function SearchBar({ value, onChange, placeholder = "Buscar...", classNam
           className="p-2 rounded-full hover:bg-abyssal-surface-high transition-colors active:scale-95"
           aria-label="Abrir búsqueda"
         >
-          <Search className="w-5 h-5 text-abyssal-text-secondary" />
+          <MagnifyingGlass className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
       )}
     </div>

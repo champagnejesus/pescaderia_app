@@ -1,7 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ShoppingCart } from "lucide-react"
+import { Plus, ShoppingCart } from "@phosphor-icons/react"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
@@ -103,7 +103,7 @@ export default function PurchasesPage() {
           </KpiCard>
         </div>
 
-        {/* Filter Tabs */}
+        {/* Funnel Tabs */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {[
             { key: "Todos", label: "Todos", count: purchases.length },

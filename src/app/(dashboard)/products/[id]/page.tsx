@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, Pencil, Package, AlertCircle } from "lucide-react"
+import { ArrowLeft, PencilSimple, Package, WarningCircle } from "@phosphor-icons/react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import api from "@/lib/api"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -60,7 +60,7 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="min-h-screen bg-abyssal-bg flex flex-col items-center justify-center gap-3 p-4">
-        <AlertCircle className="w-12 h-12 text-abyssal-red" />
+        <WarningCircle className="w-12 h-12 text-abyssal-red" />
         <p className="text-title-medium text-abyssal-text-primary">Producto no encontrado</p>
         <Button variant="ghost" onClick={() => router.back()}>Volver</Button>
       </div>
@@ -81,7 +81,7 @@ export default function ProductDetailPage() {
         </button>
         <h1 className="text-title-large text-abyssal-text-primary font-bold">Producto</h1>
         <button onClick={() => router.push("/products/" + id + "/edit")} className="p-2 -mr-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all active:scale-95">
-          <Pencil className="w-5 h-5 text-abyssal-text-secondary" />
+          <PencilSimple className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
       </header>
 

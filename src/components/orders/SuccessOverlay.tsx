@@ -1,5 +1,5 @@
 "use client"
-import { Check } from "lucide-react"
+import { Check } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 
 interface SuccessOrder {

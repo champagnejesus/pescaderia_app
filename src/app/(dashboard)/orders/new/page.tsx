@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Minus, Search } from "lucide-react"
+import { ArrowLeft, Minus, MagnifyingGlass } from "@phosphor-icons/react"
 import api from "@/lib/api"
 import { ClientSelector } from "@/components/orders/ClientSelector"
 import { ProductPicker } from "@/components/orders/ProductPicker"

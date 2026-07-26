@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Settings, Save, Plus, X, ChevronUp, ChevronDown, Download, Trash2, Key, FileText, Briefcase, Package, Ruler, CreditCard, Percent, Info, TrendingUp, Users } from "lucide-react"
+import { Gear, FloppyDisk, Plus, X, CaretUp, CaretDown, Download, Trash, Key, FileText, Briefcase, Package, Ruler, CreditCard, Percent, Info, TrendUp, Users } from "@phosphor-icons/react"
 import { Card } from "@/components/ui/card"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { Button } from "@/components/ui/button"
@@ -243,7 +243,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <>
-        <TopBar title="Configuración" icon={<Settings size={18} />} />
+        <TopBar title="Configuración" icon={<Gear size={18} />} />
         <div className="p-4 space-y-4">
           {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-32" />)}
         </div>
@@ -253,7 +253,7 @@ export default function SettingsPage() {
 
   return (
     <>
-      <TopBar title="Configuración" icon={<Settings size={18} />} subtitle="Usuarios, roles y ajustes" />
+      <TopBar title="Configuración" icon={<Gear size={18} />} subtitle="Usuarios, roles y ajustes" />
       <div className="p-4 lg:p-8 pb-24">
         {/* Title row */}
         <div className="hidden lg:flex items-center justify-between mb-6">
@@ -272,7 +272,7 @@ export default function SettingsPage() {
               { id: "users", label: "Equipo", icon: Users },
               { id: "catalogs", label: "Catálogos", icon: Package },
               { id: "billing", label: "Facturación", icon: FileText },
-              { id: "system", label: "Sistema", icon: Settings },
+              { id: "system", label: "Sistema", icon: Gear },
             ].map(tab => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
@@ -315,7 +315,7 @@ export default function SettingsPage() {
                     <Input value={profileForm.address} onChange={e => setProfileForm(p => ({ ...p, address: e.target.value }))} />
                     <label className="text-[13px] text-abyssal-text-secondary block">Email</label>
                     <Input value={data.profile?.email || ""} disabled />
-                    <Button variant="primary" onClick={saveProfile} loading={saving === "profile"}><Save size={16} /> Guardar cambios</Button>
+                    <Button variant="primary" onClick={saveProfile} loading={saving === "profile"}><FloppyDisk size={16} /> Guardar cambios</Button>
                   </div>
                 </SectionCard>
 
@@ -459,7 +459,7 @@ export default function SettingsPage() {
                                     onClick={() => deleteCollaborator(u.id)}
                                     className="text-abyssal-text-secondary hover:text-[#ef4444] disabled:opacity-40 disabled:hover:text-abyssal-text-secondary p-1 rounded-lg hover:bg-abyssal-surface-high transition-colors"
                                   >
-                                    <Trash2 size={14} />
+                                    <Trash size={14} />
                                   </button>
                                 </div>
                               </td>
@@ -564,7 +564,7 @@ export default function SettingsPage() {
                         </label>
                       </>
                     )}
-                    <Button variant="primary" onClick={saveTaxConfig} loading={saving === "tax"}><Save size={16} /> Guardar</Button>
+                    <Button variant="primary" onClick={saveTaxConfig} loading={saving === "tax"}><FloppyDisk size={16} /> Guardar</Button>
                   </div>
                 </SectionCard>
 
@@ -583,7 +583,7 @@ export default function SettingsPage() {
                         <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${invoiceForm.show_tax_breakdown ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
                       </button>
                     </label>
-                    <Button variant="primary" onClick={saveInvoicePrefs} loading={saving === "inv"}><Save size={16} /> Guardar</Button>
+                    <Button variant="primary" onClick={saveInvoicePrefs} loading={saving === "inv"}><FloppyDisk size={16} /> Guardar</Button>
                   </div>
                 </SectionCard>
               </div>
@@ -626,7 +626,7 @@ export default function SettingsPage() {
                   </div>
                 </SectionCard>
 
-                <SectionCard title="Limpiar Datos" icon={<Trash2 size={18} />}>
+                <SectionCard title="Limpiar Datos" icon={<Trash size={18} />}>
                   <div className="p-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] rounded-xl space-y-3">
                     <p className="text-[13px] text-[#ef4444]">Esta acción eliminará todos los datos transaccionales. No se puede deshacer.</p>
                     {showClearConfirm ? (
@@ -636,13 +636,13 @@ export default function SettingsPage() {
                         <div className="flex gap-2">
                           <Button variant="secondary" onClick={() => { setShowClearConfirm(false); setClearConfirmText("") }}>Cancelar</Button>
                           <Button variant="primary" className="bg-[#ef4444] hover:bg-[#ef4444]/90" onClick={clearAllData} loading={saving === "clear"}>
-                            <Trash2 size={16} /> Eliminar todo
+                            <Trash size={16} /> Eliminar todo
                           </Button>
                         </div>
                       </div>
                     ) : (
                       <Button variant="secondary" className="border-[rgba(239,68,68,0.3)] text-[#ef4444]" onClick={() => setShowClearConfirm(true)}>
-                        <Trash2 size={16} /> Limpiar todos los datos
+                        <Trash size={16} /> Limpiar todos los datos
                       </Button>
                     )}
                   </div>

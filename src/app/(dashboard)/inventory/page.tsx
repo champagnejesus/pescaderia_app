@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { Package, X, AlertCircle, Search, Settings, Package as PackageIcon } from "lucide-react"
+import { Package, X, WarningCircle, MagnifyingGlass, Gear, Package as PackageIcon } from "@phosphor-icons/react"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
@@ -156,7 +156,7 @@ export default function InventoryPage() {
           </KpiCard>
         </div>
 
-        {/* Search + Sort */}
+        {/* MagnifyingGlass + Sort */}
 
         {/* Categories + Stock Alerts row */}
         <div className="flex gap-5">
@@ -229,10 +229,10 @@ export default function InventoryPage() {
           </div>
         </div>
 
-        {/* Tabs + Search Row */}
+        {/* Tabs + MagnifyingGlass Row */}
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary" />
+            <MagnifyingGlass size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary" />
             <input
               ref={searchRef}
               value={search}
@@ -276,7 +276,7 @@ export default function InventoryPage() {
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <AlertCircle size={48} className="text-[#ef4444] mb-3" />
+            <WarningCircle size={48} className="text-[#ef4444] mb-3" />
             <p className="text-[14px] text-[#ef4444] font-body">{error}</p>
           </div>
         ) : items.length === 0 ? (
@@ -287,7 +287,7 @@ export default function InventoryPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Search size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+            <MagnifyingGlass size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-[14px] text-abyssal-text-secondary font-body">Sin resultados para "{search}"</p>
           </div>
         ) : (
@@ -309,7 +309,7 @@ export default function InventoryPage() {
                   <tr key={item.product_id} onClick={() => openMovements(item)} className="border-b border-abyssal-outline hover:bg-abyssal-surface-high/50 transition-colors cursor-pointer">
                     <td className="py-4 text-[13px] text-abyssal-text-primary font-body">
                       <div className="flex items-center gap-2">
-                        {item.status === "Stock Bajo" && <AlertCircle size={14} className="text-[#ef4444] shrink-0" />}
+                        {item.status === "Stock Bajo" && <WarningCircle size={14} className="text-[#ef4444] shrink-0" />}
                         {item.product_name}
                       </div>
                     </td>
@@ -330,7 +330,7 @@ export default function InventoryPage() {
                     <td className="py-4 text-center">
                       <button onClick={(e) => { e.stopPropagation(); setAdjustmentProduct(item); setShowAdjustmentModal(true); }}
                         className="text-abyssal-text-secondary hover:text-abyssal-primary transition-colors">
-                        <Settings size={16} />
+                        <Gear size={16} />
                       </button>
                     </td>
                   </tr>

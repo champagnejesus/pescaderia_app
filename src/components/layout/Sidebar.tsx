@@ -4,24 +4,24 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { memo, useState, useEffect } from "react"
 import {
-  LayoutDashboard, ShoppingCart, ClipboardList, Users,
-  Truck, Package, Fish, ArrowLeftFromLine,
-  ArrowRightFromLine, LogOut, DollarSign, BarChart3, type LucideIcon
-} from "lucide-react"
+  Layout, ShoppingCart, ClipboardText, Users,
+  Truck, Package, Fish, ArrowLineLeft,
+  ArrowSquareRight, SignOut, CurrencyDollar, ChartBar, type Icon
+} from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import LowStockBadge from "./LowStockBadge"
 import { ThemeToggle } from "./ThemeToggle"
 
 const menuItems = [
-  { href: "/dashboard", label: "Panel", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Panel", icon: Layout },
   { href: "/purchases", label: "Compras", icon: ShoppingCart },
-  { href: "/orders", label: "Ventas", icon: ClipboardList },
+  { href: "/orders", label: "Ventas", icon: ClipboardText },
   { href: "/clients", label: "Clientes", icon: Users },
   { href: "/suppliers", label: "Proveedores", icon: Truck },
   { href: "/inventory", label: "Inventario", icon: Package },
   { href: "/products", label: "Productos", icon: Fish },
-  { href: "/finances", label: "Finanzas", icon: DollarSign },
-  { href: "/reports", label: "Reportes", icon: BarChart3 },
+  { href: "/finances", label: "Finanzas", icon: CurrencyDollar },
+    { href: "/reports", label: "Reportes", icon: ChartBar },
 ]
 
 const SidebarItem = memo(function SidebarItem({
@@ -32,7 +32,7 @@ const SidebarItem = memo(function SidebarItem({
 }: {
   href: string
   label: string
-  icon: LucideIcon
+  icon: Icon
   active: boolean
 }) {
   return (
@@ -149,7 +149,7 @@ export function Sidebar() {
           onClick={handleLogout}
           className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-abyssal-text-secondary hover:bg-abyssal-surface-highest hover:text-abyssal-red transition-all duration-200 w-full"
         >
-          <LogOut className="w-[18px] h-[18px]" />
+          <SignOut className="w-[18px] h-[18px]" />
           <span>Cerrar sesión</span>
         </button>
       </div>

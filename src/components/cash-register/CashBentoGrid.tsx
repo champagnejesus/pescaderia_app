@@ -1,5 +1,5 @@
 import { memo } from "react"
-import { Banknote, CreditCard, ShoppingCart, Scale, HandCoins } from "lucide-react"
+import { Money, CreditCard, ShoppingCart, Scales, HandCoins } from "@phosphor-icons/react"
 import type { DailySummary } from "@/lib/types"
 
 interface CashBentoGridProps {
@@ -14,7 +14,7 @@ const cells = [
   {
     key: "cash",
     label: "Efectivo",
-    icon: Banknote,
+    icon: Money,
     getValue: (d: DailySummary) => fmt(d.cash_total),
     color: "text-abyssal-green",
   },

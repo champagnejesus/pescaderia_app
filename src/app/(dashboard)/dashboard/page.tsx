@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { TrendingUp, Search, Bell, Plus, FileText, DollarSign, Package, UserPlus, Info, Check, Wallet, ShoppingCart, BarChart3 } from "lucide-react"
+import { TrendUp, MagnifyingGlass, Bell, Plus, FileText, CurrencyDollar, Package, UserPlus, Info, Check, Wallet, ShoppingCart, ChartBar } from "@phosphor-icons/react"
 import Link from "next/link"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { Button } from "@/components/ui/button"
@@ -35,7 +35,7 @@ const statusColor: Record<string, { bg: string; text: string }> = {
 
 const iconMap: Record<string, React.FC<any>> = {
   "file-text": FileText,
-  "dollar-sign": DollarSign,
+  "dollar-sign": CurrencyDollar,
   "package": Package,
   "user-plus": UserPlus,
   "info": Info,
@@ -152,10 +152,10 @@ export default function DashboardPage() {
 
   const maxSales = Math.max(...monthlyData, 1000)
 
-  const xCoords = [37, 86.09, 135.18, 184.27, 233.36, 282.45, 331.55, 380.64, 429.73, 478.82, 527.91, 577]
+  const xCoords = [45, 90, 135, 180, 225, 270, 315, 360, 405, 450, 495, 540]
   const points = monthlyData.map((val, i) => {
     const x = xCoords[i]
-    const y = 160 - (val / maxSales) * 140
+    const y = 170 - (val / maxSales) * 140
     return { x, y }
   })
 
@@ -163,7 +163,7 @@ export default function DashboardPage() {
     ? `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ")
     : ""
   const areaD = points.length > 0
-    ? `M ${points[0].x} 160 L ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ") + ` L ${points[points.length - 1].x} 160 Z`
+    ? `M ${points[0].x} 170 L ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(" ") + ` L ${points[points.length - 1].x} 170 Z`
     : ""
 
   function handleActivityPress(item: ActivityItem) {
@@ -174,7 +174,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <>
-        <TopBar title="Dashboard" icon={<TrendingUp size={18} />} />
+        <TopBar title="Dashboard" icon={<TrendUp size={18} />} />
         <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
           <div className="hidden lg:block"><Skeleton className="h-[64px] w-full" /></div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
@@ -188,7 +188,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <TopBar title="Dashboard" icon={<TrendingUp size={18} />} />
+      <TopBar title="Dashboard" icon={<TrendUp size={18} />} />
 
       {/* Header — desktop only */}
       <div className="hidden lg:flex items-center justify-between px-8 pt-6 pb-2">
@@ -206,7 +206,7 @@ export default function DashboardPage() {
             </Button>
           </Link>
           <button className="p-2 rounded-lg hover:bg-abyssal-surface-high transition-colors">
-            <Search size={18} className="text-abyssal-text-secondary-variant" />
+            <MagnifyingGlass size={18} className="text-abyssal-text-secondary-variant" />
           </button>
           <button className="p-2 rounded-lg hover:bg-abyssal-surface-high transition-colors">
             <Bell size={18} className="text-abyssal-text-secondary-variant" />
@@ -234,7 +234,7 @@ export default function DashboardPage() {
             </p>
             {salesGrowth !== null ? (
               <div className="flex items-center gap-1.5 mt-3">
-                <TrendingUp size={14} className={salesGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
+                <TrendUp size={14} className={salesGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
                 <span className={`text-[13px] font-caption font-semibold ${salesGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"}`}>
                   {salesGrowth >= 0 ? "+" : ""}{salesGrowth.toFixed(1)}%
                 </span>
@@ -261,7 +261,7 @@ export default function DashboardPage() {
             </p>
             {ordersGrowth !== null ? (
               <div className="flex items-center gap-1.5 mt-3">
-                <TrendingUp size={14} className={ordersGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
+                <TrendUp size={14} className={ordersGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
                 <span className={`text-[13px] font-caption font-semibold ${ordersGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"}`}>
                   {ordersGrowth >= 0 ? "+" : ""}{ordersGrowth.toFixed(1)}%
                 </span>
@@ -280,7 +280,7 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between">
               <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">Ganancia Bruta</span>
               <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-500/10 text-emerald-400 shrink-0">
-                <BarChart3 size={16} />
+                <ChartBar size={16} />
               </div>
             </div>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
@@ -288,7 +288,7 @@ export default function DashboardPage() {
             </p>
             {profitGrowth !== null ? (
               <div className="flex items-center gap-1.5 mt-3">
-                <TrendingUp size={14} className={profitGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
+                <TrendUp size={14} className={profitGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
                 <span className={`text-[13px] font-caption font-semibold ${profitGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"}`}>
                   {profitGrowth >= 0 ? "+" : ""}{profitGrowth.toFixed(1)}%
                 </span>
@@ -325,9 +325,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Chart Row */}
-        <div className="flex gap-5">
+        <div className="flex flex-col lg:flex-row gap-5">
           {/* Resumen de Ventas */}
-          <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
+          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Resumen de Ventas</h3>
@@ -338,15 +338,15 @@ export default function DashboardPage() {
                 <span className="text-[12px] text-abyssal-text-secondary-variant font-caption">Este año</span>
               </div>
             </div>
-            <div className="h-[220px] relative">
+            <div className="min-h-[200px] lg:min-h-[220px] relative">
               {orders.length === 0 ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-                  <TrendingUp size={36} className="text-abyssal-text-secondary-variant/40 mb-2" />
+                  <TrendUp size={36} className="text-abyssal-text-secondary-variant/40 mb-2" />
                   <p className="text-[14px] text-abyssal-text-secondary font-medium">Sin datos de ventas</p>
                   <p className="text-[12px] text-abyssal-text-secondary-variant mt-0.5">Registra pedidos para ver tu rendimiento</p>
                 </div>
               ) : (
-                <svg width="100%" height="180" viewBox="0 0 540 180" className="mt-2" preserveAspectRatio="none">
+                <svg width="100%" height="100%" viewBox="0 0 560 210" className="mt-2" preserveAspectRatio="xMidYMid meet">
                   <defs>
                     <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="var(--abyssal-primary)" stopOpacity="0.15" />
@@ -362,23 +362,23 @@ export default function DashboardPage() {
                   {points.map((p, i) => (
                     <circle key={i} cx={p.x} cy={p.y} r="3" fill="var(--abyssal-primary)" />
                   ))}
-                  <text x="0" y="174" fill="#999" fontSize="10" fontFamily="Geist">0k</text>
-                  <text x="0" y="114" fill="#999" fontSize="10" fontFamily="Geist">{(maxSales * 0.33 / 1000).toFixed(0)}k</text>
-                  <text x="0" y="56" fill="#999" fontSize="10" fontFamily="Geist">{(maxSales * 0.66 / 1000).toFixed(0)}k</text>
-                  <text x="0" y="-6" fill="#999" fontSize="10" fontFamily="Geist">{(maxSales / 1000).toFixed(0)}k</text>
-                  <text x="28" y="184" fill="#999" fontSize="10" fontFamily="Geist">Ene</text>
-                  <text x="126.18" y="184" fill="#999" fontSize="10" fontFamily="Geist">Mar</text>
-                  <text x="224.36" y="184" fill="#999" fontSize="10" fontFamily="Geist">May</text>
-                  <text x="322.55" y="184" fill="#999" fontSize="10" fontFamily="Geist">Jul</text>
-                  <text x="420.73" y="184" fill="#999" fontSize="10" fontFamily="Geist">Sep</text>
-                  <text x="518.91" y="184" fill="#999" fontSize="10" fontFamily="Geist">Nov</text>
+                  <text x="35" y="172" fill="#999" fontSize="9" fontFamily="Geist" textAnchor="end">0</text>
+                  <text x="35" y="124" fill="#999" fontSize="9" fontFamily="Geist" textAnchor="end">{(maxSales * 0.33 / 1000).toFixed(0)}k</text>
+                  <text x="35" y="76" fill="#999" fontSize="9" fontFamily="Geist" textAnchor="end">{(maxSales * 0.66 / 1000).toFixed(0)}k</text>
+                  <text x="35" y="28" fill="#999" fontSize="9" fontFamily="Geist" textAnchor="end">{(maxSales / 1000).toFixed(0)}k</text>
+                  <text x="70" y="195" fill="#999" fontSize="9" fontFamily="Geist" textAnchor="middle">Ene</text>
+                  <text x="158.18" y="195" fill="#999" fontSize="9" fontFamily="Geist" textAnchor="middle">Mar</text>
+                  <text x="246.36" y="195" fill="#999" fontSize="9" fontFamily="Geist" textAnchor="middle">May</text>
+                  <text x="334.55" y="195" fill="#999" fontSize="9" fontFamily="Geist" textAnchor="middle">Jul</text>
+                  <text x="422.73" y="195" fill="#999" fontSize="9" fontFamily="Geist" textAnchor="middle">Sep</text>
+                  <text x="510.91" y="195" fill="#999" fontSize="9" fontFamily="Geist" textAnchor="middle">Nov</text>
                 </svg>
               )}
             </div>
           </div>
 
           {/* Margen de Contribución por Producto */}
-          <div className="w-[300px] shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
+          <div className="w-full lg:w-[300px] lg:shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
             <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Margen de Contribución</h3>
             <p className="text-[13px] text-abyssal-text-secondary-variant font-body mt-1">Margen real diario (Top 5 hoy)</p>
             {topProducts.length === 0 ? (
@@ -412,9 +412,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Table Row */}
-        <div className="flex gap-5">
+        <div className="flex flex-col lg:flex-row gap-5">
           {/* Órdenes Recientes */}
-          <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
+          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Órdenes Recientes</h3>
               <Link href="/orders" className="text-[12px] text-abyssal-primary font-body font-medium">Ver todas</Link>
@@ -460,7 +460,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Registro de Actividad */}
-          <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
+          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Registro de Actividad</h3>
               <Link href="/reports" className="text-[12px] text-abyssal-primary font-body font-medium">Ver todo</Link>

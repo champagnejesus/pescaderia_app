@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, FileText } from "lucide-react"
+import { Plus, FileText } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ToastContainer } from "@/components/ui/ToastContainer"

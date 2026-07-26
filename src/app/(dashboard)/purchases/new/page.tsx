@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Plus, Minus, Search } from "lucide-react"
+import { ArrowLeft, Plus, Minus, MagnifyingGlass } from "@phosphor-icons/react"
 import api from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -157,7 +157,7 @@ export default function NewPurchasePage() {
         <div>
           <p className="text-title-medium text-abyssal-text-primary mb-2">Proveedor</p>
           <div className="relative mb-2">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
+            <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
             <input
               type="text"
               value={supplierSearch}
@@ -197,7 +197,7 @@ export default function NewPurchasePage() {
         ) : (
           <>
             <div className="relative mb-3">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
+              <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
               <input
                 type="text"
                 value={searchQuery}

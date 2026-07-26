@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, Pencil, Truck, ShoppingCart, HandCoins, ArrowRightFromLine, Clock } from "lucide-react"
+import { ArrowLeft, PencilSimple, Truck, ShoppingCart, HandCoins, ArrowSquareRight, Clock } from "@phosphor-icons/react"
 import api from "@/lib/api"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
@@ -107,7 +107,7 @@ export default function SupplierDetailPage() {
           onClick={() => router.push(`/suppliers/${supplier.id}/edit`)}
           className="p-2 -mr-2 rounded-full hover:bg-abyssal-surface-high transition-all active:scale-95"
         >
-          <Pencil className="w-5 h-5 text-abyssal-text-secondary" />
+          <PencilSimple className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
       </header>
 

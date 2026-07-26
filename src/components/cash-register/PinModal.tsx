@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import { Dialog } from "@/components/ui/dialog"
-import { Delete } from "lucide-react"
+import { Backspace } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import type { DailySummary } from "@/lib/types"
 
@@ -97,7 +97,7 @@ export function PinModal({ open, onClose, onConfirm, summary }: PinModalProps) {
           onClick={handleDelete}
           className="h-[52px] rounded-full bg-abyssal-surface-high/60 border border-abyssal-outline flex items-center justify-center text-abyssal-text-secondary hover:bg-abyssal-surface-highest/60 transition-all active:scale-90"
         >
-          <Delete className="w-5 h-5" />
+          <Backspace className="w-5 h-5" />
         </button>
       </div>
 

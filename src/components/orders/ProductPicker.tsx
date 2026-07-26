@@ -1,5 +1,5 @@
 "use client"
-import { Plus, Minus } from "lucide-react"
+import { Plus, Minus } from "@phosphor-icons/react"
 import { SearchBar } from "@/components/shared/SearchBar"
 import { cn } from "@/lib/utils"
 

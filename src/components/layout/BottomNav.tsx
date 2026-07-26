@@ -3,25 +3,25 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  LayoutDashboard, ShoppingCart, ClipboardList, Users,
-  Truck, Package, Fish, DollarSign, ArrowLeftFromLine,
-  ArrowRightFromLine, Settings, BarChart3
-} from "lucide-react"
+  Layout, ShoppingCart, ClipboardText, Users,
+  Truck, Package, Fish, CurrencyDollar, ArrowLineLeft,
+  ArrowSquareRight, Gear, ChartBar
+} from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useLowStock } from "@/hooks/useLowStock"
 
 const tabs = [
-  { href: "/dashboard", label: "Panel", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Panel", icon: Layout },
   { href: "/purchases", label: "Compras", icon: ShoppingCart },
-  { href: "/orders", label: "Ventas", icon: ClipboardList },
+  { href: "/orders", label: "Ventas", icon: ClipboardText },
   { href: "/clients", label: "Clientes", icon: Users },
   { href: "/suppliers", label: "Proveedores", icon: Truck },
   { href: "/inventory", label: "Inventario", icon: Package },
   { href: "/products", label: "Productos", icon: Fish },
-  { href: "/cash-register", label: "Caja", icon: DollarSign },
-  { href: "/finances", label: "Finanzas", icon: DollarSign },
-  { href: "/reports", label: "Reportes", icon: BarChart3 },
-  { href: "/settings", label: "Config", icon: Settings },
+  { href: "/cash-register", label: "Caja", icon: CurrencyDollar },
+  { href: "/finances", label: "Finanzas", icon: CurrencyDollar },
+  { href: "/reports", label: "Reportes", icon: ChartBar },
+  { href: "/settings", label: "Config", icon: Gear },
 ]
 
 export function BottomNav() {

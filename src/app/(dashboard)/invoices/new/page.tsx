@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, ChevronDown, Calendar, X } from "lucide-react"
+import { ArrowLeft, CaretDown, Calendar, X } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ToastContainer } from "@/components/ui/ToastContainer"
@@ -64,7 +64,7 @@ export default function NewInvoicePage() {
                       <option value="">Seleccionar cliente</option>
                       {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary pointer-events-none" />
+                    <CaretDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary pointer-events-none" />
                   </div>
                 </div>
                 <div className="space-y-1.5">
@@ -93,7 +93,7 @@ export default function NewInvoicePage() {
                       <option value="PEN">Soles (PEN)</option>
                       <option value="USD">Dólares (USD)</option>
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary pointer-events-none" />
+                    <CaretDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary pointer-events-none" />
                   </div>
                 </div>
               </div>

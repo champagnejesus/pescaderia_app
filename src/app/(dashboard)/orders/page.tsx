@@ -1,7 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ClipboardList as OrdersIcon } from "lucide-react"
+import { Plus, ClipboardText as OrdersIcon } from "@phosphor-icons/react"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
@@ -110,7 +110,7 @@ export default function OrdersPage() {
           </KpiCard>
         </div>
 
-        {/* Filter tabs */}
+        {/* Funnel tabs */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {[
             { key: "Todos", label: "Todos", count: orders.length },

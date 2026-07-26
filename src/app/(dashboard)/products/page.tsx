@@ -1,7 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, Fish, Package, Filter, TrendingUp, ArrowUpRight } from "lucide-react"
+import { Plus, Fish, Package, Funnel, TrendUp, ArrowUpRight } from "@phosphor-icons/react"
 import { TopBar } from "@/components/layout/TopBar"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -62,7 +62,7 @@ export default function ProductsPage() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Stock Bajo</p>
             <p className={`text-title-large font-heading font-bold mt-1 ${stats.lowStock > 0 ? "text-abyssal-red" : "text-abyssal-green"}`}>{stats.lowStock}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-abyssal-green" />
+              <TrendUp size={14} className="text-abyssal-green" />
               <span className="text-xs font-semibold text-abyssal-green font-caption">-12.8%</span>
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>

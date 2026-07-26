@@ -33,14 +33,13 @@
 
 ### Typography
 
-- **Heading Font:** Cormorant Garamond
-- **Body Font:** Crimson Pro
-- **Mood:** academia, library, mahogany, parchment, brass, scholarly, prestige, antique, victorian, leather
-- **Google Fonts:** [Cormorant Garamond + Crimson Pro](https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300;1,500|Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400)
+- **Font:** Inter (single family for all hierarchies — iOS SF Pro-inspired)
+- **Mood:** clean, modern, professional, iOS-native, legible, system, sf-pro
+- **Google Fonts:** [Inter](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 ```
 
 ### Spacing Variables
@@ -184,7 +183,7 @@
 
 ### Additional Forbidden Patterns
 
-- ❌ **Emojis as icons** — Use SVG icons (Heroicons, Lucide, Simple Icons)
+- ❌ **Emojis as icons** — Use SVG icons (Phosphor Icons, Heroicons, Simple Icons)
 - ❌ **Missing cursor:pointer** — All clickable elements must have cursor:pointer
 - ❌ **Layout-shifting hovers** — Avoid scale transforms that shift layout
 - ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio

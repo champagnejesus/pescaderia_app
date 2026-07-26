@@ -1,15 +1,8 @@
 import type { Metadata } from "next"
-import { DM_Sans, Inter, JetBrains_Mono } from "next/font/google"
+import { Inter, JetBrains_Mono } from "next/font/google"
 import { ThemeProvider } from "@/providers/ThemeProvider"
 import "@/styles/globals.css"
 import "@/styles/abyssal-theme.css"
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-dm-sans",
-  display: "swap",
-})
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,7 +22,7 @@ export const metadata: Metadata = { title: "Abyssal ERP", description: "Sistema 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`dark ${dmSans.variable} ${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+    <html lang="es" className={`dark ${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

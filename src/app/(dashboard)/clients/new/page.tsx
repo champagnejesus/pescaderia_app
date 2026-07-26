@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, ChevronDown, X } from "lucide-react"
+import { ArrowLeft, CaretDown, X } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ToastContainer } from "@/components/ui/ToastContainer"
@@ -62,7 +62,7 @@ export default function NewClientPage() {
                     <select value={form.type} onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))} className="w-full h-10 bg-abyssal-surface-high rounded-xl px-3 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline appearance-none cursor-pointer">
                       <option>Empresa</option><option>Restaurante</option><option>Distribuidor</option><option>Exportador</option><option>Minorista</option>
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary pointer-events-none" />
+                    <CaretDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary pointer-events-none" />
                   </div>
                 </div>
               </div>

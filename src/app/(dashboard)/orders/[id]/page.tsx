@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, ShoppingCart, Receipt } from "lucide-react"
+import { ArrowLeft, ShoppingCart, Receipt } from "@phosphor-icons/react"
 import Link from "next/link"
 import api from "@/lib/api"
 import { Button } from "@/components/ui/button"

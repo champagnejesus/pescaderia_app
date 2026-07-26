@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Download, TrendingUp, DollarSign, Users, Package, AlertTriangle, CheckCircle} from 'lucide-react';
+import { Download, TrendUp, CurrencyDollar, Users, Package, Warning, CheckCircle} from '@phosphor-icons/react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useReports } from '@/hooks/useReports';
 import DateRangePicker from '@/components/common/DateRangePicker';
@@ -78,7 +78,7 @@ export default function ReportTabs() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-        <AlertTriangle size={48} className="text-abyssal-red mb-3" />
+        <Warning size={48} className="text-abyssal-red mb-3" />
         <p className="text-body-medium text-abyssal-red">{error}</p>
       </div>
     );
@@ -120,7 +120,7 @@ export default function ReportTabs() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Ventas Totales</p>
             <p className="text-title-large text-abyssal-green font-heading font-bold mt-1">${stats.totalSales.toLocaleString()}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-abyssal-green" />
+              <TrendUp size={14} className="text-abyssal-green" />
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">Ingresos brutos</span>
             </div>
           </KpiCard>
@@ -128,7 +128,7 @@ export default function ReportTabs() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Gastos Totales</p>
             <p className="text-title-large text-abyssal-red font-heading font-bold mt-1">${stats.totalExpenses.toLocaleString()}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <DollarSign size={14} className="text-abyssal-red" />
+              <CurrencyDollar size={14} className="text-abyssal-red" />
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">Egresos registrados</span>
             </div>
           </KpiCard>
@@ -136,7 +136,7 @@ export default function ReportTabs() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Utilidad Neta</p>
             <p className={`text-title-large font-heading font-bold mt-1 ${stats.netProfit >= 0 ? "text-abyssal-green" : "text-abyssal-red"}`}>${stats.netProfit.toLocaleString()}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-abyssal-primary" />
+              <TrendUp size={14} className="text-abyssal-primary" />
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">Ventas - Gastos</span>
             </div>
           </KpiCard>

@@ -2,7 +2,7 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { usePurchasePrices } from '@/hooks/usePurchasePrices';
-import { AlertTriangle } from 'lucide-react';
+import { Warning } from '@phosphor-icons/react';
 
 interface PriceHistoryProps {
   productId: number;
@@ -32,7 +32,7 @@ export default function PriceHistory({ productId }: PriceHistoryProps) {
     <div className="space-y-4">
       {alert?.has_alert && (
         <div className="flex items-center gap-2 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-          <AlertTriangle size={16} className="text-orange-400" />
+          <Warning size={16} className="text-orange-400" />
           <p className="text-orange-400 text-sm">{alert.message}</p>
         </div>
       )}
