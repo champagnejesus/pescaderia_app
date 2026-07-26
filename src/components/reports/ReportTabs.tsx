@@ -117,38 +117,35 @@ export default function ReportTabs() {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
           <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Reportes Generados</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">156</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-abyssal-primary" />
-              <span className="text-xs font-semibold text-abyssal-primary font-caption">+15.3%</span>
-              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
-          </KpiCard>
-          <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Descargas</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">892</p>
-            <div className="flex items-center gap-1.5 mt-3">
-              <TrendingUp size={14} className="text-abyssal-primary" />
-              <span className="text-xs font-semibold text-abyssal-primary font-caption">+24.8%</span>
-              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
-            </div>
-          </KpiCard>
-          <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Usuarios Activos</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">48</p>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Ventas Totales</p>
+            <p className="text-title-large text-abyssal-green font-heading font-bold mt-1">${stats.totalSales.toLocaleString()}</p>
             <div className="flex items-center gap-1.5 mt-3">
               <TrendingUp size={14} className="text-abyssal-green" />
-              <span className="text-xs font-semibold text-abyssal-green font-caption">+3.2%</span>
-              <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">Ingresos brutos</span>
             </div>
           </KpiCard>
           <KpiCard>
-            <p className="text-label-medium text-abyssal-text-secondary font-body">Reportes Programados</p>
-            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">12</p>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Gastos Totales</p>
+            <p className="text-title-large text-abyssal-red font-heading font-bold mt-1">${stats.totalExpenses.toLocaleString()}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <DollarSign size={14} className="text-abyssal-red" />
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">Egresos registrados</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Utilidad Neta</p>
+            <p className={`text-title-large font-heading font-bold mt-1 ${stats.netProfit >= 0 ? "text-abyssal-green" : "text-abyssal-red"}`}>${stats.netProfit.toLocaleString()}</p>
+            <div className="flex items-center gap-1.5 mt-3">
+              <TrendingUp size={14} className="text-abyssal-primary" />
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">Ventas - Gastos</span>
+            </div>
+          </KpiCard>
+          <KpiCard>
+            <p className="text-label-medium text-abyssal-text-secondary font-body">Ticket Promedio</p>
+            <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">${Math.round(stats.avgTicket).toLocaleString()}</p>
             <div className="flex items-center gap-1.5 mt-3">
               <CheckCircle size={14} className="text-abyssal-primary" />
-              <span className="text-xs font-semibold text-abyssal-primary font-caption">6 activos</span>
+              <span className="text-xs text-abyssal-text-secondary-variant font-caption">Promedio diario</span>
             </div>
           </KpiCard>
         </div>
