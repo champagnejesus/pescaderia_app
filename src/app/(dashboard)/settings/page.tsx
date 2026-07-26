@@ -13,6 +13,14 @@ import { useToast } from "@/hooks/useToast"
 import api from "@/lib/api"
 import type { BusinessProfile, Category, Unit, PaymentMethod, TaxConfig, InvoicePrefs } from "@/lib/types"
 
+interface Collaborator {
+  id: number
+  name: string
+  email: string
+  role: string
+  is_active: boolean
+}
+
 type SettingsData = {
   profile: BusinessProfile | null
   categories: Category[]
@@ -20,6 +28,7 @@ type SettingsData = {
   paymentMethods: PaymentMethod[]
   taxConfig: TaxConfig | null
   invoicePrefs: InvoicePrefs | null
+  collaborators: Collaborator[]
 }
 
 function SectionCard({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
@@ -37,7 +46,7 @@ function SectionCard({ title, icon, children }: { title: string; icon: React.Rea
 export default function SettingsPage() {
   const { toasts, addToast, removeToast } = useToast()
   const [loading, setLoading] = useState(true)
-  const [data, setData] = useState<SettingsData>({ profile: null, categories: [], units: [], paymentMethods: [], taxConfig: null, invoicePrefs: null })
+  const [data, setData] = useState<SettingsData>({ profile: null, categories: [], units: [], paymentMethods: [], taxConfig: null, invoicePrefs: null, collaborators: [] })
   const [saving, setSaving] = useState<string | null>(null)
 
   const [profileForm, setProfileForm] = useState({ business_name: "", owner_name: "", phone: "", address: "" })
@@ -50,20 +59,24 @@ export default function SettingsPage() {
   const [invoiceForm, setInvoiceForm] = useState({ footer_text: "", show_tax_breakdown: true, default_payment_method_id: null as number | null })
   const [showClearConfirm, setShowClearConfirm] = useState(false)
   const [clearConfirmText, setClearConfirmText] = useState("")
+  
+  const [showAddUser, setShowAddUser] = useState(false)
+  const [userForm, setUserForm] = useState({ name: "", email: "", password: "", role: "Usuario" })
 
   const fetchAll = useCallback(async () => {
     setLoading(true)
     try {
-      const [profileRes, catsRes, unitsRes, pmRes, taxRes, invRes] = await Promise.all([
+      const [profileRes, catsRes, unitsRes, pmRes, taxRes, invRes, collabsRes] = await Promise.all([
         api.get("/business/profile").catch(() => ({ data: null })),
         api.get("/categories").catch(() => ({ data: [] })),
         api.get("/units").catch(() => ({ data: [] })),
         api.get("/payment-methods").catch(() => ({ data: [] })),
         api.get("/tax-config").catch(() => ({ data: null })),
         api.get("/invoice-prefs").catch(() => ({ data: null })),
+        api.get("/business/collaborators").catch(() => ({ data: [] })),
       ])
       const profile = profileRes.data
-      setData({ profile, categories: catsRes.data, units: unitsRes.data, paymentMethods: pmRes.data, taxConfig: taxRes.data, invoicePrefs: invRes.data })
+      setData({ profile, categories: catsRes.data, units: unitsRes.data, paymentMethods: pmRes.data, taxConfig: taxRes.data, invoicePrefs: invRes.data, collaborators: collabsRes.data })
       if (profile) {
         setProfileForm({ business_name: profile.business_name, owner_name: profile.owner_name, phone: profile.phone || "", address: profile.address || "" })
         setPinForm(prev => ({ ...prev, require_pin: profile.require_pin }))
@@ -166,6 +179,49 @@ export default function SettingsPage() {
     } catch { addToast("Error al exportar", "error") }
   }
 
+  const addCollaborator = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!userForm.name.trim() || !userForm.email.trim() || !userForm.password.trim()) {
+      addToast("Completa todos los campos obligatorios", "error")
+      return
+    }
+    setSaving("collab")
+    try {
+      await api.post("/business/collaborators", userForm)
+      addToast("Usuario agregado exitosamente", "success")
+      setShowAddUser(false)
+      setUserForm({ name: "", email: "", password: "", role: "Usuario" })
+      fetchAll()
+    } catch (err: any) {
+      addToast(err.response?.data?.detail || "Error al agregar usuario", "error")
+    } finally {
+      setSaving(null)
+    }
+  }
+
+  const deleteCollaborator = async (id: number) => {
+    setSaving("collab")
+    try {
+      await api.delete(`/business/collaborators/${id}`)
+      addToast("Usuario eliminado exitosamente", "success")
+      fetchAll()
+    } catch (err: any) {
+      addToast(err.response?.data?.detail || "Error al eliminar usuario", "error")
+    } finally {
+      setSaving(null)
+    }
+  }
+
+  const toggleCollabStatus = async (id: number) => {
+    try {
+      await api.patch(`/business/collaborators/${id}/toggle`)
+      addToast("Estado de usuario actualizado", "success")
+      fetchAll()
+    } catch (err: any) {
+      addToast(err.response?.data?.detail || "Error al actualizar estado", "error")
+    }
+  }
+
   const clearAllData = async () => {
     if (clearConfirmText !== "BORRAR") { addToast('Escribe "BORRAR" para confirmar', "error"); return }
     setSaving("clear")
@@ -173,14 +229,6 @@ export default function SettingsPage() {
     catch { addToast("Error al limpiar datos", "error") }
     finally { setSaving(null) }
   }
-
-  const users = [
-    { name: "Carlos Aguirre", role: "Administrador", status: "Activo" },
-    { name: "María García", role: "Gerente", status: "Activo" },
-    { name: "Pedro López", role: "Analista", status: "Activo" },
-    { name: "Ana Martínez", role: "Supervisor", status: "Inactivo" },
-    { name: "Jorge Ruiz", role: "Usuario", status: "Activo" },
-  ]
 
   const roles = [
     { role: "Administrador", users: "3 usuarios", access: "Total" },
@@ -210,25 +258,31 @@ export default function SettingsPage() {
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Configuración</h1>
             <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Usuarios, roles y ajustes</p>
           </div>
-        </div>
-
-        {/* KPI Row */}
+            {/* KPI Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Usuarios Activos</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">24</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
+              {data.collaborators.filter(c => c.is_active).length}
+            </p>
           </KpiCard>
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Roles Definidos</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">8</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
+              {new Set(data.collaborators.map(c => c.role)).size || 1}
+            </p>
           </KpiCard>
           <KpiCard>
-            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Permisos</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">156</p>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Usuarios Totales</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
+              {data.collaborators.length}
+            </p>
           </KpiCard>
           <KpiCard>
-            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Auditoría</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">1,284</p>
+            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">PIN de Caja</p>
+            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
+              {data.profile?.has_pin ? "Activo" : "Inactivo"}
+            </p>
           </KpiCard>
         </div>
 
@@ -236,7 +290,72 @@ export default function SettingsPage() {
         <div className="flex gap-5">
           {/* Usuarios del Sistema */}
           <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
-            <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Usuarios del Sistema</h3>
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Usuarios del Sistema</h3>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="gap-1.5 py-1 h-8"
+                onClick={() => setShowAddUser(!showAddUser)}
+              >
+                {showAddUser ? <X size={14} /> : <Plus size={14} />}
+                {showAddUser ? "Cancelar" : "Agregar"}
+              </Button>
+            </div>
+
+            {showAddUser && (
+              <form onSubmit={addCollaborator} className="mb-6 p-4 bg-abyssal-surface-high border border-abyssal-outline rounded-xl space-y-3">
+                <h4 className="text-[13px] text-abyssal-text-primary font-heading font-semibold">Registrar Nuevo Usuario</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[11px] text-abyssal-text-secondary font-medium">Nombre</label>
+                    <Input
+                      value={userForm.name}
+                      onChange={(e) => setUserForm(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Ej: María Delgado"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] text-abyssal-text-secondary font-medium">Correo electrónico</label>
+                    <Input
+                      type="email"
+                      value={userForm.email}
+                      onChange={(e) => setUserForm(prev => ({ ...prev, email: e.target.value }))}
+                      placeholder="m.delgado@..."
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] text-abyssal-text-secondary font-medium">Contraseña</label>
+                    <Input
+                      type="password"
+                      value={userForm.password}
+                      onChange={(e) => setUserForm(prev => ({ ...prev, password: e.target.value }))}
+                      placeholder="••••••••"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] text-abyssal-text-secondary font-medium">Rol</label>
+                    <select
+                      value={userForm.role}
+                      onChange={(e) => setUserForm(prev => ({ ...prev, role: e.target.value }))}
+                      className="w-full h-10 bg-abyssal-surface rounded-xl px-3 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline appearance-none cursor-pointer"
+                    >
+                      <option value="Administrador">Administrador</option>
+                      <option value="Gerente">Gerente</option>
+                      <option value="Usuario">Usuario</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button variant="secondary" size="sm" type="button" onClick={() => setShowAddUser(false)}>Cancelar</Button>
+                  <Button variant="primary" size="sm" type="submit" loading={saving === "collab"}>Guardar Usuario</Button>
+                </div>
+              </form>
+            )}
+
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -247,21 +366,54 @@ export default function SettingsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u, i) => (
-                    <tr key={i} className="border-b border-abyssal-outline">
-                      <td className="py-4 text-[13px] text-abyssal-text-primary font-body">{u.name}</td>
-                      <td className="py-4 text-right text-[13px] text-abyssal-text-secondary font-body">{u.role}</td>
-                      <td className="py-4 text-right">
-                        <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium ${
-                          u.status === "Activo" ? "bg-[rgba(34,197,94,0.1)] text-[#22c55e]" : "bg-[rgba(239,68,68,0.1)] text-[#ef4444]"
-                        }`}>{u.status}</span>
+                  {data.collaborators.length > 0 ? (
+                    data.collaborators.map((u) => {
+                      const isOwner = data.profile?.email === u.email
+                      const isSelf = typeof window !== "undefined" && localStorage.getItem("abyssal-user-email") === u.email
+                      return (
+                        <tr key={u.id} className="border-b border-abyssal-outline">
+                          <td className="py-3">
+                            <p className="text-[13px] text-abyssal-text-primary font-body font-medium">{u.name}</p>
+                            <p className="text-[11px] text-abyssal-text-secondary-variant font-mono">{u.email}</p>
+                          </td>
+                          <td className="py-3 text-right text-[13px] text-abyssal-text-secondary font-body">{u.role}</td>
+                          <td className="py-3 text-right">
+                            <div className="flex items-center justify-end gap-3">
+                              <button
+                                disabled={isOwner || isSelf}
+                                onClick={() => toggleCollabStatus(u.id)}
+                                className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium transition-colors ${
+                                  u.is_active 
+                                    ? "bg-[rgba(34,197,94,0.1)] text-[#22c55e] hover:bg-[rgba(34,197,94,0.15)]" 
+                                    : "bg-[rgba(239,68,68,0.1)] text-[#ef4444] hover:bg-[rgba(239,68,68,0.15)]"
+                                } disabled:opacity-70 disabled:hover:bg-[rgba(34,197,94,0.1)]`}
+                              >
+                                {u.is_active ? "Activo" : "Inactivo"}
+                              </button>
+                              
+                              <button
+                                disabled={isOwner || isSelf}
+                                onClick={() => deleteCollaborator(u.id)}
+                                className="text-abyssal-text-secondary hover:text-[#ef4444] disabled:opacity-40 disabled:hover:text-abyssal-text-secondary p-1 rounded-lg hover:bg-abyssal-surface-high transition-colors"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="py-8 text-center text-[13px] text-abyssal-text-secondary-variant">
+                        No hay usuarios registrados
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
-          </div>
+          </div>       </div>
 
           {/* Ajustes Generales */}
           <div className="w-[380px] shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">

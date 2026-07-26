@@ -14,4 +14,5 @@ from app.models.invoice_pref import InvoicePref
 from app.models.expense_category import ExpenseCategory
 from app.models.inventory_adjustment import InventoryAdjustment
 from app.models.purchase_price import PurchasePrice
-__all__ = ["BusinessConfig", "Product", "Client", "Supplier", "Order", "OrderItem", "Transaction", "Purchase", "PurchaseItem", "ManualEntry", "Category", "Unit", "PaymentMethod", "TaxConfig", "InvoicePref", "ExpenseCategory", "InventoryAdjustment", "PurchasePrice"]
+from app.models.collaborator import Collaborator
+__all__ = ["BusinessConfig", "Product", "Client", "Supplier", "Order", "OrderItem", "Transaction", "Purchase", "PurchaseItem", "ManualEntry", "Category", "Unit", "PaymentMethod", "TaxConfig", "InvoicePref", "ExpenseCategory", "InventoryAdjustment", "PurchasePrice", "Collaborator"]

@@ -21,3 +21,17 @@ class PinUpdate(BaseModel):
     pin: str
     confirm_pin: str
     require_pin: bool
+
+class CollaboratorResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+    role: str
+    is_active: bool
+    class Config: from_attributes = True
+
+class CollaboratorCreate(BaseModel):
+    name: str
+    email: str
+    password: str
+    role: str = "Usuario"
