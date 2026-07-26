@@ -252,7 +252,7 @@ export default function NewPurchasePage() {
                     <Minus className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div>
                     <label className="text-[10px] text-abyssal-text-secondary font-medium">Presentación</label>
                     <select

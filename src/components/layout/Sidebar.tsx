@@ -101,7 +101,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className="hidden lg:flex lg:flex-col fixed left-0 top-0 h-screen w-64 z-40 bg-abyssal-surface-high border-r border-abyssal-outline"
+      className="hidden md:flex md:flex-col fixed left-0 top-0 h-screen w-64 z-40 bg-abyssal-surface-high border-r border-abyssal-outline"
     >
       <div className="flex items-center gap-3 px-5 h-16 border-b border-abyssal-outline">
         <div className="w-8 h-8 rounded-lg bg-abyssal-primary flex items-center justify-center text-white font-bold text-xs">

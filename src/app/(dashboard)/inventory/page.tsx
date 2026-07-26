@@ -120,8 +120,8 @@ export default function InventoryPage() {
   return (
     <>
       <TopBar title="Inventario" icon={<PackageIcon size={18} />} subtitle="Control de productos y stock" />
-      <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
-        <div className="hidden lg:flex items-center justify-between">
+      <div className="p-4 md:p-8 md:pb-8 space-y-6">
+        <div className="hidden md:flex items-center justify-between">
           <div>
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Inventario</h1>
             <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Control de productos y stock</p>
@@ -135,7 +135,7 @@ export default function InventoryPage() {
         </div>
 
         {/* KPI Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Total Productos</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{stats.total}</p>
@@ -159,9 +159,9 @@ export default function InventoryPage() {
         {/* MagnifyingGlass + Sort */}
 
         {/* Categories + Stock Alerts row */}
-        <div className="flex flex-col lg:flex-row gap-5">
+        <div className="flex flex-col md:flex-row gap-5">
           {/* Categorías */}
-          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
+          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 md:p-6 shadow-abyssal-lg">
             <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Categorías de Productos</h3>
             <div className="space-y-5">
               {categoryData.map((cat, i) => {
@@ -182,7 +182,7 @@ export default function InventoryPage() {
           </div>
 
           {/* Alertas de Stock Bajo */}
-          <div className="w-full lg:w-[380px] lg:shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
+          <div className="w-full md:w-[380px] md:shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 md:p-6 shadow-abyssal-lg">
             <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Alertas de Stock Bajo</h3>
             <div className="space-y-0">
               {lowStockItems.length > 0 ? lowStockItems.slice(0, 5).map((item, i) => (

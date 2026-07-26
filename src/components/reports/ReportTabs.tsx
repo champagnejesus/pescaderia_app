@@ -88,8 +88,8 @@ export default function ReportTabs() {
   return (
     <>
       <TopBar title="Reportes" icon={<Download size={18} />} subtitle="Análisis del rendimiento de tu negocio" />
-      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
-        <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
+      <div className="p-4 md:p-0 space-y-4 md:space-y-6">
+        <div className="hidden md:flex md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-headline-medium text-abyssal-text-primary font-heading font-bold">Reportes</h1>
             <p className="text-body-medium text-abyssal-text-secondary font-body mt-1">Análisis del rendimiento de tu negocio</p>
@@ -115,7 +115,7 @@ export default function ReportTabs() {
           />
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
           <KpiCard>
             <p className="text-label-medium text-abyssal-text-secondary font-body">Ventas Totales</p>
             <p className="text-title-large text-abyssal-green font-heading font-bold mt-1">${stats.totalSales.toLocaleString()}</p>
@@ -302,7 +302,7 @@ export default function ReportTabs() {
         )}
 
         <div className="flex gap-3">
-          <div className="hidden lg:flex items-center gap-2 text-label-small text-abyssal-text-secondary font-caption">
+          <div className="hidden md:flex items-center gap-2 text-label-small text-abyssal-text-secondary font-caption">
             <span className="w-2 h-2 rounded-full bg-abyssal-green" />
             Ingresos
             <span className="w-2 h-2 rounded-full bg-abyssal-red ml-3" />

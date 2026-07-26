@@ -26,7 +26,7 @@ export default function NewClientPage() {
     finally { setLoading(false) }
   }
   return (
-    <div className="p-4 lg:p-8">
+    <div className="p-4 md:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()} className="text-abyssal-text-secondary hover:text-abyssal-text-primary p-1"><ArrowLeft className="w-5 h-5" /></button>

@@ -61,8 +61,8 @@ export default function OrdersPage() {
           </div>
         }
       />
-      <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
-        <div className="hidden lg:flex items-center justify-between">
+      <div className="p-4 md:p-8 md:pb-8 space-y-6">
+        <div className="hidden md:flex items-center justify-between">
           <div>
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Ventas</h1>
             <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Facturación y comisiones</p>
@@ -85,7 +85,7 @@ export default function OrdersPage() {
         </div>
 
         {/* KPI Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Total Facturado</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">

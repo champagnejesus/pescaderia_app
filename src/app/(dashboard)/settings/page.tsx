@@ -254,9 +254,9 @@ export default function SettingsPage() {
   return (
     <>
       <TopBar title="Configuración" icon={<Gear size={18} />} subtitle="Usuarios, roles y ajustes" />
-      <div className="p-4 lg:p-8 pb-24">
+      <div className="p-4 md:p-8">
         {/* Title row */}
-        <div className="hidden lg:flex items-center justify-between mb-6">
+        <div className="hidden md:flex items-center justify-between mb-6">
           <div>
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Configuración</h1>
             <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Usuarios, roles y ajustes</p>
@@ -264,9 +264,9 @@ export default function SettingsPage() {
         </div>
 
         {/* Tab Layout container */}
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
           {/* Tabs Selector Navigation */}
-          <div className="w-full lg:w-64 shrink-0 flex lg:flex-col overflow-x-auto lg:overflow-x-visible gap-1 pb-3 lg:pb-0 border-b lg:border-b-0 lg:border-r border-abyssal-outline scrollbar-none lg:pr-4">
+          <div className="w-full md:w-64 shrink-0 flex md:flex-col overflow-x-auto md:overflow-x-visible gap-1 pb-3 md:pb-0 border-b md:border-b-0 md:border-r border-abyssal-outline scrollbar-none md:pr-4">
             {[
               { id: "business", label: "Negocio", icon: Briefcase },
               { id: "users", label: "Equipo", icon: Users },
@@ -283,7 +283,7 @@ export default function SettingsPage() {
                   className={cn(
                     "flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all shrink-0 select-none whitespace-nowrap",
                     isActive
-                      ? "bg-abyssal-primary/10 text-abyssal-primary border-b-2 lg:border-b-0 lg:border-l-2 border-abyssal-primary"
+                      ? "bg-abyssal-primary/10 text-abyssal-primary border-b-2 md:border-b-0 md:border-l-2 border-abyssal-primary"
                       : "text-abyssal-text-secondary hover:bg-abyssal-surface-high hover:text-abyssal-text-primary"
                   )}
                 >

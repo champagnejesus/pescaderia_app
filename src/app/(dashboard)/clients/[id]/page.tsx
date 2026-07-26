@@ -95,7 +95,7 @@ export default function ClientDetail() {
         </button>
       </header>
 
-      <main className="max-w-[480px] mx-auto p-4 pb-24 space-y-4">
+      <main className="max-w-[480px] mx-auto p-4 space-y-4">
         <section className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 animate-fade-in">
           <div className="flex items-center gap-4 mb-3">
             <div className="w-12 h-12 rounded-xl bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary text-[19px] font-bold shrink-0">

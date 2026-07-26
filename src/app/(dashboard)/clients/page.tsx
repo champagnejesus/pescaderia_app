@@ -116,8 +116,8 @@ export default function ClientsPage() {
           </div>
         }
       />
-      <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
-        <div className="hidden lg:flex items-center justify-between">
+      <div className="p-4 md:p-8 space-y-6">
+        <div className="hidden md:flex items-center justify-between">
           <div>
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Clientes</h1>
             <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Gestión de clientes y relaciones</p>
@@ -129,7 +129,7 @@ export default function ClientsPage() {
         </div>
 
         {/* KPI Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Total Clientes</p>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">{clients.length}</p>
@@ -201,8 +201,8 @@ export default function ClientsPage() {
                     const colors = statusColor[status] || statusColor.Activo
                     return (
                       <tr key={client.id} className="border-b border-abyssal-outline hover:bg-abyssal-surface-high/50 transition-colors cursor-pointer" onClick={() => router.push(`/clients/${client.id}`)}>
-                        <td className="px-6 py-4 text-[13px] text-abyssal-text-primary font-body">{client.name}</td>
-                        <td className="px-6 py-4 text-[13px] text-abyssal-text-secondary font-body">{client.company || "—"}</td>
+                        <td className="px-6 py-4 text-[13px] text-abyssal-text-primary font-body truncate max-w-[120px]">{client.name}</td>
+                        <td className="px-6 py-4 text-[13px] text-abyssal-text-secondary font-body truncate max-w-[100px]">{client.company || "—"}</td>
                         <td className="px-6 py-4 text-right text-[12px] text-abyssal-text-secondary-variant font-body">{client.phone || "—"}</td>
                         <td className="px-6 py-4 text-right">
                           <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium ${colors.bg} ${colors.text}`}>{status}</span>

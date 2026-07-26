@@ -102,8 +102,8 @@ export default function SuppliersPage() {
           </div>
         }
       />
-      <div className="p-4 lg:p-0 pb-24 lg:pb-8 space-y-4 lg:space-y-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+      <div className="p-4 md:p-0 md:pb-8 space-y-4 md:space-y-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
           <KpiCard>
             <p className="text-label-medium text-abyssal-text-secondary font-body">Total Proveedores</p>
             <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{suppliers.length}</p>

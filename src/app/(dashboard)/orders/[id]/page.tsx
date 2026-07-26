@@ -123,7 +123,7 @@ export default function OrderDetailPage() {
         <div className="w-9" />
       </header>
 
-      <div className="p-4 space-y-4 pb-24">
+      <div className="p-4 space-y-4">
         <div className="bg-abyssal-surface rounded-abyssal-md p-4 shadow-abyssal-sm animate-fade-in">
           <div className="flex items-center justify-between mb-3">
             <p className="text-label-medium text-abyssal-text-secondary">Estado</p>

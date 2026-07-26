@@ -207,7 +207,7 @@ export default function FinancesPage() {
   return (
     <>
       <TopBar title="Finanzas" icon={<CurrencyDollar size={18} />} subtitle="Resumen financiero y gestión de deudas" />
-      <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
+      <div className="p-4 md:p-8 md:pb-8 space-y-6">
         
         {/* Encabezado */}
         <div className="flex items-center justify-between">
@@ -229,7 +229,7 @@ export default function FinancesPage() {
         </div>
 
         {/* KPIs Consolidados */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
           <KpiCard>
             <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Flujo de Caja Neto</p>
             <p className={cn("text-[26px] font-heading font-bold mt-2", stats.flowBalance >= 0 ? "text-abyssal-text-primary" : "text-abyssal-red")}>
@@ -283,7 +283,7 @@ export default function FinancesPage() {
 
         {/* Contenido según pestaña */}
         {activeTab === "resumen" && (
-          <div className="flex flex-col lg:flex-row gap-5">
+          <div className="flex flex-col md:flex-row gap-5">
             {/* Resumen Financiero */}
             <div className="flex-1 bg-abyssal-surface border border-slate-800 rounded-abyssal-lg p-6 shadow-abyssal-lg">
               <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Resumen Financiero</h3>
@@ -325,7 +325,7 @@ export default function FinancesPage() {
             </div>
 
             {/* Distribución de Ingresos (Métodos de pago) */}
-            <div className="w-full lg:w-[320px] shrink-0 bg-abyssal-surface border border-slate-800 rounded-abyssal-lg p-6 shadow-abyssal-lg flex flex-col justify-between">
+            <div className="w-full md:w-[320px] shrink-0 bg-abyssal-surface border border-slate-800 rounded-abyssal-lg p-6 shadow-abyssal-lg flex flex-col justify-between">
               <div>
                 <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Distribución de Ingresos</h3>
                 <p className="text-[12px] text-abyssal-text-secondary-variant font-caption mt-0.5">Por método de pago (hoy)</p>

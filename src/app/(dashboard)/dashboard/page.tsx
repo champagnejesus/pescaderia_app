@@ -175,9 +175,9 @@ export default function DashboardPage() {
     return (
       <>
         <TopBar title="Dashboard" icon={<TrendUp size={18} />} />
-        <div className="p-4 lg:p-0 pb-24 lg:pb-8 space-y-4 lg:space-y-6">
-          <div className="hidden lg:block"><Skeleton className="h-[64px] w-full" /></div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+        <div className="p-4 md:p-0 md:pb-8 space-y-4 md:space-y-6">
+          <div className="hidden md:block"><Skeleton className="h-[64px] w-full" /></div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
             {[1,2,3,4].map(i => <Skeleton key={i} className="h-[130px] rounded-abyssal-lg" />)}
           </div>
           <Skeleton className="h-[350px] rounded-abyssal-lg" />
@@ -191,7 +191,7 @@ export default function DashboardPage() {
       <TopBar title="Dashboard" icon={<TrendUp size={18} />} />
 
       {/* Header — desktop only */}
-      <div className="hidden lg:flex items-center justify-between px-8 pt-6 pb-2">
+      <div className="hidden md:flex items-center justify-between px-8 pt-6 pb-2">
         <div className="flex items-center gap-4">
           <div>
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Dashboard</h1>
@@ -219,9 +219,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
+      <div className="p-4 md:p-8 md:pb-8 space-y-6">
         {/* KPI Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
           <KpiCard>
             <div className="flex items-start justify-between">
               <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">Ingresos Totales</span>
@@ -325,9 +325,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Chart Row */}
-        <div className="flex flex-col lg:flex-row gap-5">
+        <div className="flex flex-col md:flex-row gap-5">
           {/* Resumen de Ventas */}
-          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
+          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 md:p-6 shadow-abyssal-lg">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Resumen de Ventas</h3>
@@ -338,7 +338,7 @@ export default function DashboardPage() {
                 <span className="text-[12px] text-abyssal-text-secondary-variant font-caption">Este año</span>
               </div>
             </div>
-            <div className="min-h-[200px] lg:min-h-[220px] relative">
+            <div className="min-h-[200px] md:min-h-[220px] relative">
               {orders.length === 0 ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
                   <TrendUp size={36} className="text-abyssal-text-secondary-variant/40 mb-2" />
@@ -378,7 +378,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Margen de Contribución por Producto */}
-          <div className="w-full lg:w-[300px] lg:shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
+          <div className="w-full md:w-[300px] md:shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 md:p-6 shadow-abyssal-lg">
             <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Margen de Contribución</h3>
             <p className="text-[13px] text-abyssal-text-secondary-variant font-body mt-1">Margen real diario (Top 5 hoy)</p>
             {topProducts.length === 0 ? (
@@ -412,9 +412,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Table Row */}
-        <div className="flex flex-col lg:flex-row gap-5">
+        <div className="flex flex-col md:flex-row gap-5">
           {/* Órdenes Recientes */}
-          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
+          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 md:p-6 shadow-abyssal-lg">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Órdenes Recientes</h3>
               <Link href="/orders" className="text-[12px] text-abyssal-primary font-body font-medium">Ver todas</Link>
@@ -436,7 +436,7 @@ export default function DashboardPage() {
                     return (
                       <tr key={order.id} className="border-b border-abyssal-outline hover:bg-abyssal-surface-high/50 transition-colors cursor-pointer" onClick={() => router.push(`/orders/${order.id}`)}>
                         <td className="py-3 text-[12px] text-abyssal-text-secondary-variant font-mono">{order.order_number}</td>
-                        <td className="py-3 text-[13px] text-abyssal-text-secondary font-body">{order.client_name}</td>
+                        <td className="py-3 text-[13px] text-abyssal-text-secondary font-body truncate max-w-[120px]">{order.client_name}</td>
                         <td className="py-3 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">
                           {formatCurrency(order.total_value)}
                         </td>
@@ -460,7 +460,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Registro de Actividad */}
-          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
+          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 md:p-6 shadow-abyssal-lg">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Registro de Actividad</h3>
               <Link href="/reports" className="text-[12px] text-abyssal-primary font-body font-medium">Ver todo</Link>
@@ -498,7 +498,7 @@ export default function DashboardPage() {
         </div>
 
         {/* FAB for mobile */}
-        <div className="lg:hidden fixed bottom-20 right-4 z-40">
+        <div className="md:hidden fixed bottom-20 right-4 z-40">
           <Link href="/orders/new">
             <button className="w-14 h-14 rounded-full bg-abyssal-primary text-white shadow-lg flex items-center justify-center active:scale-95 transition-transform">
               <Plus size={24} />
