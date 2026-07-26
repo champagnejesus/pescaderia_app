@@ -350,195 +350,131 @@ export default function SettingsPage() {
 
             {activeTab === "users" && (
               <div className="space-y-6">
-                <div>
-                  <h2 className="text-[18px] text-abyssal-text-primary font-heading font-semibold">Equipo</h2>
-                  <p className="text-[13px] text-abyssal-text-secondary-variant font-body">Manejo de usuarios, colaboradores de caja y roles de acceso</p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-[18px] text-abyssal-text-primary font-heading font-semibold">Equipo</h2>
+                    <p className="text-[13px] text-abyssal-text-secondary-variant font-body">Manejo de usuarios, colaboradores de caja y roles de acceso</p>
+                  </div>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="gap-1.5 py-1 h-8 shrink-0"
+                    onClick={() => setShowAddUser(!showAddUser)}
+                  >
+                    {showAddUser ? <X size={14} /> : <Plus size={14} />}
+                    {showAddUser ? "Cancelar" : "Agregar"}
+                  </Button>
                 </div>
 
-                {/* KPI Row */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
-                  <KpiCard>
-                    <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Usuarios Activos</p>
-                    <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-                      {data.collaborators.filter(c => c.is_active).length}
-                    </p>
-                  </KpiCard>
-                  <KpiCard>
-                    <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Roles Definidos</p>
-                    <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-                      {new Set(data.collaborators.map(c => c.role)).size || 1}
-                    </p>
-                  </KpiCard>
-                  <KpiCard>
-                    <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Usuarios Totales</p>
-                    <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-                      {data.collaborators.length}
-                    </p>
-                  </KpiCard>
-                  <KpiCard>
-                    <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">PIN de Caja</p>
-                    <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-                      {data.profile?.has_pin ? "Activo" : "Inactivo"}
-                    </p>
-                  </KpiCard>
-                </div>
-
-                <div className="flex flex-col lg:flex-row gap-5">
-                  {/* Usuarios del Sistema */}
-                  <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
-                    <div className="flex items-center justify-between mb-5">
-                      <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Usuarios del Sistema</h3>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="gap-1.5 py-1 h-8"
-                        onClick={() => setShowAddUser(!showAddUser)}
-                      >
-                        {showAddUser ? <X size={14} /> : <Plus size={14} />}
-                        {showAddUser ? "Cancelar" : "Agregar"}
-                      </Button>
+                {showAddUser && (
+                  <form onSubmit={addCollaborator} className="p-4 bg-abyssal-surface-high border border-slate-800 rounded-xl space-y-3 max-w-3xl">
+                    <h4 className="text-[13px] text-abyssal-text-primary font-heading font-semibold">Registrar Nuevo Usuario</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[11px] text-abyssal-text-secondary font-medium">Nombre</label>
+                        <Input
+                          value={userForm.name}
+                          onChange={(e) => setUserForm(prev => ({ ...prev, name: e.target.value }))}
+                          placeholder="Ej: María Delgado"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] text-abyssal-text-secondary font-medium">Correo electrónico</label>
+                        <Input
+                          type="email"
+                          value={userForm.email}
+                          onChange={(e) => setUserForm(prev => ({ ...prev, email: e.target.value }))}
+                          placeholder="m.delgado@..."
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] text-abyssal-text-secondary font-medium">Contraseña</label>
+                        <Input
+                          type="password"
+                          value={userForm.password}
+                          onChange={(e) => setUserForm(prev => ({ ...prev, password: e.target.value }))}
+                          placeholder="••••••••"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] text-abyssal-text-secondary font-medium">Rol</label>
+                        <select
+                          value={userForm.role}
+                          onChange={(e) => setUserForm(prev => ({ ...prev, role: e.target.value }))}
+                          className="w-full h-10 bg-abyssal-surface rounded-xl px-3 text-[13px] text-abyssal-text-primary outline-none border border-slate-800 appearance-none cursor-pointer"
+                        >
+                          <option value="Administrador">Administrador</option>
+                          <option value="Gerente">Gerente</option>
+                          <option value="Usuario">Usuario</option>
+                        </select>
+                      </div>
                     </div>
+                    <div className="flex justify-end gap-2 pt-2">
+                      <Button variant="secondary" size="sm" type="button" onClick={() => setShowAddUser(false)}>Cancelar</Button>
+                      <Button variant="primary" size="sm" type="submit" loading={saving === "collab"}>Guardar Usuario</Button>
+                    </div>
+                  </form>
+                )}
 
-                    {showAddUser && (
-                      <form onSubmit={addCollaborator} className="mb-6 p-4 bg-abyssal-surface-high border border-abyssal-outline rounded-xl space-y-3">
-                        <h4 className="text-[13px] text-abyssal-text-primary font-heading font-semibold">Registrar Nuevo Usuario</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-abyssal-text-secondary font-medium">Nombre</label>
-                            <Input
-                              value={userForm.name}
-                              onChange={(e) => setUserForm(prev => ({ ...prev, name: e.target.value }))}
-                              placeholder="Ej: María Delgado"
-                              required
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-abyssal-text-secondary font-medium">Correo electrónico</label>
-                            <Input
-                              type="email"
-                              value={userForm.email}
-                              onChange={(e) => setUserForm(prev => ({ ...prev, email: e.target.value }))}
-                              placeholder="m.delgado@..."
-                              required
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-abyssal-text-secondary font-medium">Contraseña</label>
-                            <Input
-                              type="password"
-                              value={userForm.password}
-                              onChange={(e) => setUserForm(prev => ({ ...prev, password: e.target.value }))}
-                              placeholder="••••••••"
-                              required
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-abyssal-text-secondary font-medium">Rol</label>
-                            <select
-                              value={userForm.role}
-                              onChange={(e) => setUserForm(prev => ({ ...prev, role: e.target.value }))}
-                              className="w-full h-10 bg-abyssal-surface rounded-xl px-3 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline appearance-none cursor-pointer"
-                            >
-                              <option value="Administrador">Administrador</option>
-                              <option value="Gerente">Gerente</option>
-                              <option value="Usuario">Usuario</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div className="flex justify-end gap-2 pt-2">
-                          <Button variant="secondary" size="sm" type="button" onClick={() => setShowAddUser(false)}>Cancelar</Button>
-                          <Button variant="primary" size="sm" type="submit" loading={saving === "collab"}>Guardar Usuario</Button>
-                        </div>
-                      </form>
-                    )}
-
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b border-abyssal-outline">
-                            <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">USUARIO</th>
-                            <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ROL</th>
-                            <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ESTADO</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {data.collaborators.length > 0 ? (
-                            data.collaborators.map((u) => {
-                              const isOwner = data.profile?.email === u.email
-                              const isSelf = typeof window !== "undefined" && localStorage.getItem("abyssal-user-email") === u.email
-                              return (
-                                <tr key={u.id} className="border-b border-abyssal-outline">
-                                  <td className="py-3">
-                                    <p className="text-[13px] text-abyssal-text-primary font-body font-medium">{u.name}</p>
-                                    <p className="text-[11px] text-abyssal-text-secondary-variant font-mono">{u.email}</p>
-                                  </td>
-                                  <td className="py-3 text-right text-[13px] text-abyssal-text-secondary font-body">{u.role}</td>
-                                  <td className="py-3 text-right">
-                                    <div className="flex items-center justify-end gap-3">
-                                      <button
-                                        disabled={isOwner || isSelf}
-                                        onClick={() => toggleCollabStatus(u.id)}
-                                        className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium transition-colors ${
-                                          u.is_active 
-                                            ? "bg-[rgba(34,197,94,0.1)] text-[#22c55e] hover:bg-[rgba(34,197,94,0.15)]" 
-                                            : "bg-[rgba(239,68,68,0.1)] text-[#ef4444] hover:bg-[rgba(239,68,68,0.15)]"
-                                        } disabled:opacity-70 disabled:hover:bg-[rgba(34,197,94,0.1)]`}
-                                      >
-                                        {u.is_active ? "Activo" : "Inactivo"}
-                                      </button>
-                                      
-                                      <button
-                                        disabled={isOwner || isSelf}
-                                        onClick={() => deleteCollaborator(u.id)}
-                                        className="text-abyssal-text-secondary hover:text-[#ef4444] disabled:opacity-40 disabled:hover:text-abyssal-text-secondary p-1 rounded-lg hover:bg-abyssal-surface-high transition-colors"
-                                      >
-                                        <Trash2 size={14} />
-                                      </button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              )
-                            })
-                          ) : (
-                            <tr>
-                              <td colSpan={3} className="py-8 text-center text-[13px] text-abyssal-text-secondary-variant">
-                                No hay usuarios registrados
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-slate-800">
+                        <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">USUARIO</th>
+                        <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ROL</th>
+                        <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ESTADO</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.collaborators.length > 0 ? (
+                        data.collaborators.map((u) => {
+                          const isOwner = data.profile?.email === u.email
+                          const isSelf = typeof window !== "undefined" && localStorage.getItem("abyssal-user-email") === u.email
+                          return (
+                            <tr key={u.id} className="border-b border-slate-800">
+                              <td className="py-3">
+                                <p className="text-[13px] text-abyssal-text-primary font-body font-medium">{u.name}</p>
+                                <p className="text-[11px] text-abyssal-text-secondary-variant font-mono">{u.email}</p>
+                              </td>
+                              <td className="py-3 text-right text-[13px] text-abyssal-text-secondary font-body">{u.role}</td>
+                              <td className="py-3 text-right">
+                                <div className="flex items-center justify-end gap-3">
+                                  <button
+                                    disabled={isOwner || isSelf}
+                                    onClick={() => toggleCollabStatus(u.id)}
+                                    className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium transition-colors ${
+                                      u.is_active 
+                                        ? "bg-[rgba(34,197,94,0.1)] text-[#22c55e] hover:bg-[rgba(34,197,94,0.15)]" 
+                                        : "bg-[rgba(239,68,68,0.1)] text-[#ef4444] hover:bg-[rgba(239,68,68,0.15)]"
+                                    } disabled:opacity-70 disabled:hover:bg-[rgba(34,197,94,0.1)]`}
+                                  >
+                                    {u.is_active ? "Activo" : "Inactivo"}
+                                  </button>
+                                  
+                                  <button
+                                    disabled={isOwner || isSelf}
+                                    onClick={() => deleteCollaborator(u.id)}
+                                    className="text-abyssal-text-secondary hover:text-[#ef4444] disabled:opacity-40 disabled:hover:text-abyssal-text-secondary p-1 rounded-lg hover:bg-abyssal-surface-high transition-colors"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
                               </td>
                             </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Roles y Permisos */}
-                <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg mt-6">
-                  <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Roles y Permisos</h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-abyssal-outline">
-                          <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ROL</th>
-                          <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">USUARIOS</th>
-                          <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ACCESO</th>
+                          )
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={3} className="py-8 text-center text-[13px] text-abyssal-text-secondary-variant">
+                            No hay usuarios registrados
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {[
-                          { role: "Administrador", users: `${data.collaborators.filter(c => c.role === "Administrador").length} usuarios`, access: "Total" },
-                          { role: "Gerente", users: `${data.collaborators.filter(c => c.role === "Gerente").length} usuarios`, access: "Ventas, Finanzas" },
-                          { role: "Usuario", users: `${data.collaborators.filter(c => c.role === "Usuario").length} usuarios`, access: "Consultas básicas" },
-                        ].map((r, i) => (
-                          <tr key={i} className="border-b border-abyssal-outline">
-                            <td className="py-4 text-[13px] text-abyssal-text-primary font-body font-medium">{r.role}</td>
-                            <td className="py-4 text-[13px] text-abyssal-text-secondary font-body">{r.users}</td>
-                            <td className="py-4 text-right text-[12px] text-abyssal-text-secondary-variant font-caption">{r.access}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
