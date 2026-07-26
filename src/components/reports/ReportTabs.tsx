@@ -12,18 +12,19 @@ import { FilterTabs } from '@/components/shared/FilterTabs';
 import { FAB } from '@/components/shared/FAB';
 import { Card } from '@/components/ui/card';
 import { TopBar } from '@/components/layout/TopBar';
+import { ExportDropdown } from '@/components/shared/ExportDropdown';
 
 const COLORS = ['#4A9FD8', '#30D158', '#FFD60A', '#FF453A', '#FF9F0A', '#BF5AF2'];
 
-async function downloadPdf(endpoint: string, filename: string, startDate?: string, endDate?: string) {
+async function downloadReport(format: string, endpoint: string, filename: string, startDate?: string, endDate?: string) {
   const params = new URLSearchParams();
   if (startDate) params.append('start_date', startDate);
   if (endDate) params.append('end_date', endDate);
   const qs = params.toString();
-  const url = `${api.defaults.baseURL}/reports/pdf/${endpoint}${qs ? `?${qs}` : ''}`;
+  const url = `${api.defaults.baseURL}/reports/${format}/${endpoint}${qs ? `?${qs}` : ''}`;
   const token = localStorage.getItem('abyssal-token');
   const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-  if (!response.ok) throw new Error('Error downloading PDF');
+  if (!response.ok) throw new Error(`Error downloading ${format.toUpperCase()}`);
   const blob = await response.blob();
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -46,13 +47,13 @@ export default function ReportTabs() {
 
   const currentTab = tabs.find((t) => t.id === activeTab);
 
-  const handleDownload = async () => {
+  const getReportFilename = (base: string, ext: string) => base.replace('.pdf', `.${ext}`);
+
+  const handleDownload = async (format: string) => {
     if (!currentTab) return;
-    try {
-      await downloadPdf(currentTab.pdf, currentTab.file, dateRange.startDate, dateRange.endDate);
-    } catch (error) {
-      console.error('PDF download error:', error);
-    }
+    const ext = format === "excel" ? "xlsx" : format;
+    const filename = getReportFilename(currentTab.file, ext);
+    await downloadReport(format, currentTab.pdf, filename, dateRange.startDate, dateRange.endDate);
   };
 
   const stats = useMemo(() => {
@@ -106,13 +107,12 @@ export default function ReportTabs() {
             activeKey={activeTab}
             onSelect={setActiveTab}
           />
-          <button
-            onClick={handleDownload}
-            className="flex items-center gap-2 px-4 py-2 bg-abyssal-primary/10 text-abyssal-primary rounded-abyssal-lg text-sm font-medium hover:bg-abyssal-primary/20 transition-colors border border-abyssal-primary/30 font-body"
-          >
-            <Download size={16} />
-            Descargar PDF
-          </button>
+          <ExportDropdown
+            iconOnly={false}
+            onExportExcel={() => handleDownload("excel")}
+            onExportPDF={() => handleDownload("pdf")}
+            onExportCSV={() => handleDownload("csv")}
+          />
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">

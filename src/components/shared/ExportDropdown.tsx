@@ -5,13 +5,25 @@ import { DownloadSimple, FileXls, FilePdf, FileCsv } from "@phosphor-icons/react
 import { exportCSV, exportExcel, exportPDF } from "@/lib/export"
 
 interface ExportDropdownProps {
+  /** Data rows for built-in export (csv/excel/pdf). Required when not using custom handlers. */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any[]
-  filename: string
-  headerMap: Record<string, string>
+  data?: any[]
+  /** Filename without extension. */
+  filename?: string
+  /** Column header map for built-in export. */
+  headerMap?: Record<string, string>
+  /** PDF title. */
   title?: string
+  /** Called after any export (built-in or custom). */
   onExport?: (format: string) => void
+  /** Custom handler for Excel export — when provided, overrides built-in Excel export. */
+  onExportExcel?: () => void | Promise<void>
+  /** Custom handler for PDF export — when provided, overrides built-in PDF export. */
+  onExportPDF?: () => void | Promise<void>
+  /** Custom handler for CSV export — when provided, overrides built-in CSV export. */
+  onExportCSV?: () => void | Promise<void>
   className?: string
+  /** When true renders a compact icon-only trigger; when false renders a labeled button. */
   iconOnly?: boolean
 }
 
@@ -21,8 +33,9 @@ const options = [
   { key: "csv" as const, label: "CSV", icon: <FileCsv size={16} className="text-blue-400" />, desc: ".csv" },
 ]
 
-export function ExportDropdown({ data, filename, headerMap, title, onExport, className, iconOnly }: ExportDropdownProps) {
+export function ExportDropdown({ data, filename, headerMap, title, onExport, onExportExcel, onExportPDF, onExportCSV, className, iconOnly }: ExportDropdownProps) {
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState<"excel" | "pdf" | "csv" | null>(null)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -33,15 +46,43 @@ export function ExportDropdown({ data, filename, headerMap, title, onExport, cla
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  const handleExport = (format: "csv" | "excel" | "pdf") => {
-    if (data.length === 0) return
-    switch (format) {
-      case "csv": exportCSV(data, filename, headerMap); break
-      case "excel": exportExcel(data, filename, headerMap); break
-      case "pdf": exportPDF(data, filename, headerMap, title); break
+  const handleExport = async (format: "csv" | "excel" | "pdf") => {
+    const hasCustom =
+      (format === "excel" && onExportExcel) ||
+      (format === "pdf" && onExportPDF) ||
+      (format === "csv" && onExportCSV)
+
+    if (hasCustom) {
+      setLoading(format)
+      try {
+        if (format === "excel" && onExportExcel) await onExportExcel()
+        if (format === "pdf" && onExportPDF) await onExportPDF()
+        if (format === "csv" && onExportCSV) await onExportCSV()
+      } catch (err) {
+        console.error(`Export ${format} failed:`, err)
+      } finally {
+        setLoading(null)
+      }
+    } else if (data && data.length > 0 && filename && headerMap) {
+      switch (format) {
+        case "csv": exportCSV(data, filename, headerMap); break
+        case "excel": exportExcel(data, filename, headerMap); break
+        case "pdf": exportPDF(data, filename, headerMap, title); break
+      }
     }
+
     onExport?.(format)
     setOpen(false)
+  }
+
+  const isDisabled = (format: "csv" | "excel" | "pdf") => {
+    if (loading) return true
+    const hasCustom =
+      (format === "excel" && onExportExcel) ||
+      (format === "pdf" && onExportPDF) ||
+      (format === "csv" && onExportCSV)
+    if (hasCustom) return false
+    return !data || data.length === 0
   }
 
   return (
@@ -49,15 +90,17 @@ export function ExportDropdown({ data, filename, headerMap, title, onExport, cla
       {iconOnly === false ? (
         <button
           onClick={() => setOpen(!open)}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-medium text-abyssal-text-secondary hover:bg-abyssal-surface-high border border-abyssal-outline transition-all active:scale-[0.97] ${className || ""}`}
+          disabled={!!loading}
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-medium text-abyssal-text-secondary hover:bg-abyssal-surface-high border border-abyssal-outline transition-all active:scale-[0.97] disabled:opacity-50 ${className || ""}`}
         >
           <DownloadSimple size={15} />
-          Exportar
+          {loading ? "Exportando..." : "Exportar"}
         </button>
       ) : (
         <button
           onClick={() => setOpen(!open)}
-          className={`w-9 h-9 rounded-xl flex items-center justify-center text-abyssal-text-secondary hover:bg-abyssal-surface-high border border-abyssal-outline transition-all active:scale-[0.93] ${className || ""}`}
+          disabled={!!loading}
+          className={`w-9 h-9 rounded-xl flex items-center justify-center text-abyssal-text-secondary hover:bg-abyssal-surface-high border border-abyssal-outline transition-all active:scale-[0.93] disabled:opacity-50 ${className || ""}`}
           title="Exportar datos"
         >
           <DownloadSimple size={16} />
@@ -67,21 +110,25 @@ export function ExportDropdown({ data, filename, headerMap, title, onExport, cla
       {open && (
         <div className="absolute right-0 top-full mt-1.5 z-50 w-[170px] bg-abyssal-surface border border-abyssal-outline rounded-xl shadow-abyssal-lg overflow-hidden animate-fade-in">
           <div className="py-1">
-            {options.map((opt) => (
-              <button
-                key={opt.key}
-                onClick={() => handleExport(opt.key)}
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 text-[13px] text-abyssal-text-primary font-body hover:bg-abyssal-surface-high transition-colors text-left active:bg-abyssal-surface-high"
-              >
-                <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-abyssal-surface-high shrink-0">
-                  {opt.icon}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium">{opt.label}</p>
-                  <p className="text-[10px] text-abyssal-text-secondary-variant font-caption">{opt.desc}</p>
-                </div>
-              </button>
-            ))}
+            {options.map((opt) => {
+              const disabled = isDisabled(opt.key)
+              return (
+                <button
+                  key={opt.key}
+                  onClick={() => !disabled && handleExport(opt.key)}
+                  disabled={disabled}
+                  className="w-full flex items-center gap-3 px-3.5 py-2.5 text-[13px] text-abyssal-text-primary font-body hover:bg-abyssal-surface-high transition-colors text-left active:bg-abyssal-surface-high disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-abyssal-surface-high shrink-0">
+                    {opt.icon}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium">{opt.label}</p>
+                    <p className="text-[10px] text-abyssal-text-secondary-variant font-caption">{opt.desc}</p>
+                  </div>
+                </button>
+              )
+            })}
           </div>
         </div>
       )}
