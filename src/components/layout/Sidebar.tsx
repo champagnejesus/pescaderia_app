@@ -6,7 +6,7 @@ import { memo, useState, useEffect } from "react"
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, Users,
   Truck, Package, Fish, ArrowLeftFromLine,
-  ArrowRightFromLine, LogOut, type LucideIcon
+  ArrowRightFromLine, LogOut, DollarSign, type LucideIcon
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import LowStockBadge from "./LowStockBadge"
@@ -20,7 +20,7 @@ const menuItems = [
   { href: "/suppliers", label: "Proveedores", icon: Truck },
   { href: "/inventory", label: "Inventario", icon: Package },
   { href: "/products", label: "Productos", icon: Fish },
-  { href: "/accounts-receivable", label: "Cuentas por cobrar", icon: ArrowLeftFromLine },
+  { href: "/accounts-receivable", label: "Finanzas", icon: DollarSign },
   { href: "/accounts-payable", label: "Cuentas por pagar", icon: ArrowRightFromLine },
 ]
 

@@ -19,7 +19,7 @@ const tabs = [
   { href: "/inventory", label: "Inventario", icon: Package },
   { href: "/products", label: "Productos", icon: Fish },
   { href: "/cash-register", label: "Caja", icon: DollarSign },
-  { href: "/accounts-receivable", label: "C x C", icon: ArrowLeftFromLine },
+  { href: "/accounts-receivable", label: "Finanzas", icon: DollarSign },
   { href: "/accounts-payable", label: "C x P", icon: ArrowRightFromLine },
   { href: "/settings", label: "Config", icon: Settings },
 ]
