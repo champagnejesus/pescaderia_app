@@ -175,7 +175,7 @@ export default function DashboardPage() {
     return (
       <>
         <TopBar title="Dashboard" icon={<TrendUp size={18} />} />
-        <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
+        <div className="p-4 lg:p-0 pb-24 lg:pb-8 space-y-4 lg:space-y-6">
           <div className="hidden lg:block"><Skeleton className="h-[64px] w-full" /></div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
             {[1,2,3,4].map(i => <Skeleton key={i} className="h-[130px] rounded-abyssal-lg" />)}
@@ -219,7 +219,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="p-4 lg:p-8 space-y-6">
+      <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
         {/* KPI Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
           <KpiCard>

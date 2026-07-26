@@ -79,7 +79,7 @@ export default function CashRegisterPage() {
   return (
     <>
       <TopBar title="Cierre de Caja" icon={<CurrencyDollar size={18} />} subtitle="Resumen diario de transacciones" />
-      <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
+      <div className="p-4 lg:p-0 pb-24 lg:pb-8 space-y-4 lg:space-y-6">
         {loading ? (
           <>
             <Skeleton className="h-24" />

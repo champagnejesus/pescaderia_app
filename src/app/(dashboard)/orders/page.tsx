@@ -61,7 +61,7 @@ export default function OrdersPage() {
           </div>
         }
       />
-      <div className="p-4 lg:p-8 space-y-6">
+      <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
         <div className="hidden lg:flex items-center justify-between">
           <div>
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Ventas</h1>

@@ -120,7 +120,7 @@ export default function InventoryPage() {
   return (
     <>
       <TopBar title="Inventario" icon={<PackageIcon size={18} />} subtitle="Control de productos y stock" />
-      <div className="p-4 lg:p-8 space-y-6">
+      <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
         <div className="hidden lg:flex items-center justify-between">
           <div>
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Inventario</h1>
@@ -159,9 +159,9 @@ export default function InventoryPage() {
         {/* MagnifyingGlass + Sort */}
 
         {/* Categories + Stock Alerts row */}
-        <div className="flex gap-5">
+        <div className="flex flex-col lg:flex-row gap-5">
           {/* Categorías */}
-          <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
+          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
             <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Categorías de Productos</h3>
             <div className="space-y-5">
               {categoryData.map((cat, i) => {
@@ -182,7 +182,7 @@ export default function InventoryPage() {
           </div>
 
           {/* Alertas de Stock Bajo */}
-          <div className="w-[380px] shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
+          <div className="w-full lg:w-[380px] lg:shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
             <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Alertas de Stock Bajo</h3>
             <div className="space-y-0">
               {lowStockItems.length > 0 ? lowStockItems.slice(0, 5).map((item, i) => (

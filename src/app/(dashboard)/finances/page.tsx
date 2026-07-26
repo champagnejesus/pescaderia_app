@@ -207,7 +207,7 @@ export default function FinancesPage() {
   return (
     <>
       <TopBar title="Finanzas" icon={<CurrencyDollar size={18} />} subtitle="Resumen financiero y gestión de deudas" />
-      <div className="p-4 lg:p-8 space-y-6">
+      <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
         
         {/* Encabezado */}
         <div className="flex items-center justify-between">
