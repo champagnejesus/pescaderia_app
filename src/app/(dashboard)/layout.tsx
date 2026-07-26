@@ -23,8 +23,7 @@ const pageMeta: Record<string, { label: string; icon: React.ReactNode }> = {
   "/suppliers": { label: "Proveedores", icon: <Truck size={18} /> },
   "/inventory": { label: "Inventario", icon: <Package size={18} /> },
   "/products": { label: "Productos", icon: <Fish size={18} /> },
-  "/accounts-receivable": { label: "Finanzas", icon: <DollarSign size={18} /> },
-  "/accounts-payable": { label: "Cuentas por Pagar", icon: <ArrowRightFromLine size={18} /> },
+  "/finances": { label: "Finanzas", icon: <DollarSign size={18} /> },
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

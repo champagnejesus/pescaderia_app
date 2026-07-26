@@ -20,8 +20,7 @@ const menuItems = [
   { href: "/suppliers", label: "Proveedores", icon: Truck },
   { href: "/inventory", label: "Inventario", icon: Package },
   { href: "/products", label: "Productos", icon: Fish },
-  { href: "/accounts-receivable", label: "Finanzas", icon: DollarSign },
-  { href: "/accounts-payable", label: "Cuentas por pagar", icon: ArrowRightFromLine },
+  { href: "/finances", label: "Finanzas", icon: DollarSign },
 ]
 
 const SidebarItem = memo(function SidebarItem({
