@@ -601,7 +601,7 @@ export default function SettingsPage() {
                   <div className="space-y-0">
                     {[
                       { param: "Idioma", value: "Español" },
-                      { param: "Zona Horaria", value: "GMT-5 (Perú)" },
+                      { param: "Zona Horaria", value: "GMT-4 (Chile/Santiago)" },
                       { param: "Formato Moneda", value: "PEN (S/)" },
                       { param: "Notificaciones", value: "Activadas" },
                       { param: "Autenticación 2FA", value: "Desactivada" },
