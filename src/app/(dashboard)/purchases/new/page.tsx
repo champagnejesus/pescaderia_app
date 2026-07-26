@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Plus, Minus, MagnifyingGlass } from "@phosphor-icons/react"
+import { ArrowLeftIcon, PlusIcon, MinusIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import api from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -137,13 +137,13 @@ export default function NewPurchasePage() {
   const totalValue = selectedItems.reduce((sum, s) => sum + s.quantity * s.unit_price, 0)
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="p-4 pb-24 space-y-6">
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.back()}
           className="text-abyssal-text-secondary hover:text-abyssal-text-primary transition-colors"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeftIcon className="w-5 h-5" />
         </button>
         <h1 className="text-title-large text-abyssal-text-primary">Registrar Compra</h1>
       </div>
@@ -157,7 +157,7 @@ export default function NewPurchasePage() {
         <div>
           <p className="text-title-medium text-abyssal-text-primary mb-2">Proveedor</p>
           <div className="relative mb-2">
-            <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
+            <MagnifyingGlassIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
             <input
               type="text"
               value={supplierSearch}
@@ -197,7 +197,7 @@ export default function NewPurchasePage() {
         ) : (
           <>
             <div className="relative mb-3">
-              <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
+              <MagnifyingGlassIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
               <input
                 type="text"
                 value={searchQuery}
@@ -225,7 +225,7 @@ export default function NewPurchasePage() {
                       onClick={() => handleAddProduct(product)}
                       className="w-8 h-8 rounded-full bg-abyssal-primary text-white flex items-center justify-center hover:opacity-90 transition-opacity shrink-0 ml-2"
                     >
-                      <Plus className="w-4 h-4" />
+                      <PlusIcon className="w-4 h-4" />
                     </button>
                   </div>
                 ))}
@@ -249,10 +249,10 @@ export default function NewPurchasePage() {
                     onClick={() => setSelectedItems((prev) => prev.filter((s) => s.product_id !== item.product_id))}
                     className="text-abyssal-text-secondary hover:text-abyssal-red transition-colors p-1"
                   >
-                    <Minus className="w-4 h-4" />
+                    <MinusIcon className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
                   <div>
                     <label className="text-[10px] text-abyssal-text-secondary font-medium">Presentación</label>
                     <select

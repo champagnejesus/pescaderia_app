@@ -10,21 +10,21 @@ import { BottomNav } from "@/components/layout/BottomNav"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import {
-  Layout, ShoppingCart, ClipboardText, Users,
-  Truck, Package, Fish, ArrowLineLeft,
-  ArrowSquareRight, CurrencyDollar, ChartBar
-} from "@phosphor-icons/react"
+  ViewColumnsIcon, ShoppingCartIcon, ClipboardDocumentIcon, UsersIcon,
+  TruckIcon, CubeIcon, CubeTransparentIcon, ArrowLeftIcon,
+  ArrowRightIcon, CurrencyDollarIcon, ChartBarIcon
+} from "@heroicons/react/24/outline"
 
 const pageMeta: Record<string, { label: string; icon: React.ReactNode }> = {
-  "/dashboard": { label: "Panel", icon: <Layout size={18} /> },
-  "/purchases": { label: "Compras", icon: <ShoppingCart size={18} /> },
-  "/orders": { label: "Ventas", icon: <ClipboardText size={18} /> },
-  "/clients": { label: "Clientes", icon: <Users size={18} /> },
-  "/suppliers": { label: "Proveedores", icon: <Truck size={18} /> },
-  "/inventory": { label: "Inventario", icon: <Package size={18} /> },
-  "/products": { label: "Productos", icon: <Fish size={18} /> },
-  "/finances": { label: "Finanzas", icon: <CurrencyDollar size={18} /> },
-  "/reports": { label: "Reportes", icon: <ChartBar size={18} /> },
+  "/dashboard": { label: "Panel", icon: <ViewColumnsIcon size={18} /> },
+  "/purchases": { label: "Compras", icon: <ShoppingCartIcon size={18} /> },
+  "/orders": { label: "Ventas", icon: <ClipboardDocumentIcon size={18} /> },
+  "/clients": { label: "Clientes", icon: <UsersIcon size={18} /> },
+  "/suppliers": { label: "Proveedores", icon: <TruckIcon size={18} /> },
+  "/inventory": { label: "Inventario", icon: <CubeIcon size={18} /> },
+  "/products": { label: "Productos", icon: <CubeTransparentIcon size={18} /> },
+  "/finances": { label: "Finanzas", icon: <CurrencyDollarIcon size={18} /> },
+  "/reports": { label: "Reportes", icon: <ChartBarIcon size={18} /> },
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

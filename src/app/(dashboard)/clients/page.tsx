@@ -1,6 +1,6 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus, Users as UsersIcon, MagnifyingGlass } from "@phosphor-icons/react"
+import { PlusIcon, UsersIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
@@ -116,14 +116,14 @@ export default function ClientsPage() {
           </div>
         }
       />
-      <div className="p-4 lg:p-8 space-y-6">
+      <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
         <div className="hidden lg:flex items-center justify-between">
           <div>
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Clientes</h1>
             <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Gestión de clientes y relaciones</p>
           </div>
           <Button variant="primary" size="sm" className="gap-1.5" onClick={() => router.push("/clients/new")}>
-            <Plus size={16} />
+            <PlusIcon size={16} />
             Nuevo Cliente
           </Button>
         </div>
@@ -150,7 +150,7 @@ export default function ClientsPage() {
           </KpiCard>
         </div>
 
-        {/* Funnel tabs */}
+        {/* FunnelIcon tabs */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {filterTabs.map((t) => (
             <button
@@ -218,7 +218,7 @@ export default function ClientsPage() {
       </div>
 
       <FAB onClick={() => router.push("/clients/new")} aria-label="Agregar cliente">
-        <Plus className="w-6 h-6" />
+        <PlusIcon className="w-6 h-6" />
       </FAB>
 
       <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Agregar Cliente" showClose>

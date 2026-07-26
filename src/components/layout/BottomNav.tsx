@@ -1,27 +1,27 @@
 "use client"
 
-import Link from "next/link"
+import LinkIcon from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  Layout, ShoppingCart, ClipboardText, Users,
-  Truck, Package, Fish, CurrencyDollar, ArrowLineLeft,
-  ArrowSquareRight, Gear, ChartBar
-} from "@phosphor-icons/react"
+  ViewColumnsIcon, ShoppingCartIcon, ClipboardDocumentIcon, UsersIcon,
+  TruckIcon, CubeIcon, CubeTransparentIcon, CurrencyDollarIcon, ArrowLeftIcon,
+  ArrowRightIcon, Cog6ToothIcon, ChartBarIcon
+} from "@heroicons/react/24/outline"
 import { cn } from "@/lib/utils"
 import { useLowStock } from "@/hooks/useLowStock"
 
 const tabs = [
-  { href: "/dashboard", label: "Panel", icon: Layout },
-  { href: "/purchases", label: "Compras", icon: ShoppingCart },
-  { href: "/orders", label: "Ventas", icon: ClipboardText },
-  { href: "/clients", label: "Clientes", icon: Users },
-  { href: "/suppliers", label: "Proveedores", icon: Truck },
-  { href: "/inventory", label: "Inventario", icon: Package },
-  { href: "/products", label: "Productos", icon: Fish },
-  { href: "/cash-register", label: "Caja", icon: CurrencyDollar },
-  { href: "/finances", label: "Finanzas", icon: CurrencyDollar },
-  { href: "/reports", label: "Reportes", icon: ChartBar },
-  { href: "/settings", label: "Config", icon: Gear },
+  { href: "/dashboard", label: "Panel", icon: ViewColumnsIcon },
+  { href: "/purchases", label: "Compras", icon: ShoppingCartIcon },
+  { href: "/orders", label: "Ventas", icon: ClipboardDocumentIcon },
+  { href: "/clients", label: "Clientes", icon: UsersIcon },
+  { href: "/suppliers", label: "Proveedores", icon: TruckIcon },
+  { href: "/inventory", label: "Inventario", icon: CubeIcon },
+  { href: "/products", label: "Productos", icon: CubeTransparentIcon },
+  { href: "/cash-register", label: "Caja", icon: CurrencyDollarIcon },
+  { href: "/finances", label: "Finanzas", icon: CurrencyDollarIcon },
+  { href: "/reports", label: "Reportes", icon: ChartBarIcon },
+  { href: "/settings", label: "Config", icon: Cog6ToothIcon },
 ]
 
 export function BottomNav() {
@@ -39,7 +39,7 @@ export function BottomNav() {
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = pathname.startsWith(href)
           return (
-            <Link
+            <LinkIcon
               key={href}
               href={href}
               role="tab"
@@ -65,7 +65,7 @@ export function BottomNav() {
                 "text-[10px] leading-tight transition-all duration-200 whitespace-nowrap",
                 active ? "font-semibold text-abyssal-primary" : "font-medium"
               )}>{label}</span>
-            </Link>
+            </LinkIcon>
           )
         })}
       </div>

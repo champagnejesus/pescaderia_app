@@ -1,7 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ClipboardText as OrdersIcon } from "@phosphor-icons/react"
+import { PlusIcon, ClipboardDocumentIcon as OrdersIcon } from "@heroicons/react/24/outline"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
@@ -78,7 +78,7 @@ export default function OrdersPage() {
               onClick={() => router.push("/orders/new")}
               className="px-4 py-2 bg-abyssal-primary text-white rounded-xl text-[13px] font-semibold flex items-center gap-1.5 hover:bg-abyssal-primary/90 transition-colors"
             >
-              <Plus size={16} />
+              <PlusIcon size={16} />
               Nuevo Pedido
             </button>
           </div>
@@ -110,7 +110,7 @@ export default function OrdersPage() {
           </KpiCard>
         </div>
 
-        {/* Funnel tabs */}
+        {/* FunnelIcon tabs */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {[
             { key: "Todos", label: "Todos", count: orders.length },
@@ -186,7 +186,7 @@ export default function OrdersPage() {
       </div>
 
       <FAB href="/orders/new" aria-label="Crear pedido">
-        <Plus className="w-6 h-6" />
+        <PlusIcon className="w-6 h-6" />
       </FAB>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>

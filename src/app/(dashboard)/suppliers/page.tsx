@@ -1,6 +1,6 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus, Truck, Truck as TruckIcon, Funnel, TrendUp, ArrowUpRight } from "@phosphor-icons/react"
+import { PlusIcon, TruckIcon, FunnelIcon, ArrowTrendingUpIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
@@ -108,7 +108,7 @@ export default function SuppliersPage() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Total Proveedores</p>
             <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{suppliers.length}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-abyssal-primary" />
+              <ArrowTopRightOnSquareIcon size={14} className="text-abyssal-primary" />
               <span className="text-xs font-semibold text-abyssal-primary font-caption">+12.5%</span>
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
@@ -117,7 +117,7 @@ export default function SuppliersPage() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Pendiente de Pago</p>
             <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{formatCurrency(totalPending)}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendUp size={14} className="text-abyssal-yellow" />
+              <ArrowTrendingUpIcon size={14} className="text-abyssal-yellow" />
               <span className="text-xs font-semibold text-abyssal-yellow font-caption">
                 {totalPending > lastMonthPending ? "+" : ""}{Math.round(((totalPending - lastMonthPending) / lastMonthPending) * 100)}%
               </span>
@@ -135,7 +135,7 @@ export default function SuppliersPage() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Al Corriente</p>
             <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{suppliers.filter((s) => s.pending_payment <= 0).length}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <ArrowUpRight size={14} className="text-abyssal-green" />
+              <ArrowTopRightOnSquareIcon size={14} className="text-abyssal-green" />
               <span className="text-xs font-semibold text-abyssal-green font-caption">
                 {Math.round((suppliers.filter(s => s.pending_payment <= 0).length / Math.max(suppliers.length, 1)) * 100)}%
               </span>
@@ -154,11 +154,11 @@ export default function SuppliersPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Truck size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+            <TruckIcon size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-title-medium text-abyssal-text-primary font-heading mb-2">No hay proveedores</p>
             <p className="text-body-medium text-abyssal-text-secondary font-body mb-4">Agrega tu primer proveedor para comenzar</p>
             <FAB onClick={() => setAddOpen(true)} aria-label="Agregar proveedor">
-              <Plus className="w-6 h-6" />
+              <PlusIcon className="w-6 h-6" />
             </FAB>
           </div>
         ) : (
@@ -171,7 +171,7 @@ export default function SuppliersPage() {
       </div>
 
       <FAB onClick={() => setAddOpen(true)} aria-label="Agregar proveedor">
-        <Plus className="w-6 h-6" />
+        <PlusIcon className="w-6 h-6" />
       </FAB>
 
       <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Agregar Proveedor" showClose>

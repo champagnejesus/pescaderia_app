@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X } from '@phosphor-icons/react';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useInventoryAdjustments } from '@/hooks/useInventoryAdjustments';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';

@@ -1,5 +1,5 @@
 "use client"
-import { Plus, Minus } from "@phosphor-icons/react"
+import { PlusIcon, MinusIcon } from "@heroicons/react/24/outline"
 import { SearchBar } from "@/components/shared/SearchBar"
 import { cn } from "@/lib/utils"
 
@@ -62,7 +62,7 @@ export function ProductPicker({ products, selected, onAdd, onUpdateQty, onSearch
                   onClick={() => onAdd(product)}
                   className="w-8 h-8 rounded-full bg-abyssal-primary text-abyssal-on-primary flex items-center justify-center hover:opacity-90 transition-opacity"
                 >
-                  <Plus className="w-4 h-4" />
+                  <PlusIcon className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -94,7 +94,7 @@ export function ProductPicker({ products, selected, onAdd, onUpdateQty, onSearch
                     onClick={() => onUpdateQty(item.product_id, item.quantity - 1)}
                     className="w-7 h-7 rounded-full bg-abyssal-surface-high text-abyssal-text-primary flex items-center justify-center hover:opacity-80 transition-opacity"
                   >
-                    <Minus className="w-3.5 h-3.5" />
+                    <MinusIcon className="w-3.5 h-3.5" />
                   </button>
                   <span className="text-body-medium text-abyssal-text-primary font-semibold min-w-[20px] text-center">
                     {item.quantity}
@@ -103,7 +103,7 @@ export function ProductPicker({ products, selected, onAdd, onUpdateQty, onSearch
                     onClick={() => onUpdateQty(item.product_id, item.quantity + 1)}
                     className="w-7 h-7 rounded-full bg-abyssal-surface-high text-abyssal-text-primary flex items-center justify-center hover:opacity-80 transition-opacity"
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <PlusIcon className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>

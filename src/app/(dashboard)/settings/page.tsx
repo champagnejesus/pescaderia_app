@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Gear, FloppyDisk, Plus, X, CaretUp, CaretDown, Download, Trash, Key, FileText, Briefcase, Package, Ruler, CreditCard, Percent, Info, TrendUp, Users } from "@phosphor-icons/react"
+import { Cog6ToothIcon, ArrowDownTrayIcon, PlusIcon, XMarkIcon, ChevronUpIcon, ChevronDownIcon, TrashIcon, KeyIcon, DocumentTextIcon, BriefcaseIcon, CubeIcon, AdjustmentsHorizontalIcon, CreditCardIcon, PercentBadgeIcon, InformationCircleIcon, ArrowTrendingUpIcon, UsersIcon } from "@heroicons/react/24/outline"
 import { Card } from "@/components/ui/card"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { Button } from "@/components/ui/button"
@@ -243,7 +243,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <>
-        <TopBar title="Configuración" icon={<Gear size={18} />} />
+        <TopBar title="Configuración" icon={<Cog6ToothIcon size={18} />} />
         <div className="p-4 space-y-4">
           {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-32" />)}
         </div>
@@ -253,7 +253,7 @@ export default function SettingsPage() {
 
   return (
     <>
-      <TopBar title="Configuración" icon={<Gear size={18} />} subtitle="Usuarios, roles y ajustes" />
+      <TopBar title="Configuración" icon={<Cog6ToothIcon size={18} />} subtitle="Usuarios, roles y ajustes" />
       <div className="p-4 lg:p-8 pb-24">
         {/* Title row */}
         <div className="hidden lg:flex items-center justify-between mb-6">
@@ -263,16 +263,16 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Tab Layout container */}
+        {/* Tab ViewColumnsIcon container */}
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
           {/* Tabs Selector Navigation */}
           <div className="w-full lg:w-64 shrink-0 flex lg:flex-col overflow-x-auto lg:overflow-x-visible gap-1 pb-3 lg:pb-0 border-b lg:border-b-0 lg:border-r border-abyssal-outline scrollbar-none lg:pr-4">
             {[
-              { id: "business", label: "Negocio", icon: Briefcase },
-              { id: "users", label: "Equipo", icon: Users },
-              { id: "catalogs", label: "Catálogos", icon: Package },
-              { id: "billing", label: "Facturación", icon: FileText },
-              { id: "system", label: "Sistema", icon: Gear },
+              { id: "business", label: "Negocio", icon: BriefcaseIcon },
+              { id: "users", label: "Equipo", icon: UsersIcon },
+              { id: "catalogs", label: "Catálogos", icon: CubeIcon },
+              { id: "billing", label: "Facturación", icon: DocumentTextIcon },
+              { id: "system", label: "Sistema", icon: Cog6ToothIcon },
             ].map(tab => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
@@ -303,7 +303,7 @@ export default function SettingsPage() {
                   <p className="text-[13px] text-abyssal-text-secondary-variant font-body">Datos de perfil de la empresa y seguridad de caja</p>
                 </div>
                 
-                <SectionCard title="Perfil del Negocio" icon={<Briefcase size={18} />}>
+                <SectionCard title="Perfil del Negocio" icon={<BriefcaseIcon size={18} />}>
                   <div className="space-y-3">
                     <label className="text-[13px] text-abyssal-text-secondary block">Nombre del negocio</label>
                     <Input value={profileForm.business_name} onChange={e => setProfileForm(p => ({ ...p, business_name: e.target.value }))} />
@@ -315,11 +315,11 @@ export default function SettingsPage() {
                     <Input value={profileForm.address} onChange={e => setProfileForm(p => ({ ...p, address: e.target.value }))} />
                     <label className="text-[13px] text-abyssal-text-secondary block">Email</label>
                     <Input value={data.profile?.email || ""} disabled />
-                    <Button variant="primary" onClick={saveProfile} loading={saving === "profile"}><FloppyDisk size={16} /> Guardar cambios</Button>
+                    <Button variant="primary" onClick={saveProfile} loading={saving === "profile"}><ArrowDownTrayIcon size={16} /> Guardar cambios</Button>
                   </div>
                 </SectionCard>
 
-                <SectionCard title="PIN de Caja" icon={<Key size={18} />}>
+                <SectionCard title="PIN de Caja" icon={<KeyIcon size={18} />}>
                   <div className="space-y-3">
                     <p className="text-[13px] text-abyssal-text-secondary">{data.profile?.has_pin ? "PIN configurado" : "PIN no configurado"}</p>
                     {showPinForm ? (
@@ -341,7 +341,7 @@ export default function SettingsPage() {
                         </div>
                       </div>
                     ) : (
-                      <Button variant="secondary" onClick={() => setShowPinForm(true)}><Key size={16} /> {data.profile?.has_pin ? "Cambiar PIN" : "Configurar PIN"}</Button>
+                      <Button variant="secondary" onClick={() => setShowPinForm(true)}><KeyIcon size={16} /> {data.profile?.has_pin ? "Cambiar PIN" : "Configurar PIN"}</Button>
                     )}
                   </div>
                 </SectionCard>
@@ -361,7 +361,7 @@ export default function SettingsPage() {
                     className="gap-1.5 py-1 h-8 shrink-0"
                     onClick={() => setShowAddUser(!showAddUser)}
                   >
-                    {showAddUser ? <X size={14} /> : <Plus size={14} />}
+                    {showAddUser ? <XMarkIcon size={14} /> : <PlusIcon size={14} />}
                     {showAddUser ? "Cancelar" : "Agregar"}
                   </Button>
                 </div>
@@ -459,7 +459,7 @@ export default function SettingsPage() {
                                     onClick={() => deleteCollaborator(u.id)}
                                     className="text-abyssal-text-secondary hover:text-[#ef4444] disabled:opacity-40 disabled:hover:text-abyssal-text-secondary p-1 rounded-lg hover:bg-abyssal-surface-high transition-colors"
                                   >
-                                    <Trash size={14} />
+                                    <TrashIcon size={14} />
                                   </button>
                                 </div>
                               </td>
@@ -486,38 +486,38 @@ export default function SettingsPage() {
                   <p className="text-[13px] text-abyssal-text-secondary-variant font-body">Parámetros del inventario y métodos de cobro en caja</p>
                 </div>
 
-                <SectionCard title="Categorías de Productos" icon={<Package size={18} />}>
+                <SectionCard title="Categorías de Productos" icon={<CubeIcon size={18} />}>
                   <div className="flex flex-wrap gap-2">
                     {data.categories.map(cat => (
                       <span key={cat.id} className="inline-flex items-center gap-1 bg-abyssal-surface-high text-abyssal-text-primary rounded-full px-3 py-1 text-[13px]">
                         {cat.name}
-                        <button onClick={() => deleteCategory(cat.id)} className="p-0.5 hover:bg-abyssal-surface-highest rounded-full"><X size={14} /></button>
+                        <button onClick={() => deleteCategory(cat.id)} className="p-0.5 hover:bg-abyssal-surface-highest rounded-full"><XMarkIcon size={14} /></button>
                       </span>
                     ))}
                   </div>
                   <div className="flex gap-2">
                     <Input placeholder="Nueva categoría" value={newCategory} onChange={e => setNewCategory(e.target.value)} className="flex-1" />
-                    <Button variant="primary" onClick={addCategory} loading={saving === "cat"}><Plus size={16} /></Button>
+                    <Button variant="primary" onClick={addCategory} loading={saving === "cat"}><PlusIcon size={16} /></Button>
                   </div>
                 </SectionCard>
 
-                <SectionCard title="Unidades de Medida" icon={<Ruler size={18} />}>
+                <SectionCard title="Unidades de Medida" icon={<AdjustmentsHorizontalIcon className="w-[18px] h-[18px]" />}>
                   <div className="flex flex-wrap gap-2">
                     {data.units.map(u => (
                       <span key={u.id} className="inline-flex items-center gap-1 bg-abyssal-surface-high text-abyssal-text-primary rounded-full px-3 py-1 text-[13px]">
                         {u.name} ({u.abbreviation})
-                        <button onClick={() => deleteUnit(u.id)} className="p-0.5 hover:bg-abyssal-surface-highest rounded-full"><X size={14} /></button>
+                        <button onClick={() => deleteUnit(u.id)} className="p-0.5 hover:bg-abyssal-surface-highest rounded-full"><XMarkIcon size={14} /></button>
                       </span>
                     ))}
                   </div>
                   <div className="flex gap-2">
                     <Input placeholder="Nombre" value={newUnitName} onChange={e => setNewUnitName(e.target.value)} className="flex-1" />
                     <Input placeholder="Abrev." value={newUnitAbbr} onChange={e => setNewUnitAbbr(e.target.value)} className="w-20" />
-                    <Button variant="primary" onClick={addUnit} loading={saving === "unit"}><Plus size={16} /></Button>
+                    <Button variant="primary" onClick={addUnit} loading={saving === "unit"}><PlusIcon size={16} /></Button>
                   </div>
                 </SectionCard>
 
-                <SectionCard title="Métodos de Pago" icon={<CreditCard size={18} />}>
+                <SectionCard title="Métodos de Pago" icon={<CreditCardIcon size={18} />}>
                   <div className="space-y-2">
                     {data.paymentMethods.map((pm) => (
                       <div key={pm.id} className="flex items-center justify-between p-2 bg-abyssal-surface-high rounded-xl">
@@ -540,7 +540,7 @@ export default function SettingsPage() {
                   <p className="text-[13px] text-abyssal-text-secondary-variant font-body">Configuración de impuestos y personalización de comprobantes</p>
                 </div>
 
-                <SectionCard title="Impuesto / IVA" icon={<Percent size={18} />}>
+                <SectionCard title="Impuesto / IVA" icon={<PercentBadgeIcon size={18} />}>
                   <div className="space-y-3">
                     <label className="flex items-center justify-between">
                       <span className="text-[13px] text-abyssal-text-primary">Aplicar impuesto</span>
@@ -564,11 +564,11 @@ export default function SettingsPage() {
                         </label>
                       </>
                     )}
-                    <Button variant="primary" onClick={saveTaxConfig} loading={saving === "tax"}><FloppyDisk size={16} /> Guardar</Button>
+                    <Button variant="primary" onClick={saveTaxConfig} loading={saving === "tax"}><ArrowDownTrayIcon size={16} /> Guardar</Button>
                   </div>
                 </SectionCard>
 
-                <SectionCard title="Preferencias de Factura" icon={<FileText size={18} />}>
+                <SectionCard title="Preferencias de Factura" icon={<DocumentTextIcon className="w-[18px] h-[18px]" />}>
                   <div className="space-y-3">
                     <div>
                       <label className="text-[13px] text-abyssal-text-secondary block">Footer del ticket</label>
@@ -583,7 +583,7 @@ export default function SettingsPage() {
                         <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${invoiceForm.show_tax_breakdown ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
                       </button>
                     </label>
-                    <Button variant="primary" onClick={saveInvoicePrefs} loading={saving === "inv"}><FloppyDisk size={16} /> Guardar</Button>
+                    <Button variant="primary" onClick={saveInvoicePrefs} loading={saving === "inv"}><ArrowDownTrayIcon size={16} /> Guardar</Button>
                   </div>
                 </SectionCard>
               </div>
@@ -614,11 +614,11 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <SectionCard title="Exportar Datos" icon={<Download size={18} />}>
-                  <Button variant="primary" onClick={exportAll}><Download size={16} /> Todo (ZIP)</Button>
+                <SectionCard title="Exportar Datos" icon={<ArrowDownTrayIcon size={18} />}>
+                  <Button variant="primary" onClick={exportAll}><ArrowDownTrayIcon size={16} /> Todo (ZIP)</Button>
                 </SectionCard>
 
-                <SectionCard title="Información" icon={<Info size={18} />}>
+                <SectionCard title="Información" icon={<InformationCircleIcon size={18} />}>
                   <div className="space-y-1 text-[13px] text-abyssal-text-secondary">
                     <p><span className="text-abyssal-text-primary">App:</span> PESCAMAR ERP</p>
                     <p><span className="text-abyssal-text-primary">Versión:</span> 1.0.0</p>
@@ -626,7 +626,7 @@ export default function SettingsPage() {
                   </div>
                 </SectionCard>
 
-                <SectionCard title="Limpiar Datos" icon={<Trash size={18} />}>
+                <SectionCard title="Limpiar Datos" icon={<TrashIcon size={18} />}>
                   <div className="p-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] rounded-xl space-y-3">
                     <p className="text-[13px] text-[#ef4444]">Esta acción eliminará todos los datos transaccionales. No se puede deshacer.</p>
                     {showClearConfirm ? (
@@ -636,13 +636,13 @@ export default function SettingsPage() {
                         <div className="flex gap-2">
                           <Button variant="secondary" onClick={() => { setShowClearConfirm(false); setClearConfirmText("") }}>Cancelar</Button>
                           <Button variant="primary" className="bg-[#ef4444] hover:bg-[#ef4444]/90" onClick={clearAllData} loading={saving === "clear"}>
-                            <Trash size={16} /> Eliminar todo
+                            <TrashIcon size={16} /> Eliminar todo
                           </Button>
                         </div>
                       </div>
                     ) : (
                       <Button variant="secondary" className="border-[rgba(239,68,68,0.3)] text-[#ef4444]" onClick={() => setShowClearConfirm(true)}>
-                        <Trash size={16} /> Limpiar todos los datos
+                        <TrashIcon size={16} /> Limpiar todos los datos
                       </Button>
                     )}
                   </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, type ReactNode } from "react"
-import { X } from "@phosphor-icons/react"
+import { XMarkIcon } from "@heroicons/react/24/outline"
 import { cn } from "@/lib/utils"
 
 interface DialogProps {
@@ -34,7 +34,7 @@ export function Dialog({ open, onClose, children, className, showClose, title }:
             {title && <h2 className="text-[17px] font-semibold text-abyssal-text-primary font-heading">{title}</h2>}
             {showClose && (
               <button onClick={onClose} className="p-1.5 rounded-full bg-abyssal-surface-high hover:bg-abyssal-surface-highest transition-colors">
-                <X className="w-4 h-4 text-abyssal-text-secondary" />
+                <XMarkIcon className="w-4 h-4 text-abyssal-text-secondary" />
               </button>
             )}
           </div>

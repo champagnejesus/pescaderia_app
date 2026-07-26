@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Download, TrendUp, CurrencyDollar, Users, Package, Warning, CheckCircle} from '@phosphor-icons/react';
+import { ArrowDownTrayIcon, ArrowTrendingUpIcon, CurrencyDollarIcon, UsersIcon, CubeIcon, ExclamationTriangleIcon, CheckCircleIcon} from '@heroicons/react/24/outline';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useReports } from '@/hooks/useReports';
 import DateRangePicker from '@/components/common/DateRangePicker';
@@ -78,7 +78,7 @@ export default function ReportTabs() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-        <Warning size={48} className="text-abyssal-red mb-3" />
+        <ExclamationTriangleIcon size={48} className="text-abyssal-red mb-3" />
         <p className="text-body-medium text-abyssal-red">{error}</p>
       </div>
     );
@@ -86,7 +86,7 @@ export default function ReportTabs() {
 
   return (
     <>
-      <TopBar title="Reportes" icon={<Download size={18} />} subtitle="Análisis del rendimiento de tu negocio" />
+      <TopBar title="Reportes" icon={<ArrowDownTrayIcon size={18} />} subtitle="Análisis del rendimiento de tu negocio" />
       <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
         <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
           <div>
@@ -110,7 +110,7 @@ export default function ReportTabs() {
             onClick={handleDownload}
             className="flex items-center gap-2 px-4 py-2 bg-abyssal-primary/10 text-abyssal-primary rounded-abyssal-lg text-sm font-medium hover:bg-abyssal-primary/20 transition-colors border border-abyssal-primary/30 font-body"
           >
-            <Download size={16} />
+            <ArrowDownTrayIcon size={16} />
             Descargar PDF
           </button>
         </div>
@@ -120,7 +120,7 @@ export default function ReportTabs() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Ventas Totales</p>
             <p className="text-title-large text-abyssal-green font-heading font-bold mt-1">${stats.totalSales.toLocaleString()}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendUp size={14} className="text-abyssal-green" />
+              <ArrowTrendingUpIcon size={14} className="text-abyssal-green" />
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">Ingresos brutos</span>
             </div>
           </KpiCard>
@@ -128,7 +128,7 @@ export default function ReportTabs() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Gastos Totales</p>
             <p className="text-title-large text-abyssal-red font-heading font-bold mt-1">${stats.totalExpenses.toLocaleString()}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <CurrencyDollar size={14} className="text-abyssal-red" />
+              <CurrencyDollarIcon size={14} className="text-abyssal-red" />
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">Egresos registrados</span>
             </div>
           </KpiCard>
@@ -136,7 +136,7 @@ export default function ReportTabs() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Utilidad Neta</p>
             <p className={`text-title-large font-heading font-bold mt-1 ${stats.netProfit >= 0 ? "text-abyssal-green" : "text-abyssal-red"}`}>${stats.netProfit.toLocaleString()}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <TrendUp size={14} className="text-abyssal-primary" />
+              <ArrowTrendingUpIcon size={14} className="text-abyssal-primary" />
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">Ventas - Gastos</span>
             </div>
           </KpiCard>
@@ -144,7 +144,7 @@ export default function ReportTabs() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Ticket Promedio</p>
             <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">${Math.round(stats.avgTicket).toLocaleString()}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <CheckCircle size={14} className="text-abyssal-primary" />
+              <CheckCircleIcon size={14} className="text-abyssal-primary" />
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">Promedio diario</span>
             </div>
           </KpiCard>
@@ -158,7 +158,7 @@ export default function ReportTabs() {
             <div className="p-4 h-[350px]">
               {salesData.daily_breakdown.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
-                  <Package size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+                  <CubeIcon size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
                   <p className="text-body-medium text-abyssal-text-secondary font-body">Sin transacciones en el período seleccionado</p>
                 </div>
               ) : (
@@ -193,7 +193,7 @@ export default function ReportTabs() {
             <div className="p-4">
               {productsData.top_products.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Package size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+                  <CubeIcon size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
                   <p className="text-body-medium text-abyssal-text-secondary font-body">Sin datos de productos en este período</p>
                 </div>
               ) : (
@@ -228,7 +228,7 @@ export default function ReportTabs() {
             <div className="p-4">
               {clientsData.top_clients.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Users size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+                  <UsersIcon size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
                   <p className="text-body-medium text-abyssal-text-secondary font-body">Sin datos de clientes en este período</p>
                 </div>
               ) : (
@@ -263,7 +263,7 @@ export default function ReportTabs() {
             <div className="p-4">
               {inventoryData.categories_summary.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Package size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+                  <CubeIcon size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
                   <p className="text-body-medium text-abyssal-text-secondary font-body">Sin datos de inventario</p>
                 </div>
               ) : (

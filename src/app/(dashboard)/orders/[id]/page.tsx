@@ -1,8 +1,8 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, ShoppingCart, Receipt } from "@phosphor-icons/react"
-import Link from "next/link"
+import { ArrowLeftIcon, ShoppingCartIcon, ReceiptPercentIcon } from "@heroicons/react/24/outline"
+import LinkIcon from "next/link"
 import api from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -117,7 +117,7 @@ export default function OrderDetailPage() {
     <>
       <header className="bg-abyssal-surface/80 backdrop-blur-xl px-4 py-3 flex items-center justify-between sticky top-0 z-40">
         <button onClick={() => router.back()} className="p-2 -ml-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all active:scale-95">
-          <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
+          <ArrowLeftIcon className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
         <h1 className="text-title-large text-abyssal-text-primary">Pedido #{order.order_number}</h1>
         <div className="w-9" />
@@ -194,7 +194,7 @@ export default function OrderDetailPage() {
               onClick={() => handleStatusChange("ENTREGADO")}
               loading={submitting}
             >
-              <ShoppingCart className="w-4 h-4 mr-2" />
+              <ShoppingCartIcon className="w-4 h-4 mr-2" />
               Entregar
             </Button>
             <Button
@@ -207,12 +207,12 @@ export default function OrderDetailPage() {
             </Button>
           </div>
         )}
-        <Link href={`/orders/${order.id}/invoice`}>
+        <LinkIcon href={`/orders/${order.id}/invoice`}>
           <Button variant="ghost" size="md" className="w-full gap-2">
-            <Receipt className="w-4 h-4" />
+            <ReceiptPercentIcon className="w-4 h-4" />
             Ver Recibo
           </Button>
-        </Link>
+        </LinkIcon>
       </div>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>

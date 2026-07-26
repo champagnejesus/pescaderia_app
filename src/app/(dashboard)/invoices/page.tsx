@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, FileText } from "@phosphor-icons/react"
+import { PlusIcon, FileText } from "@heroicons/react/24/outline"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ToastContainer } from "@/components/ui/ToastContainer"
@@ -29,10 +29,10 @@ export default function InvoicesPage() {
   }, [invoices, search])
 
   return (
-    <div className="p-4 lg:p-8 space-y-6">
+    <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Facturas</h1><p className="text-[14px] text-abyssal-text-secondary-variant">Gestión de facturación electrónica</p></div>
-        <Button variant="primary" size="sm" className="gap-1.5" onClick={() => router.push("/invoices/new")}><Plus size={16} /> Nueva Factura</Button>
+        <Button variant="primary" size="sm" className="gap-1.5" onClick={() => router.push("/invoices/new")}><PlusIcon size={16} /> Nueva Factura</Button>
       </div>
       <div className="flex items-center gap-2">
         <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar factura..." />

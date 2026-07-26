@@ -1,16 +1,16 @@
 import { memo } from "react"
-import { ArrowCircleUp, ArrowCircleDown, Money, CreditCard, Truck } from "@phosphor-icons/react"
+import { ArrowUpCircleIcon, ArrowDownCircleIcon, BanknotesIcon, CreditCardIcon, TruckIcon } from "@heroicons/react/24/outline"
 import type { Transaction } from "@/lib/types"
 
 interface TransactionRowProps {
   transaction: Transaction
 }
 
-const typeIcons: Record<string, typeof Money> = {
-  Efectivo: Money,
-  Tarjeta: CreditCard,
-  Transfer: Truck,
-  Transferencia: Truck,
+const typeIcons: Record<string, typeof BanknotesIcon> = {
+  Efectivo: BanknotesIcon,
+  Tarjeta: CreditCardIcon,
+  Transfer: TruckIcon,
+  Transferencia: TruckIcon,
 }
 
 function TransactionRowComponent({ transaction }: TransactionRowProps) {
@@ -19,7 +19,7 @@ function TransactionRowComponent({ transaction }: TransactionRowProps) {
   const iconColor = isIncome ? "text-abyssal-green" : "text-abyssal-red"
   const bgColor = isIncome ? "bg-abyssal-green/12" : "bg-abyssal-red/12"
   const TypeIcon = typeIcons[transaction.type]
-  const Icon = isExpense ? ArrowCircleDown : TypeIcon || ArrowCircleUp
+  const Icon = isExpense ? ArrowDownCircleIcon : TypeIcon || ArrowUpCircleIcon
 
   return (
     <div className="flex items-center gap-3 p-3.5 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg contain-render">

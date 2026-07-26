@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Download, FileXls, FileText, FileArrowDown } from "@phosphor-icons/react"
+import { ArrowDownTrayIcon, DocumentChartBarIcon, FileText, DocumentArrowDownIcon } from "@heroicons/react/24/outline"
 import { exportCSV, exportExcel, exportPDF } from "@/lib/export"
 
 interface ExportDropdownProps {
@@ -39,9 +39,9 @@ export function ExportDropdown({ data, filename, headerMap, title, onExport, cla
   }
 
   const options = [
-    { key: "excel" as const, label: "Excel (.xlsx)", icon: <FileXls size={15} className="text-emerald-400" /> },
+    { key: "excel" as const, label: "Excel (.xlsx)", icon: <DocumentChartBarIcon size={15} className="text-emerald-400" /> },
     { key: "pdf" as const, label: "PDF (.pdf)", icon: <FileText size={15} className="text-red-400" /> },
-    { key: "csv" as const, label: "CSV (.csv)", icon: <FileArrowDown size={15} className="text-blue-400" /> },
+    { key: "csv" as const, label: "CSV (.csv)", icon: <DocumentArrowDownIcon size={15} className="text-blue-400" /> },
   ]
 
   return (
@@ -52,10 +52,10 @@ export function ExportDropdown({ data, filename, headerMap, title, onExport, cla
         title="Exportar datos"
       >
         {iconOnly !== false ? (
-          <Download size={18} className="text-abyssal-text-secondary" />
+          <ArrowDownTrayIcon size={18} className="text-abyssal-text-secondary" />
         ) : (
           <span className="flex items-center gap-1.5 text-[13px] font-medium text-abyssal-text-secondary">
-            <Download size={15} /> Exportar
+            <ArrowDownTrayIcon size={15} /> Exportar
           </span>
         )}
       </button>
