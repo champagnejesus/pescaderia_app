@@ -23,7 +23,7 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`dark ${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning style={{ overflowX: "hidden" }}>
+    <html lang="es" className={`dark ${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="bg-abyssal-bg text-abyssal-text-primary font-body antialiased">
+        <body className="bg-abyssal-bg text-abyssal-text-primary font-body antialiased overflow-x-hidden">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-abyssal-primary focus:text-white focus:rounded-xl focus:outline-none focus:ring-2 focus:ring-abyssal-primary/50"

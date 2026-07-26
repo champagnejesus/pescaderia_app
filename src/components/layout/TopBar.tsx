@@ -35,7 +35,7 @@ export function TopBar({ title, icon, subtitle, leftAction, rightAction, onMenuT
             {subtitle && <p className="text-[11px] text-abyssal-text-secondary-variant font-body">{subtitle}</p>}
           </div>
         </div>
-        <div className="flex items-center gap-1 min-w-[40px] justify-end">
+        <div className="flex items-center gap-1 min-w-[40px] max-w-[45%] justify-end overflow-hidden shrink-0">
           {rightAction}
           <ThemeToggle />
         </div>

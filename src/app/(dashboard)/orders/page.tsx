@@ -143,19 +143,19 @@ export default function OrdersPage() {
             <p className="text-[14px] text-abyssal-text-secondary font-body mb-4">Crea tu primer pedido para comenzar</p>
           </div>
         ) : (
-          <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg shadow-abyssal-lg overflow-hidden">
+          <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg shadow-abyssal-lg overflow-clip">
             <div className="p-6 pb-4">
               <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Facturas Recientes</h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[600px]">
                 <thead>
                   <tr className="border-b border-abyssal-outline">
-                    <th className="text-left px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">FACTURA</th>
-                    <th className="text-left px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">CLIENTE</th>
-                    <th className="text-right px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">FECHA</th>
-                    <th className="text-right px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">MONTO</th>
-                    <th className="text-right px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ESTADO</th>
+                    <th className="text-left px-3 md:px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">FACTURA</th>
+                    <th className="text-left px-3 md:px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">CLIENTE</th>
+                    <th className="text-right px-3 md:px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">FECHA</th>
+                    <th className="text-right px-3 md:px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">MONTO</th>
+                    <th className="text-right px-3 md:px-6 py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ESTADO</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -164,15 +164,15 @@ export default function OrdersPage() {
                     const colors = statusColor[status] || { bg: "bg-[rgba(74,159,216,0.1)]", text: "text-abyssal-primary" }
                     return (
                       <tr key={order.id} className="border-b border-abyssal-outline hover:bg-abyssal-surface-high/50 transition-colors cursor-pointer" onClick={() => router.push(`/orders/${order.id}`)}>
-                        <td className="px-6 py-4 text-[12px] text-abyssal-text-secondary-variant font-mono">{order.order_number}</td>
-                        <td className="px-6 py-4 text-[13px] text-abyssal-text-secondary font-body">{order.client_name}</td>
-                        <td className="px-6 py-4 text-right text-[12px] text-abyssal-text-secondary-variant font-caption">
+                        <td className="px-3 md:px-6 py-4 text-[12px] text-abyssal-text-secondary-variant font-mono">{order.order_number}</td>
+                        <td className="px-3 md:px-6 py-4 text-[13px] text-abyssal-text-secondary font-body truncate max-w-[100px]">{order.client_name}</td>
+                        <td className="px-3 md:px-6 py-4 text-right text-[12px] text-abyssal-text-secondary-variant font-caption">
                           {order.created_at ? new Date(order.created_at).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "2-digit" }) : "--"}
                         </td>
-                        <td className="px-6 py-4 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">
+                        <td className="px-3 md:px-6 py-4 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">
                           {formatCurrency(order.total_value)}
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-3 md:px-6 py-4 text-right">
                           <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium ${colors.bg} ${colors.text}`}>{status}</span>
                         </td>
                       </tr>

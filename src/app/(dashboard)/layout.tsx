@@ -37,7 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <AuthGuard>
-      <div className="flex min-h-screen bg-abyssal-bg w-full max-w-[100vw] overflow-x-hidden">
+      <div className="flex min-h-screen bg-abyssal-bg w-full">
         <Sidebar />
         <MobileNav open={menuOpen} onClose={() => setMenuOpen(false)} />
         <main className="flex-1 md:ml-64">

@@ -266,32 +266,34 @@ export default function SettingsPage() {
         {/* Tab Layout container */}
         <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
           {/* Tabs Selector Navigation */}
-          <div className="w-full md:w-64 shrink-0 flex md:flex-col overflow-x-auto md:overflow-x-visible gap-1 pb-3 md:pb-0 border-b md:border-b-0 md:border-r border-abyssal-outline scrollbar-none md:pr-4">
-            {[
-              { id: "business", label: "Negocio", icon: Briefcase },
-              { id: "users", label: "Equipo", icon: Users },
-              { id: "catalogs", label: "Catálogos", icon: Package },
-              { id: "billing", label: "Facturación", icon: FileText },
-              { id: "system", label: "Sistema", icon: Gear },
-            ].map(tab => {
-              const Icon = tab.icon
-              const isActive = activeTab === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all shrink-0 select-none whitespace-nowrap",
-                    isActive
-                      ? "bg-abyssal-primary/10 text-abyssal-primary border-b-2 md:border-b-0 md:border-l-2 border-abyssal-primary"
-                      : "text-abyssal-text-secondary hover:bg-abyssal-surface-high hover:text-abyssal-text-primary"
-                  )}
-                >
-                  <Icon size={16} />
-                  <span>{tab.label}</span>
-                </button>
-              )
-            })}
+          <div className="relative w-full md:w-64 shrink-0">
+            <div className="flex md:flex-col overflow-x-auto md:overflow-x-visible gap-1 pb-3 md:pb-0 border-b md:border-b-0 md:border-r border-abyssal-outline scrollbar-none md:pr-4">
+              {[
+                { id: "business", label: "Negocio", icon: Briefcase },
+                { id: "users", label: "Equipo", icon: Users },
+                { id: "catalogs", label: "Catálogos", icon: Package },
+                { id: "billing", label: "Facturación", icon: FileText },
+                { id: "system", label: "Sistema", icon: Gear },
+              ].map(tab => {
+                const Icon = tab.icon
+                const isActive = activeTab === tab.id
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={cn(
+                      "flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-2.5 rounded-xl text-[12px] md:text-[13px] font-medium transition-all shrink-0 select-none whitespace-nowrap",
+                      isActive
+                        ? "bg-abyssal-primary/10 text-abyssal-primary border-b-2 md:border-b-0 md:border-l-2 border-abyssal-primary"
+                        : "text-abyssal-text-secondary hover:bg-abyssal-surface-high hover:text-abyssal-text-primary"
+                    )}
+                  >
+                    <Icon size={16} />
+                    <span>{tab.label}</span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
           {/* Tab Content */}
@@ -350,7 +352,7 @@ export default function SettingsPage() {
 
             {activeTab === "users" && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div>
                     <h2 className="text-[18px] text-abyssal-text-primary font-heading font-semibold">Equipo</h2>
                     <p className="text-[13px] text-abyssal-text-secondary-variant font-body">Manejo de usuarios, colaboradores de caja y roles de acceso</p>

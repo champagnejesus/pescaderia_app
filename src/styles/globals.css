@@ -79,6 +79,15 @@
   display: none;
 }
 
+/* Alias */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* iOS frosted glass surfaces */
 .glass {
   backdrop-filter: blur(20px) saturate(1.8);
