@@ -1,5 +1,5 @@
 import { memo } from "react"
-import { BanknotesIcon, CreditCardIcon, ShoppingCartIcon, ScaleIcon } from "@heroicons/react/24/outline"
+import { Money, CreditCard, ShoppingCart, Scales, HandCoins } from "@phosphor-icons/react"
 import type { DailySummary } from "@/lib/types"
 
 interface CashBentoGridProps {
@@ -14,28 +14,28 @@ const cells = [
   {
     key: "cash",
     label: "Efectivo",
-    icon: BanknotesIcon,
+    icon: Money,
     getValue: (d: DailySummary) => fmt(d.cash_total),
     color: "text-abyssal-green",
   },
   {
     key: "card",
     label: "Tarjeta",
-    icon: CreditCardIcon,
+    icon: CreditCard,
     getValue: (d: DailySummary) => fmt(d.card_total),
     color: "text-abyssal-primary",
   },
   {
     key: "expenses",
     label: "Gastos",
-    icon: ShoppingCartIcon,
+    icon: ShoppingCart,
     getValue: (d: DailySummary) => `-${fmt(d.total_expenses)}`,
     color: "text-abyssal-red",
   },
   {
     key: "collections",
     label: "Cobros",
-    icon: BanknotesIcon,
+    icon: HandCoins,
     getValue: (d: DailySummary) => fmt(d.total_collections || 0),
     color: "text-abyssal-yellow",
   },

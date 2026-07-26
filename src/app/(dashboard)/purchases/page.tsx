@@ -1,7 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { PlusIcon, ShoppingCartIcon } from "@heroicons/react/24/outline"
+import { Plus, ShoppingCart } from "@phosphor-icons/react"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
@@ -49,7 +49,7 @@ export default function PurchasesPage() {
     <>
       <TopBar
         title="Órdenes de Compra"
-        icon={<ShoppingCartIcon size={18} />}
+        icon={<ShoppingCart size={18} />}
         subtitle="Órdenes a proveedores"
         rightAction={
           <div className="flex items-center gap-1">
@@ -75,7 +75,7 @@ export default function PurchasesPage() {
               onClick={() => router.push("/purchases/new")}
               className="px-4 py-2 bg-abyssal-primary text-white rounded-xl text-[13px] font-semibold flex items-center gap-1.5 hover:bg-abyssal-primary/90 transition-colors"
             >
-              <PlusIcon size={16} />
+              <Plus size={16} />
               Nueva Compra
             </button>
           </div>
@@ -103,7 +103,7 @@ export default function PurchasesPage() {
           </KpiCard>
         </div>
 
-        {/* FunnelIcon Tabs */}
+        {/* Funnel Tabs */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {[
             { key: "Todos", label: "Todos", count: purchases.length },
@@ -131,7 +131,7 @@ export default function PurchasesPage() {
           <p className="text-center text-[14px] text-[#ef4444] font-body py-8">{error}</p>
         ) : purchases.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <ShoppingCartIcon size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+            <ShoppingCart size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-[16px] text-abyssal-text-primary font-heading mb-2">No hay compras</p>
             <p className="text-[14px] text-abyssal-text-secondary font-body mb-4">Registra tu primera compra para comenzar</p>
           </div>
@@ -179,7 +179,7 @@ export default function PurchasesPage() {
       </div>
 
       <FAB href="/purchases/new" aria-label="Nueva compra">
-        <PlusIcon className="w-6 h-6" />
+        <Plus className="w-6 h-6" />
       </FAB>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>

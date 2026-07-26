@@ -1,5 +1,5 @@
 "use client"
-import { XMarkIcon } from "@heroicons/react/24/outline"
+import { X } from "@phosphor-icons/react"
 import type { Toast } from "@/hooks/useToast"
 import { cn } from "@/lib/utils"
 
@@ -33,7 +33,7 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
             className="shrink-0 p-0.5 rounded-full hover:opacity-70 transition-opacity"
             aria-label="Cerrar"
           >
-            <XMarkIcon className="w-4 h-4" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       ))}

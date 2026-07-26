@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { XMarkIcon, ExclamationCircleIcon, MagnifyingGlassIcon, Cog6ToothIcon, CubeIcon as PackageIcon } from "@heroicons/react/24/outline"
+import { Package, X, WarningCircle, MagnifyingGlass, Gear, Package as PackageIcon } from "@phosphor-icons/react"
 import api from "@/lib/api"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
@@ -120,7 +120,7 @@ export default function InventoryPage() {
   return (
     <>
       <TopBar title="Inventario" icon={<PackageIcon size={18} />} subtitle="Control de productos y stock" />
-      <div className="p-4 lg:p-8 pb-24 lg:pb-8 space-y-6">
+      <div className="p-4 lg:p-8 space-y-6">
         <div className="hidden lg:flex items-center justify-between">
           <div>
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Inventario</h1>
@@ -156,12 +156,12 @@ export default function InventoryPage() {
           </KpiCard>
         </div>
 
-        {/* MagnifyingGlassIcon + Sort */}
+        {/* MagnifyingGlass + Sort */}
 
         {/* Categories + Stock Alerts row */}
-        <div className="flex flex-col lg:flex-row gap-5">
+        <div className="flex gap-5">
           {/* Categorías */}
-          <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
+          <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
             <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Categorías de Productos</h3>
             <div className="space-y-5">
               {categoryData.map((cat, i) => {
@@ -182,7 +182,7 @@ export default function InventoryPage() {
           </div>
 
           {/* Alertas de Stock Bajo */}
-          <div className="w-full lg:w-[380px] lg:shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
+          <div className="w-[380px] shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
             <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Alertas de Stock Bajo</h3>
             <div className="space-y-0">
               {lowStockItems.length > 0 ? lowStockItems.slice(0, 5).map((item, i) => (
@@ -229,10 +229,10 @@ export default function InventoryPage() {
           </div>
         </div>
 
-        {/* Tabs + MagnifyingGlassIcon Row */}
+        {/* Tabs + MagnifyingGlass Row */}
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            <MagnifyingGlassIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary" />
+            <MagnifyingGlass size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary" />
             <input
               ref={searchRef}
               value={search}
@@ -242,7 +242,7 @@ export default function InventoryPage() {
             />
             {search && (
               <button onClick={() => { setSearch(""); searchRef.current?.focus() }} className="absolute right-3 top-1/2 -translate-y-1/2 text-abyssal-text-secondary hover:text-abyssal-text-primary">
-                <XMarkIcon size={16} />
+                <X size={16} />
               </button>
             )}
           </div>
@@ -276,18 +276,18 @@ export default function InventoryPage() {
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <ExclamationCircleIcon size={48} className="text-[#ef4444] mb-3" />
+            <WarningCircle size={48} className="text-[#ef4444] mb-3" />
             <p className="text-[14px] text-[#ef4444] font-body">{error}</p>
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <CubeIcon size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+            <Package size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-[16px] text-abyssal-text-primary font-heading mb-2">Inventario vacío</p>
             <p className="text-[14px] text-abyssal-text-secondary font-body">Registra compras para ver el inventario</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <MagnifyingGlassIcon size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+            <MagnifyingGlass size={48} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-[14px] text-abyssal-text-secondary font-body">Sin resultados para "{search}"</p>
           </div>
         ) : (
@@ -309,7 +309,7 @@ export default function InventoryPage() {
                   <tr key={item.product_id} onClick={() => openMovements(item)} className="border-b border-abyssal-outline hover:bg-abyssal-surface-high/50 transition-colors cursor-pointer">
                     <td className="py-4 text-[13px] text-abyssal-text-primary font-body">
                       <div className="flex items-center gap-2">
-                        {item.status === "Stock Bajo" && <ExclamationCircleIcon size={14} className="text-[#ef4444] shrink-0" />}
+                        {item.status === "Stock Bajo" && <WarningCircle size={14} className="text-[#ef4444] shrink-0" />}
                         {item.product_name}
                       </div>
                     </td>
@@ -330,7 +330,7 @@ export default function InventoryPage() {
                     <td className="py-4 text-center">
                       <button onClick={(e) => { e.stopPropagation(); setAdjustmentProduct(item); setShowAdjustmentModal(true); }}
                         className="text-abyssal-text-secondary hover:text-abyssal-primary transition-colors">
-                        <Cog6ToothIcon size={16} />
+                        <Gear size={16} />
                       </button>
                     </td>
                   </tr>

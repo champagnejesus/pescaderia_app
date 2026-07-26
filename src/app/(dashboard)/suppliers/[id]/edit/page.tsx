@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeftIcon } from "@heroicons/react/24/outline"
+import { ArrowLeft } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -54,7 +54,7 @@ export default function EditSupplierPage() {
     <div className="min-h-screen bg-abyssal-bg">
       <header className="bg-abyssal-surface/80 backdrop-blur-xl px-4 py-3 flex items-center gap-3 sticky top-0 z-40">
         <button onClick={() => router.back()} className="p-2 -ml-2 rounded-full hover:bg-abyssal-surface-high transition-all active:scale-95">
-          <ArrowLeftIcon className="w-5 h-5 text-abyssal-text-secondary" />
+          <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
         <h1 className="text-title-large text-abyssal-text-primary flex-1">Editar Proveedor</h1>
       </header>

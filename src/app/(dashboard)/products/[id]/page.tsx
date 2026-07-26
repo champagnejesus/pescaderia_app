@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeftIcon, PencilIcon, CubeIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline"
+import { ArrowLeft, PencilSimple, Package, WarningCircle } from "@phosphor-icons/react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import api from "@/lib/api"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -60,7 +60,7 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="min-h-screen bg-abyssal-bg flex flex-col items-center justify-center gap-3 p-4">
-        <ExclamationCircleIcon className="w-12 h-12 text-abyssal-red" />
+        <WarningCircle className="w-12 h-12 text-abyssal-red" />
         <p className="text-title-medium text-abyssal-text-primary">Producto no encontrado</p>
         <Button variant="ghost" onClick={() => router.back()}>Volver</Button>
       </div>
@@ -77,11 +77,11 @@ export default function ProductDetailPage() {
     <div className="min-h-screen bg-abyssal-bg">
       <header className="bg-abyssal-surface/80 backdrop-blur-xl px-4 py-3 flex items-center justify-between sticky top-0 z-40">
         <button onClick={() => router.back()} className="p-2 -ml-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all active:scale-95">
-          <ArrowLeftIcon className="w-5 h-5 text-abyssal-text-secondary" />
+          <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
         <h1 className="text-title-large text-abyssal-text-primary font-bold">Producto</h1>
         <button onClick={() => router.push("/products/" + id + "/edit")} className="p-2 -mr-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all active:scale-95">
-          <PencilIcon className="w-5 h-5 text-abyssal-text-secondary" />
+          <PencilSimple className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
       </header>
 
@@ -91,12 +91,12 @@ export default function ProductDetailPage() {
             <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-abyssal-primary-light to-abyssal-primary flex items-center justify-center">
-              <CubeIcon className="w-16 h-16 text-abyssal-on-primary/60" />
+              <Package className="w-16 h-16 text-abyssal-on-primary/60" />
             </div>
           )}
         </div>
 
-        <div className="p-4 pb-24 space-y-4">
+        <div className="p-4 space-y-4">
           <div className="animate-fade-in" style={{ animationDelay: "50ms" }}>
             <h1 className="text-title-large text-abyssal-text-primary font-bold">{product.name}</h1>
             <div className="flex items-center gap-2 mt-2">
@@ -111,7 +111,7 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 animate-fade-in" style={{ animationDelay: "100ms" }}>
+          <div className="grid grid-cols-3 gap-3 animate-fade-in" style={{ animationDelay: "100ms" }}>
             <div className="bg-abyssal-surface rounded-abyssal-md p-4">
               <p className="text-label-medium text-abyssal-text-secondary">P. Compra</p>
               <p className="text-headline-medium text-abyssal-text-primary font-bold mt-1">

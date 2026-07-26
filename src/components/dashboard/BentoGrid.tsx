@@ -1,5 +1,5 @@
 "use client"
-import { ArrowTrendingUpIcon, ShoppingCartIcon, CubeIcon, CurrencyDollarIcon, ArrowPathIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline"
+import { TrendUp, ShoppingCart, Package, CurrencyDollar, ArrowsClockwise, Warning } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { StatsCard } from "./StatsCard"
 
@@ -24,12 +24,12 @@ export function BentoGrid({ data }: BentoGridProps) {
     `$${n.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`
 
   const items = [
-    { icon: <ArrowTrendingUpIcon size={18} />, label: "Ganancia Bruta", value: formatCurrency(data.gross_profit) },
-    { icon: <ShoppingCartIcon size={18} />, label: "Ventas", value: formatCurrency(data.sales_total) },
-    { icon: <CubeIcon size={18} />, label: "Compras", value: formatCurrency(data.purchases_total) },
-    { icon: <CurrencyDollarIcon size={18} />, label: "Efectivo", value: formatCurrency(data.cash_total) },
-    { icon: <ArrowPathIcon size={18} />, label: "Transferencias", value: formatCurrency(data.transfer_total) },
-    { icon: <ExclamationTriangleIcon size={18} />, label: "Pendientes / Stock Bajo", value: `${data.pending_orders} / ${data.low_stock_count}` },
+    { icon: <TrendUp size={18} />, label: "Ganancia Bruta", value: formatCurrency(data.gross_profit) },
+    { icon: <ShoppingCart size={18} />, label: "Ventas", value: formatCurrency(data.sales_total) },
+    { icon: <Package size={18} />, label: "Compras", value: formatCurrency(data.purchases_total) },
+    { icon: <CurrencyDollar size={18} />, label: "Efectivo", value: formatCurrency(data.cash_total) },
+    { icon: <ArrowsClockwise size={18} />, label: "Transferencias", value: formatCurrency(data.transfer_total) },
+    { icon: <Warning size={18} />, label: "Pendientes / Stock Bajo", value: `${data.pending_orders} / ${data.low_stock_count}` },
   ]
 
   return (

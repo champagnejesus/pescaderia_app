@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
-import { CurrencyDollarIcon } from "@heroicons/react/24/outline"
+import { CurrencyDollar } from "@phosphor-icons/react"
 import { TopBar } from "@/components/layout/TopBar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DaySummaryCard } from "@/components/cash-register/DaySummaryCard"
@@ -78,7 +78,7 @@ export default function CashRegisterPage() {
 
   return (
     <>
-      <TopBar title="Cierre de Caja" icon={<CurrencyDollarIcon size={18} />} subtitle="Resumen diario de transacciones" />
+      <TopBar title="Cierre de Caja" icon={<CurrencyDollar size={18} />} subtitle="Resumen diario de transacciones" />
       <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
         {loading ? (
           <>

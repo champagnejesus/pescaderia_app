@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { MoonIcon, SunIcon } from "@heroicons/react/24/outline"
+import { Moon, Sun } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 export function ThemeToggle({ className }: { className?: string }) {
@@ -51,7 +51,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-label={dark ? "Activar modo claro" : "Activar modo oscuro"}
       title={dark ? "Modo claro" : "Modo oscuro"}
     >
-      {dark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
+      {dark ? <Sun size={18} /> : <Moon size={18} />}
     </button>
   )
 }

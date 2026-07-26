@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeftIcon, PrinterIcon } from "@heroicons/react/24/outline"
+import { ArrowLeft, Printer } from "@phosphor-icons/react"
 import api from "@/lib/api"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
@@ -87,11 +87,11 @@ export default function InvoicePage() {
     <div className="min-h-screen bg-gray-100">
       <div className="no-print sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center justify-between">
         <button onClick={() => router.back()} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-          <ArrowLeftIcon className="w-5 h-5 text-gray-600" />
+          <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
         <h1 className="text-lg font-semibold text-gray-800">Recibo</h1>
         <button onClick={handlePrint} className="p-2 rounded-full hover:bg-gray-100 transition-colors" aria-label="Imprimir">
-          <PrinterIcon className="w-5 h-5 text-gray-600" />
+          <Printer className="w-5 h-5 text-gray-600" />
         </button>
       </div>
 

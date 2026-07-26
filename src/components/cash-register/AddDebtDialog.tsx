@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
+import { MagnifyingGlass } from "@phosphor-icons/react"
 import { formatCurrency } from "@/lib/formatters"
 import api from "@/lib/api"
 
@@ -96,7 +96,7 @@ export function AddDebtDialog({ open, onClose, type, onCreated }: AddDebtDialogP
               {type === "receivable" ? "Cliente" : "Proveedor"}
             </label>
             <div className="relative mb-2">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary" />
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary" />
               <input
                 type="text"
                 value={search}

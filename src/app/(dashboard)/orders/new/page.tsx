@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeftIcon, MinusIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline"
+import { ArrowLeft, Minus, MagnifyingGlass } from "@phosphor-icons/react"
 import api from "@/lib/api"
 import { ClientSelector } from "@/components/orders/ClientSelector"
 import { ProductPicker } from "@/components/orders/ProductPicker"
@@ -170,13 +170,13 @@ export default function NewOrderPage() {
   }
 
   return (
-    <div className="p-4 pb-24 space-y-6">
+    <div className="p-4 space-y-6">
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.back()}
           className="text-abyssal-text-secondary hover:text-abyssal-text-primary transition-colors"
         >
-          <ArrowLeftIcon className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5" />
         </button>
         <h1 className="text-title-large text-abyssal-text-primary">{isQuickSale ? "Registrar Venta" : "Nuevo Pedido"}</h1>
       </div>
@@ -240,10 +240,10 @@ export default function NewOrderPage() {
                   onClick={() => setSelectedItems((prev) => prev.filter((s) => s.product_id !== item.product_id))}
                   className="text-abyssal-text-secondary hover:text-abyssal-red transition-colors p-1"
                 >
-                  <MinusIcon className="w-4 h-4" />
+                  <Minus className="w-4 h-4" />
                 </button>
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <div>
                   <label className="text-[10px] text-abyssal-text-secondary font-medium">Presentación</label>
                   <select

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { ArrowDownTrayIcon, DocumentChartBarIcon, FileText, DocumentArrowDownIcon } from "@heroicons/react/24/outline"
+import { DownloadSimple, FileXls, FilePdf, FileCsv } from "@phosphor-icons/react"
 import { exportCSV, exportExcel, exportPDF } from "@/lib/export"
 
 interface ExportDropdownProps {
@@ -14,6 +14,12 @@ interface ExportDropdownProps {
   className?: string
   iconOnly?: boolean
 }
+
+const options = [
+  { key: "excel" as const, label: "Excel", icon: <FileXls size={16} className="text-emerald-400" />, desc: ".xlsx" },
+  { key: "pdf" as const, label: "PDF", icon: <FilePdf size={16} className="text-red-400" />, desc: ".pdf" },
+  { key: "csv" as const, label: "CSV", icon: <FileCsv size={16} className="text-blue-400" />, desc: ".csv" },
+]
 
 export function ExportDropdown({ data, filename, headerMap, title, onExport, className, iconOnly }: ExportDropdownProps) {
   const [open, setOpen] = useState(false)
@@ -38,40 +44,45 @@ export function ExportDropdown({ data, filename, headerMap, title, onExport, cla
     setOpen(false)
   }
 
-  const options = [
-    { key: "excel" as const, label: "Excel (.xlsx)", icon: <DocumentChartBarIcon size={15} className="text-emerald-400" /> },
-    { key: "pdf" as const, label: "PDF (.pdf)", icon: <FileText size={15} className="text-red-400" /> },
-    { key: "csv" as const, label: "CSV (.csv)", icon: <DocumentArrowDownIcon size={15} className="text-blue-400" /> },
-  ]
-
   return (
     <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className={className || "p-2 rounded-lg hover:bg-abyssal-surface-high transition-colors active:scale-95"}
-        title="Exportar datos"
-      >
-        {iconOnly !== false ? (
-          <ArrowDownTrayIcon size={18} className="text-abyssal-text-secondary" />
-        ) : (
-          <span className="flex items-center gap-1.5 text-[13px] font-medium text-abyssal-text-secondary">
-            <ArrowDownTrayIcon size={15} /> Exportar
-          </span>
-        )}
-      </button>
+      {iconOnly === false ? (
+        <button
+          onClick={() => setOpen(!open)}
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-medium text-abyssal-text-secondary hover:bg-abyssal-surface-high border border-abyssal-outline transition-all active:scale-[0.97] ${className || ""}`}
+        >
+          <DownloadSimple size={15} />
+          Exportar
+        </button>
+      ) : (
+        <button
+          onClick={() => setOpen(!open)}
+          className={`w-9 h-9 rounded-xl flex items-center justify-center text-abyssal-text-secondary hover:bg-abyssal-surface-high border border-abyssal-outline transition-all active:scale-[0.93] ${className || ""}`}
+          title="Exportar datos"
+        >
+          <DownloadSimple size={16} />
+        </button>
+      )}
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-abyssal-surface border border-abyssal-outline rounded-xl shadow-abyssal-lg overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
-          {options.map((opt) => (
-            <button
-              key={opt.key}
-              onClick={() => handleExport(opt.key)}
-              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] text-abyssal-text-primary font-body hover:bg-abyssal-surface-high transition-colors text-left"
-            >
-              {opt.icon}
-              {opt.label}
-            </button>
-          ))}
+        <div className="absolute right-0 top-full mt-1.5 z-50 w-[170px] bg-abyssal-surface border border-abyssal-outline rounded-xl shadow-abyssal-lg overflow-hidden animate-fade-in">
+          <div className="py-1">
+            {options.map((opt) => (
+              <button
+                key={opt.key}
+                onClick={() => handleExport(opt.key)}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 text-[13px] text-abyssal-text-primary font-body hover:bg-abyssal-surface-high transition-colors text-left active:bg-abyssal-surface-high"
+              >
+                <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-abyssal-surface-high shrink-0">
+                  {opt.icon}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium">{opt.label}</p>
+                  <p className="text-[10px] text-abyssal-text-secondary-variant font-caption">{opt.desc}</p>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

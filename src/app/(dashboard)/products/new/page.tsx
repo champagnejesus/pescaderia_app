@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeftIcon } from "@heroicons/react/24/outline"
+import { ArrowLeft } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -43,11 +43,11 @@ export default function NewProductPage() {
     <div className="min-h-screen bg-abyssal-bg">
       <header className="bg-abyssal-surface/80 backdrop-blur-xl px-4 py-3 flex items-center gap-3 sticky top-0 z-40">
         <button onClick={() => router.back()} className="p-2 -ml-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-all active:scale-95">
-          <ArrowLeftIcon className="w-5 h-5 text-abyssal-text-secondary" />
+          <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
         <h1 className="text-title-large text-abyssal-text-primary flex-1">Nuevo Producto</h1>
       </header>
-      <form onSubmit={handleSubmit} className="p-4 pb-24 space-y-4 max-w-[480px] mx-auto">
+      <form onSubmit={handleSubmit} className="p-4 space-y-4 max-w-[480px] mx-auto">
         {error && (
           <div className="bg-abyssal-red-bg rounded-abyssal-sm px-4 py-2 text-body-medium text-abyssal-red">{error}</div>
         )}
@@ -66,7 +66,7 @@ export default function NewProductPage() {
             </select>
           )}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-label-small text-abyssal-text-secondary">Stock</label>
             <Input type="number" step="0.1" value={form.stock} onChange={(e) => setForm({ ...form, stock: +e.target.value })} required />
@@ -76,7 +76,7 @@ export default function NewProductPage() {
             <Input value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} required />
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-label-small text-abyssal-text-secondary">Precio Compra</label>
             <Input type="number" step="0.01" value={form.price_compra} onChange={(e) => setForm({ ...form, price_compra: +e.target.value })} required />

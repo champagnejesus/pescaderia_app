@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { BellIcon } from '@heroicons/react/24/outline';
+import { Bell } from '@phosphor-icons/react';
 import { useLowStock } from '@/hooks/useLowStock';
-import LinkIcon from 'next/link';
+import Link from 'next/link';
 
 export default function LowStockBadge() {
   const { products, count, loading } = useLowStock();
@@ -17,7 +17,7 @@ export default function LowStockBadge() {
         onClick={() => setShowDropdown(!showDropdown)}
         className="relative p-2 text-gray-400 hover:text-white transition-colors"
       >
-        <BellIcon size={18} />
+        <Bell size={18} />
         <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center">
           {count}
         </span>
@@ -33,7 +33,7 @@ export default function LowStockBadge() {
             </div>
             <div className="max-h-64 overflow-y-auto">
               {products.map((product) => (
-                <LinkIcon
+                <Link
                   key={product.id}
                   href={`/products/${product.id}`}
                   onClick={() => setShowDropdown(false)}
@@ -46,16 +46,16 @@ export default function LowStockBadge() {
                   <span className="text-sm font-semibold text-red-400">
                     {product.stock} {product.unit}
                   </span>
-                </LinkIcon>
+                </Link>
               ))}
             </div>
-            <LinkIcon
+            <Link
               href="/products"
               onClick={() => setShowDropdown(false)}
               className="block p-3 text-center text-sm text-cyan-400 hover:bg-white/5 transition-colors"
             >
               Ver todos los productos
-            </LinkIcon>
+            </Link>
           </div>
         </>
       )}

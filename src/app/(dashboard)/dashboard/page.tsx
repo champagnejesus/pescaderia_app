@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
-import { ArrowTrendingUpIcon, MagnifyingGlassIcon, BellIcon, PlusIcon, FileText, CurrencyDollarIcon, CubeIcon, UserPlusIcon, InformationCircleIcon, CheckIcon, WalletIcon, ShoppingCartIcon, ChartBarIcon } from "@heroicons/react/24/outline"
-import LinkIcon from "next/link"
+import { TrendUp, MagnifyingGlass, Bell, Plus, FileText, CurrencyDollar, Package, UserPlus, Info, Check, Wallet, ShoppingCart, ChartBar } from "@phosphor-icons/react"
+import Link from "next/link"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -35,11 +35,11 @@ const statusColor: Record<string, { bg: string; text: string }> = {
 
 const iconMap: Record<string, React.FC<any>> = {
   "file-text": FileText,
-  "dollar-sign": CurrencyDollarIcon,
-  "package": CubeIcon,
-  "user-plus": UserPlusIcon,
-  "info": InformationCircleIcon,
-  "check": CheckIcon,
+  "dollar-sign": CurrencyDollar,
+  "package": Package,
+  "user-plus": UserPlus,
+  "info": Info,
+  "check": Check,
 }
 
 export default function DashboardPage() {
@@ -174,7 +174,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <>
-        <TopBar title="Dashboard" icon={<ArrowTrendingUpIcon size={18} />} />
+        <TopBar title="Dashboard" icon={<TrendUp size={18} />} />
         <div className="p-4 lg:p-0 space-y-4 lg:space-y-6">
           <div className="hidden lg:block"><Skeleton className="h-[64px] w-full" /></div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
@@ -188,7 +188,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <TopBar title="Dashboard" icon={<ArrowTrendingUpIcon size={18} />} />
+      <TopBar title="Dashboard" icon={<TrendUp size={18} />} />
 
       {/* Header — desktop only */}
       <div className="hidden lg:flex items-center justify-between px-8 pt-6 pb-2">
@@ -199,17 +199,17 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <LinkIcon href="/orders/new">
+          <Link href="/orders/new">
             <Button variant="primary" size="sm" className="gap-1.5">
-              <PlusIcon size={16} />
+              <Plus size={16} />
               Nuevo Pedido
             </Button>
-          </LinkIcon>
+          </Link>
           <button className="p-2 rounded-lg hover:bg-abyssal-surface-high transition-colors">
-            <MagnifyingGlassIcon size={18} className="text-abyssal-text-secondary-variant" />
+            <MagnifyingGlass size={18} className="text-abyssal-text-secondary-variant" />
           </button>
           <button className="p-2 rounded-lg hover:bg-abyssal-surface-high transition-colors">
-            <BellIcon size={18} className="text-abyssal-text-secondary-variant" />
+            <Bell size={18} className="text-abyssal-text-secondary-variant" />
           </button>
           <div className="flex items-center gap-2 h-9 px-3 rounded-lg bg-abyssal-surface-high border border-abyssal-outline">
             <span className="text-[12px] text-abyssal-text-secondary font-caption">
@@ -226,7 +226,7 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between">
               <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">Ingresos Totales</span>
               <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-500/10 text-blue-400 shrink-0">
-                <WalletIcon size={16} />
+                <Wallet size={16} />
               </div>
             </div>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
@@ -234,7 +234,7 @@ export default function DashboardPage() {
             </p>
             {salesGrowth !== null ? (
               <div className="flex items-center gap-1.5 mt-3">
-                <ArrowTrendingUpIcon size={14} className={salesGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
+                <TrendUp size={14} className={salesGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
                 <span className={`text-[13px] font-caption font-semibold ${salesGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"}`}>
                   {salesGrowth >= 0 ? "+" : ""}{salesGrowth.toFixed(1)}%
                 </span>
@@ -253,7 +253,7 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between">
               <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">Total de Órdenes</span>
               <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-purple-500/10 text-purple-400 shrink-0">
-                <ShoppingCartIcon size={16} />
+                <ShoppingCart size={16} />
               </div>
             </div>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
@@ -261,7 +261,7 @@ export default function DashboardPage() {
             </p>
             {ordersGrowth !== null ? (
               <div className="flex items-center gap-1.5 mt-3">
-                <ArrowTrendingUpIcon size={14} className={ordersGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
+                <TrendUp size={14} className={ordersGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
                 <span className={`text-[13px] font-caption font-semibold ${ordersGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"}`}>
                   {ordersGrowth >= 0 ? "+" : ""}{ordersGrowth.toFixed(1)}%
                 </span>
@@ -280,7 +280,7 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between">
               <span className="text-[13px] text-abyssal-text-secondary font-body font-medium">Ganancia Bruta</span>
               <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-500/10 text-emerald-400 shrink-0">
-                <ChartBarIcon size={16} />
+                <ChartBar size={16} />
               </div>
             </div>
             <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
@@ -288,7 +288,7 @@ export default function DashboardPage() {
             </p>
             {profitGrowth !== null ? (
               <div className="flex items-center gap-1.5 mt-3">
-                <ArrowTrendingUpIcon size={14} className={profitGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
+                <TrendUp size={14} className={profitGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"} />
                 <span className={`text-[13px] font-caption font-semibold ${profitGrowth >= 0 ? "text-abyssal-primary" : "text-[#EF4444]"}`}>
                   {profitGrowth >= 0 ? "+" : ""}{profitGrowth.toFixed(1)}%
                 </span>
@@ -341,7 +341,7 @@ export default function DashboardPage() {
             <div className="min-h-[200px] lg:min-h-[220px] relative">
               {orders.length === 0 ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-                  <ArrowTrendingUpIcon size={36} className="text-abyssal-text-secondary-variant/40 mb-2" />
+                  <TrendUp size={36} className="text-abyssal-text-secondary-variant/40 mb-2" />
                   <p className="text-[14px] text-abyssal-text-secondary font-medium">Sin datos de ventas</p>
                   <p className="text-[12px] text-abyssal-text-secondary-variant mt-0.5">Registra pedidos para ver tu rendimiento</p>
                 </div>
@@ -383,7 +383,7 @@ export default function DashboardPage() {
             <p className="text-[13px] text-abyssal-text-secondary-variant font-body mt-1">Margen real diario (Top 5 hoy)</p>
             {topProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <CubeIcon size={32} className="text-abyssal-text-secondary-variant/40 mb-2" />
+                <Package size={32} className="text-abyssal-text-secondary-variant/40 mb-2" />
                 <p className="text-[13px] text-abyssal-text-secondary font-medium">Sin datos de productos</p>
                 <p className="text-[11px] text-abyssal-text-secondary-variant mt-0.5">Agrega precios de compra y venta</p>
               </div>
@@ -417,7 +417,7 @@ export default function DashboardPage() {
           <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Órdenes Recientes</h3>
-              <LinkIcon href="/orders" className="text-[12px] text-abyssal-primary font-body font-medium">Ver todas</LinkIcon>
+              <Link href="/orders" className="text-[12px] text-abyssal-primary font-body font-medium">Ver todas</Link>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -463,7 +463,7 @@ export default function DashboardPage() {
           <div className="w-full bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-4 lg:p-6 shadow-abyssal-lg">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Registro de Actividad</h3>
-              <LinkIcon href="/reports" className="text-[12px] text-abyssal-primary font-body font-medium">Ver todo</LinkIcon>
+              <Link href="/reports" className="text-[12px] text-abyssal-primary font-body font-medium">Ver todo</Link>
             </div>
             <div className="space-y-0">
               {activity.length > 0 ? activity.slice(0, 6).map((item, i) => {
@@ -499,11 +499,11 @@ export default function DashboardPage() {
 
         {/* FAB for mobile */}
         <div className="lg:hidden fixed bottom-20 right-4 z-40">
-          <LinkIcon href="/orders/new">
+          <Link href="/orders/new">
             <button className="w-14 h-14 rounded-full bg-abyssal-primary text-white shadow-lg flex items-center justify-center active:scale-95 transition-transform">
-              <PlusIcon size={24} />
+              <Plus size={24} />
             </button>
-          </LinkIcon>
+          </Link>
         </div>
       </div>
       <ToastContainer toasts={toasts} onRemove={removeToast} />

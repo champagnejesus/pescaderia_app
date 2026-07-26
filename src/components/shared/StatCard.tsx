@@ -1,6 +1,6 @@
 import { memo } from "react"
 import { cn } from "@/lib/utils"
-import type { Icon } from "@heroicons/react/24/outline"
+import type { Icon } from "@phosphor-icons/react"
 
 interface StatCardProps {
   label: string

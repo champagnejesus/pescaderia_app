@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeftIcon, ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline"
+import { ArrowLeft, CaretDown, X } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ToastContainer } from "@/components/ui/ToastContainer"
@@ -29,9 +29,9 @@ export default function NewClientPage() {
     <div className="p-4 lg:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.back()} className="text-abyssal-text-secondary hover:text-abyssal-text-primary p-1"><ArrowLeftIcon className="w-5 h-5" /></button>
+          <button onClick={() => router.back()} className="text-abyssal-text-secondary hover:text-abyssal-text-primary p-1"><ArrowLeft className="w-5 h-5" /></button>
           <div><h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Nuevo Cliente</h1><p className="text-[14px] text-abyssal-text-secondary-variant">Registrar nuevo cliente en el sistema</p></div>
-          <button onClick={() => router.back()} className="ml-auto text-abyssal-text-secondary hover:text-abyssal-text-primary p-1"><XMarkIcon className="w-5 h-5" /></button>
+          <button onClick={() => router.back()} className="ml-auto text-abyssal-text-secondary hover:text-abyssal-text-primary p-1"><X className="w-5 h-5" /></button>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg shadow-abyssal-lg overflow-hidden">
@@ -62,7 +62,7 @@ export default function NewClientPage() {
                     <select value={form.type} onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))} className="w-full h-10 bg-abyssal-surface-high rounded-xl px-3 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline appearance-none cursor-pointer">
                       <option>Empresa</option><option>Restaurante</option><option>Distribuidor</option><option>Exportador</option><option>Minorista</option>
                     </select>
-                    <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary pointer-events-none" />
+                    <CaretDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-abyssal-text-secondary pointer-events-none" />
                   </div>
                 </div>
               </div>

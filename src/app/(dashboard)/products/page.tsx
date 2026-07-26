@@ -1,7 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { PlusIcon, CubeTransparentIcon, CubeIcon, FunnelIcon, ArrowTrendingUpIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline"
+import { Plus, Fish, Package, Funnel, TrendUp, ArrowUpRight } from "@phosphor-icons/react"
 import { TopBar } from "@/components/layout/TopBar"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -43,7 +43,7 @@ export default function ProductsPage() {
     <>
       <TopBar
         title="Productos"
-        icon={<CubeTransparentIcon size={18} />}
+        icon={<Fish size={18} />}
         subtitle="Catálogo de productos del mar"
         rightAction={<CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar productos..." />}
       />
@@ -53,7 +53,7 @@ export default function ProductsPage() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Total Productos</p>
             <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">{stats.total}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <ArrowTopRightOnSquareIcon size={14} className="text-abyssal-primary" />
+              <ArrowUpRight size={14} className="text-abyssal-primary" />
               <span className="text-xs font-semibold text-abyssal-primary font-caption">+8.3%</span>
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
@@ -62,7 +62,7 @@ export default function ProductsPage() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Stock Bajo</p>
             <p className={`text-title-large font-heading font-bold mt-1 ${stats.lowStock > 0 ? "text-abyssal-red" : "text-abyssal-green"}`}>{stats.lowStock}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <ArrowTrendingUpIcon size={14} className="text-abyssal-green" />
+              <TrendUp size={14} className="text-abyssal-green" />
               <span className="text-xs font-semibold text-abyssal-green font-caption">-12.8%</span>
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
@@ -71,7 +71,7 @@ export default function ProductsPage() {
             <p className="text-label-medium text-abyssal-text-secondary font-body">Valor Inventario</p>
             <p className="text-title-large text-abyssal-text-primary font-heading font-bold mt-1">${stats.totalValue.toLocaleString("es-MX")}</p>
             <div className="flex items-center gap-1.5 mt-3">
-              <ArrowTopRightOnSquareIcon size={14} className="text-abyssal-primary" />
+              <ArrowUpRight size={14} className="text-abyssal-primary" />
               <span className="text-xs font-semibold text-abyssal-primary font-caption">+5.2%</span>
               <span className="text-xs text-abyssal-text-secondary-variant font-caption">vs mes anterior</span>
             </div>
@@ -95,7 +95,7 @@ export default function ProductsPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <CubeIcon size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
+            <Package size={64} className="text-abyssal-text-secondary mb-3" strokeWidth={1} />
             <p className="text-title-medium text-abyssal-text-primary font-heading mb-2">No se encontraron productos</p>
             <p className="text-body-medium text-abyssal-text-secondary font-body mb-4">Agrega tu primer producto para comenzar</p>
             <Button variant="primary" onClick={() => router.push("/products/new")}>Agregar Producto</Button>
@@ -113,7 +113,7 @@ export default function ProductsPage() {
         )}
       </div>
       <FAB href="/products/new" aria-label="Agregar producto">
-        <PlusIcon className="w-6 h-6" />
+        <Plus className="w-6 h-6" />
       </FAB>
     </>
   )

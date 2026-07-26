@@ -1,6 +1,6 @@
 "use client"
 import { useState, useRef, useEffect } from "react"
-import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline"
+import { MagnifyingGlass, X } from "@phosphor-icons/react"
 
 interface CollapsibleSearchBarProps {
   value: string
@@ -38,7 +38,7 @@ export function CollapsibleSearchBar({ value, onChange, placeholder = "Buscar...
     <div ref={containerRef} className="flex items-center justify-end">
       {open ? (
         <div className="relative w-full animate-fade-in">
-          <MagnifyingGlassIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
+          <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-abyssal-text-secondary/60" />
           <input
             ref={inputRef}
             type="text"
@@ -52,7 +52,7 @@ export function CollapsibleSearchBar({ value, onChange, placeholder = "Buscar...
             className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-abyssal-surface-high transition-colors"
             aria-label="Limpiar búsqueda"
           >
-            <XMarkIcon className="w-4 h-4 text-abyssal-text-secondary/60" />
+            <X className="w-4 h-4 text-abyssal-text-secondary/60" />
           </button>
         </div>
       ) : (
@@ -61,7 +61,7 @@ export function CollapsibleSearchBar({ value, onChange, placeholder = "Buscar...
           className="p-2 rounded-full hover:bg-abyssal-surface-high transition-colors active:scale-95"
           aria-label="Abrir búsqueda"
         >
-          <MagnifyingGlassIcon className="w-5 h-5 text-abyssal-text-secondary" />
+          <MagnifyingGlass className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
       )}
     </div>

@@ -1,7 +1,7 @@
 "use client"
 import { cn } from "@/lib/utils"
 import { StatusBadge } from "@/components/shared/StatusBadge"
-import { ShoppingCartIcon, CubeIcon, CurrencyDollarIcon, BanknotesIcon, ArrowTrendingDownIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
+import { ShoppingCart, Package, CurrencyDollar, HandCoins, TrendDown, ArrowsClockwise } from "@phosphor-icons/react"
 
 interface ActivityItem {
   id: string
@@ -21,12 +21,12 @@ interface RecentActivityListProps {
 }
 
 const TYPE_META: Record<string, { icon: React.ReactNode; label: string; bg: string; iconColor: string }> = {
-  pedido: { icon: <ShoppingCartIcon size={16} />, label: "Pedido", bg: "bg-abyssal-primary/10", iconColor: "text-abyssal-primary" },
-  compra: { icon: <CubeIcon size={16} />, label: "Compra", bg: "bg-abyssal-surface-high", iconColor: "text-abyssal-primary" },
-  pago: { icon: <CurrencyDollarIcon size={16} />, label: "Pago", bg: "bg-abyssal-green/10", iconColor: "text-abyssal-green" },
-  cobro: { icon: <BanknotesIcon size={16} />, label: "Cobro", bg: "bg-abyssal-yellow/10", iconColor: "text-abyssal-yellow" },
-  gasto: { icon: <ArrowTrendingDownIcon size={16} />, label: "Gasto", bg: "bg-abyssal-red/10", iconColor: "text-abyssal-red" },
-  transferencia: { icon: <ArrowPathIcon size={16} />, label: "Transferencia", bg: "bg-abyssal-primary/10", iconColor: "text-abyssal-primary" },
+  pedido: { icon: <ShoppingCart size={16} />, label: "Pedido", bg: "bg-abyssal-primary/10", iconColor: "text-abyssal-primary" },
+  compra: { icon: <Package size={16} />, label: "Compra", bg: "bg-abyssal-surface-high", iconColor: "text-abyssal-primary" },
+  pago: { icon: <CurrencyDollar size={16} />, label: "Pago", bg: "bg-abyssal-green/10", iconColor: "text-abyssal-green" },
+  cobro: { icon: <HandCoins size={16} />, label: "Cobro", bg: "bg-abyssal-yellow/10", iconColor: "text-abyssal-yellow" },
+  gasto: { icon: <TrendDown size={16} />, label: "Gasto", bg: "bg-abyssal-red/10", iconColor: "text-abyssal-red" },
+  transferencia: { icon: <ArrowsClockwise size={16} />, label: "Transferencia", bg: "bg-abyssal-primary/10", iconColor: "text-abyssal-primary" },
 }
 
 function formatDate(dateStr: string | null) {

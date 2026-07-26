@@ -1,5 +1,5 @@
 "use client"
-import { CheckIcon } from "@heroicons/react/24/outline"
+import { Check } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 
 interface SuccessOrder {
@@ -20,7 +20,7 @@ export function SuccessOverlay({ open, order, onView, onClose }: SuccessOverlayP
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center px-6">
       <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-8 flex flex-col items-center max-w-sm w-full">
         <div className="w-20 h-20 rounded-full bg-abyssal-green/15 flex items-center justify-center mb-5">
-          <CheckIcon className="w-10 h-10 text-abyssal-green" />
+          <Check className="w-10 h-10 text-abyssal-green" />
         </div>
         <h2 className="text-[22px] font-semibold text-abyssal-text-primary mb-1">¡Pedido Creado!</h2>
         <p className="text-[15px] text-abyssal-text-secondary">

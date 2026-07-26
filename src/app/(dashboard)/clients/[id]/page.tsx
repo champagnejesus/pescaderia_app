@@ -1,8 +1,8 @@
 "use client"
 import { useParams, useRouter } from "next/navigation"
-import LinkIcon from "next/link"
+import Link from "next/link"
 import { useState } from "react"
-import { ArrowLeftIcon, PhoneIcon, ChatBubbleLeftIcon, ShoppingCartIcon, EnvelopeIcon, MapPinIcon, CubeIcon, ExclamationCircleIcon, InboxIcon, CurrencyDollarIcon, CheckCircleIcon, BanknotesIcon } from "@heroicons/react/24/outline"
+import { ArrowLeft, Phone, ChatCircle, ShoppingCart, Envelope, MapPin, Package, WarningCircle, Tray, CurrencyDollar, CheckCircle, HandCoins } from "@phosphor-icons/react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { cn } from "@/lib/utils"
@@ -62,9 +62,9 @@ export default function ClientDetail() {
   if (clientError || !client) {
     return (
       <div className="min-h-screen bg-abyssal-bg flex flex-col items-center justify-center gap-4 p-4">
-        <ExclamationCircleIcon className="w-12 h-12 text-abyssal-red" />
+        <WarningCircle className="w-12 h-12 text-abyssal-red" />
         <p className="text-title-medium text-abyssal-text-primary text-center">{clientError || "Cliente no encontrado"}</p>
-        <LinkIcon href="/clients" className="text-body-medium text-abyssal-primary">Volver a clientes</LinkIcon>
+        <Link href="/clients" className="text-body-medium text-abyssal-primary">Volver a clientes</Link>
       </div>
     )
   }
@@ -84,7 +84,7 @@ export default function ClientDetail() {
     <div className="min-h-screen bg-abyssal-bg">
       <header className="bg-abyssal-surface/80 backdrop-blur-xl px-4 py-3 flex items-center justify-between sticky top-0 z-40">
         <button onClick={() => router.back()} className="p-2 -ml-2 rounded-abyssal-full hover:bg-abyssal-surface-high transition-colors active:scale-95">
-          <ArrowLeftIcon className="w-5 h-5 text-abyssal-text-secondary" />
+          <ArrowLeft className="w-5 h-5 text-abyssal-text-secondary" />
         </button>
         <h1 className="text-title-large text-abyssal-text-primary truncate px-2 text-center flex-1">{client.name}</h1>
         <button
@@ -119,36 +119,36 @@ export default function ClientDetail() {
           )}
         </section>
 
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-2 animate-fade-in" style={{ animationDelay: "50ms" }}>
+        <section className="grid grid-cols-4 gap-2 animate-fade-in" style={{ animationDelay: "50ms" }}>
           <a href={phoneUrl} className="flex flex-col items-center justify-center bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3 gap-1.5 hover:bg-abyssal-surface-high transition-all active:scale-95">
             <div className="w-9 h-9 rounded-full bg-abyssal-green-bg flex items-center justify-center text-abyssal-green">
-              <PhoneIcon className="w-4 h-4" />
+              <Phone className="w-4 h-4" />
             </div>
             <span className="text-[10px] text-abyssal-text-secondary font-medium">Llamar</span>
           </a>
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3 gap-1.5 hover:bg-abyssal-surface-high transition-all active:scale-95">
             <div className="w-9 h-9 rounded-full bg-[#25D366]/20 flex items-center justify-center text-[#25D366]">
-              <ChatBubbleLeftIcon className="w-4 h-4" />
+              <ChatCircle className="w-4 h-4" />
             </div>
             <span className="text-[10px] text-abyssal-text-secondary font-medium">WhatsApp</span>
           </a>
-          <LinkIcon href={newOrderUrl} className="flex flex-col items-center justify-center bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3 gap-1.5 hover:bg-abyssal-surface-high transition-all active:scale-95">
+          <Link href={newOrderUrl} className="flex flex-col items-center justify-center bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3 gap-1.5 hover:bg-abyssal-surface-high transition-all active:scale-95">
             <div className="w-9 h-9 rounded-full bg-abyssal-primary/15 flex items-center justify-center text-abyssal-primary">
-              <ShoppingCartIcon className="w-4 h-4" />
+              <ShoppingCart className="w-4 h-4" />
             </div>
             <span className="text-[10px] text-abyssal-text-secondary font-medium">Pedido</span>
-          </LinkIcon>
+          </Link>
           {hasDebt ? (
             <button onClick={() => setPayOpen(true)} className="flex flex-col items-center justify-center bg-abyssal-primary rounded-2xl p-3 gap-1.5 hover:opacity-90 transition-all active:scale-95">
               <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white">
-                <BanknotesIcon className="w-4 h-4" />
+                <HandCoins className="w-4 h-4" />
               </div>
               <span className="text-[10px] text-white/90 font-medium">Cobrar</span>
             </button>
           ) : (
             <div className="flex flex-col items-center justify-center bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-3 gap-1.5 opacity-50">
               <div className="w-9 h-9 rounded-full bg-abyssal-green/20 flex items-center justify-center text-abyssal-green">
-                <CheckCircleIcon className="w-4 h-4" />
+                <CheckCircle className="w-4 h-4" />
               </div>
               <span className="text-[10px] text-abyssal-text-secondary font-medium">Al día</span>
             </div>
@@ -159,9 +159,9 @@ export default function ClientDetail() {
           <h2 className="text-label-small text-abyssal-text-secondary uppercase tracking-wider mb-3 px-1">Información de Contacto</h2>
           <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg overflow-hidden">
             {[
-              { icon: PhoneIcon, label: "Teléfono", value: client.phone || "No disponible" },
-              { icon: EnvelopeIcon, label: "Email", value: client.email || "No disponible" },
-              { icon: MapPinIcon, label: "Dirección", value: client.address || "No disponible" },
+              { icon: Phone, label: "Teléfono", value: client.phone || "No disponible" },
+              { icon: Envelope, label: "Email", value: client.email || "No disponible" },
+              { icon: MapPin, label: "Dirección", value: client.address || "No disponible" },
             ].map((item, i) => (
               <div key={i} className={cn(
                 "flex items-center p-4 gap-4 transition-colors hover:bg-abyssal-surface-high",
@@ -180,7 +180,7 @@ export default function ClientDetail() {
         <section className="animate-fade-in" style={{ animationDelay: "150ms" }}>
           <div className="flex justify-between items-center mb-3 px-1">
             <h2 className="text-label-small text-abyssal-text-secondary uppercase tracking-wider">Últimos Pedidos</h2>
-            <LinkIcon href={`/orders?client_id=${client.id}`} className="text-body-medium text-abyssal-primary">Ver todos</LinkIcon>
+            <Link href={`/orders?client_id=${client.id}`} className="text-body-medium text-abyssal-primary">Ver todos</Link>
           </div>
           <div className="space-y-2">
             {ordersLoading ? (
@@ -201,24 +201,24 @@ export default function ClientDetail() {
               ))
             ) : ordersError ? (
               <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 text-center">
-                <ExclamationCircleIcon className="w-10 h-10 text-abyssal-red mx-auto mb-2" />
+                <WarningCircle className="w-10 h-10 text-abyssal-red mx-auto mb-2" />
                 <p className="text-body-medium text-abyssal-red">{ordersError}</p>
               </div>
             ) : orders.length === 0 ? (
               <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 text-center">
-                <InboxIcon className="w-10 h-10 text-abyssal-text-secondary mx-auto mb-2" />
+                <Tray className="w-10 h-10 text-abyssal-text-secondary mx-auto mb-2" />
                 <p className="text-body-medium text-abyssal-text-secondary">Sin pedidos recientes</p>
               </div>
             ) : (
               orders.map((order) => (
-                <LinkIcon
+                <Link
                   key={order.id}
                   href={`/orders/${order.id}`}
                   className="flex items-center justify-between p-4 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg transition-all hover:bg-abyssal-surface-high active:scale-[0.99]"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-abyssal-sm bg-abyssal-surface-high flex items-center justify-center">
-                      <CubeIcon className="w-6 h-6 text-abyssal-text-secondary" />
+                      <Package className="w-6 h-6 text-abyssal-text-secondary" />
                     </div>
                     <div>
                       <p className="text-body-medium text-abyssal-text-primary font-semibold">Orden #{order.order_number}</p>
@@ -229,7 +229,7 @@ export default function ClientDetail() {
                     <p className="text-body-medium text-abyssal-text-primary font-semibold">{formatCurrency(order.total_value)}</p>
                     <StatusBadge status={order.status} />
                   </div>
-                </LinkIcon>
+                </Link>
               ))
             )}
           </div>
@@ -244,7 +244,7 @@ export default function ClientDetail() {
               ))
             ) : payments.length === 0 ? (
               <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 text-center">
-                <CurrencyDollarIcon className="w-10 h-10 text-abyssal-text-secondary mx-auto mb-2" />
+                <CurrencyDollar className="w-10 h-10 text-abyssal-text-secondary mx-auto mb-2" />
                 <p className="text-body-medium text-abyssal-text-secondary">Sin pagos registrados</p>
               </div>
             ) : (
@@ -255,7 +255,7 @@ export default function ClientDetail() {
                   <div key={entry.id} className="flex items-center justify-between p-4 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-abyssal-sm bg-abyssal-green/15 flex items-center justify-center">
-                        <CheckCircleIcon className="w-5 h-5 text-abyssal-green" />
+                        <CheckCircle className="w-5 h-5 text-abyssal-green" />
                       </div>
                       <div>
                         <p className="text-body-medium text-abyssal-text-primary font-medium">{entry.reference_number}</p>
@@ -279,11 +279,11 @@ export default function ClientDetail() {
           >
             <div className="absolute inset-0 bg-gradient-to-t from-abyssal-bg to-transparent opacity-60 z-10" />
             <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-abyssal-surface/80 backdrop-blur-md px-3 py-1.5 rounded-full z-20">
-              <MapPinIcon className="w-4 h-4 text-abyssal-primary" />
+              <MapPin className="w-4 h-4 text-abyssal-primary" />
               <span className="text-label-small text-abyssal-text-primary">Ver en mapa</span>
             </div>
             <div className="flex items-center justify-center h-full">
-              <MapPinIcon className="w-12 h-12 text-abyssal-text-secondary" />
+              <MapPin className="w-12 h-12 text-abyssal-text-secondary" />
             </div>
           </a>
         </section>
