@@ -24,9 +24,10 @@
   --abyssal-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
   --abyssal-shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.03), 0 16px 40px rgba(0, 0, 0, 0.07);
   --abyssal-bg-overlay: rgba(0, 0, 0, 0.55);
-  --abyssal-font-heading: "Funnel Sans", sans-serif;
-  --abyssal-font-body: "Inter", sans-serif;
-  --abyssal-font-caption: "Geist", sans-serif;
+  --abyssal-font-heading: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
+  --abyssal-font-body: var(--font-inter), "Inter", system-ui, sans-serif;
+  --abyssal-font-caption: var(--font-inter), "Inter", system-ui, sans-serif;
+  --abyssal-font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
 }
 .dark {
   --abyssal-bg: #0F0F11;

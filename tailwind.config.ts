@@ -8,6 +8,7 @@ const config: Config = {
         heading: ["var(--abyssal-font-heading)"],
         body: ["var(--abyssal-font-body)"],
         caption: ["var(--abyssal-font-caption)"],
+        mono: ["var(--abyssal-font-mono)"],
       },
       colors: {
         abyssal: {

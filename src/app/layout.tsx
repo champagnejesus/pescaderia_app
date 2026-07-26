@@ -1,13 +1,35 @@
 import type { Metadata } from "next"
+import { DM_Sans, Inter, JetBrains_Mono } from "next/font/google"
 import { ThemeProvider } from "@/providers/ThemeProvider"
 import "@/styles/globals.css"
 import "@/styles/abyssal-theme.css"
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-dm-sans",
+  display: "swap",
+})
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+})
 
 export const metadata: Metadata = { title: "Abyssal ERP", description: "Sistema de Gestión Logística" }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className="dark" suppressHydrationWarning>
+    <html lang="es" className={`dark ${dmSans.variable} ${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -23,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="bg-abyssal-bg text-abyssal-text-primary font-sans antialiased">
+      <body className="bg-abyssal-bg text-abyssal-text-primary font-body antialiased">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-abyssal-primary focus:text-white focus:rounded-xl focus:outline-none focus:ring-2 focus:ring-abyssal-primary/50"
