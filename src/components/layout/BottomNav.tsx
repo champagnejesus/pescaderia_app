@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, Users,
   Truck, Package, Fish, DollarSign, ArrowLeftFromLine,
-  ArrowRightFromLine, Settings
+  ArrowRightFromLine, Settings, BarChart3
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useLowStock } from "@/hooks/useLowStock"
@@ -20,6 +20,7 @@ const tabs = [
   { href: "/products", label: "Productos", icon: Fish },
   { href: "/cash-register", label: "Caja", icon: DollarSign },
   { href: "/finances", label: "Finanzas", icon: DollarSign },
+  { href: "/reports", label: "Reportes", icon: BarChart3 },
   { href: "/settings", label: "Config", icon: Settings },
 ]
 

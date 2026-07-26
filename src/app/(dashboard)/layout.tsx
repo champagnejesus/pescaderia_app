@@ -12,7 +12,7 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, Users,
   Truck, Package, Fish, ArrowLeftFromLine,
-  ArrowRightFromLine, DollarSign
+  ArrowRightFromLine, DollarSign, BarChart3
 } from "lucide-react"
 
 const pageMeta: Record<string, { label: string; icon: React.ReactNode }> = {
@@ -24,6 +24,7 @@ const pageMeta: Record<string, { label: string; icon: React.ReactNode }> = {
   "/inventory": { label: "Inventario", icon: <Package size={18} /> },
   "/products": { label: "Productos", icon: <Fish size={18} /> },
   "/finances": { label: "Finanzas", icon: <DollarSign size={18} /> },
+  "/reports": { label: "Reportes", icon: <BarChart3 size={18} /> },
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

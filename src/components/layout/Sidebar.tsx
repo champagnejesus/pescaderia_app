@@ -6,7 +6,7 @@ import { memo, useState, useEffect } from "react"
 import {
   LayoutDashboard, ShoppingCart, ClipboardList, Users,
   Truck, Package, Fish, ArrowLeftFromLine,
-  ArrowRightFromLine, LogOut, DollarSign, type LucideIcon
+  ArrowRightFromLine, LogOut, DollarSign, BarChart3, type LucideIcon
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import LowStockBadge from "./LowStockBadge"
@@ -21,6 +21,7 @@ const menuItems = [
   { href: "/inventory", label: "Inventario", icon: Package },
   { href: "/products", label: "Productos", icon: Fish },
   { href: "/finances", label: "Finanzas", icon: DollarSign },
+  { href: "/reports", label: "Reportes", icon: BarChart3 },
 ]
 
 const SidebarItem = memo(function SidebarItem({
