@@ -2,6 +2,17 @@
 import { useEffect } from "react"
 import { useThemeStore } from "@/store/themeStore"
 
+if (typeof Number !== "undefined" && Number.prototype.toLocaleString) {
+  const originalToLocaleString = Number.prototype.toLocaleString
+  Number.prototype.toLocaleString = function (locale, options) {
+    return originalToLocaleString.call(this, "es-CL", {
+      ...options,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+  }
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const theme = useThemeStore((s) => s.theme)
   const setTheme = useThemeStore((s) => s.setTheme)

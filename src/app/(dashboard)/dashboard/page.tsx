@@ -438,7 +438,7 @@ export default function DashboardPage() {
                         <td className="py-3 text-[12px] text-abyssal-text-secondary-variant font-mono">{order.order_number}</td>
                         <td className="py-3 text-[13px] text-abyssal-text-secondary font-body">{order.client_name}</td>
                         <td className="py-3 text-right text-[13px] text-abyssal-text-primary font-body font-semibold">
-                          ${order.total_value.toLocaleString("en-US")}
+                          {formatCurrency(order.total_value)}
                         </td>
                         <td className="py-3 text-right">
                           <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium ${colors.bg} ${colors.text}`}>

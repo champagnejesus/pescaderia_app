@@ -602,7 +602,7 @@ export default function SettingsPage() {
                     {[
                       { param: "Idioma", value: "Español" },
                       { param: "Zona Horaria", value: "GMT-4 (Chile/Santiago)" },
-                      { param: "Formato Moneda", value: "PEN (S/)" },
+                      { param: "Formato Moneda", value: "CLP ($)" },
                       { param: "Notificaciones", value: "Activadas" },
                       { param: "Autenticación 2FA", value: "Desactivada" },
                     ].map((item, i) => (
