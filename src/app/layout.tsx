@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter, JetBrains_Mono } from "next/font/google"
 import { ThemeProvider } from "@/providers/ThemeProvider"
 import "@/styles/globals.css"
@@ -19,10 +19,11 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = { title: "Abyssal ERP", description: "Sistema de Gestión Logística" }
+export const viewport: Viewport = { width: "device-width", initialScale: 1 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`dark ${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+    <html lang="es" className={`dark ${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning style={{ overflowX: "hidden" }}>
       <head>
         <script
           dangerouslySetInnerHTML={{

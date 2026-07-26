@@ -23,6 +23,7 @@ const pageMeta: Record<string, { label: string; icon: React.ReactNode }> = {
   "/suppliers": { label: "Proveedores", icon: <Truck size={18} /> },
   "/inventory": { label: "Inventario", icon: <Package size={18} /> },
   "/products": { label: "Productos", icon: <Fish size={18} /> },
+  "/cash-register": { label: "Caja", icon: <CurrencyDollar size={18} /> },
   "/finances": { label: "Finanzas", icon: <CurrencyDollar size={18} /> },
   "/reports": { label: "Reportes", icon: <ChartBar size={18} /> },
 }
@@ -34,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <AuthGuard>
-      <div className="flex min-h-screen bg-abyssal-bg">
+      <div className="flex min-h-screen bg-abyssal-bg overflow-x-hidden">
         <Sidebar />
         <main className="flex-1 lg:ml-64">
           {meta && (
