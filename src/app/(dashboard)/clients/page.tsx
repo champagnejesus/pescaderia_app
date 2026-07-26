@@ -1,10 +1,11 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Download, Plus, Users as UsersIcon, Search } from "lucide-react"
+import { Plus, Users as UsersIcon, Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
+import { ExportDropdown } from "@/components/shared/ExportDropdown"
 import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,7 +13,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import { useToast } from "@/hooks/useToast"
 import api from "@/lib/api"
-import { exportCSV } from "@/lib/export"
 import { FAB } from "@/components/shared/FAB"
 import { statusColor } from "@/lib/status-colors"
 
@@ -106,16 +106,13 @@ export default function ClientsPage() {
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
-            <button
-              onClick={() => {
-                if (!clients.length) { addToast("No hay datos para exportar", "error"); return }
-                exportCSV(clients, "clientes", { name: "Nombre", phone: "Teléfono", email: "Email" })
-                addToast("Clientes exportados", "success")
-              }}
-              className="p-2 rounded-full hover:bg-abyssal-surface-high transition-colors active:scale-95"
-            >
-              <Download className="w-5 h-5 text-abyssal-text-secondary" />
-            </button>
+            <ExportDropdown
+              data={clients}
+              filename="clientes"
+              headerMap={{ name: "Nombre", phone: "Teléfono", email: "Email" }}
+              title="Reporte de Clientes"
+              onExport={(f) => addToast(`Clientes exportados (${f})`, "success")}
+            />
           </div>
         }
       />

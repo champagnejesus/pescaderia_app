@@ -1,14 +1,14 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, ShoppingCart, Download } from "lucide-react"
+import { Plus, ShoppingCart } from "lucide-react"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
+import { ExportDropdown } from "@/components/shared/ExportDropdown"
 import { usePurchases } from "@/hooks/usePurchases"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
-import { exportCSV } from "@/lib/export"
 import { FAB } from "@/components/shared/FAB"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatCurrency } from "@/lib/formatters"
@@ -54,18 +54,13 @@ export default function PurchasesPage() {
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={searchText} onChange={setSearchText} placeholder="Buscar por proveedor o #compra..." />
-            <button
-              onClick={() => {
-                if (!purchases.length) { addToast("No hay datos para exportar", "error"); return }
-                exportCSV(purchases.map(p => ({ ...p, created_at: p.created_at || "" })), "compras", {
-                  purchase_number: "# Compra", supplier_name: "Proveedor", total_value: "Total", payment_status: "Estado de Pago", created_at: "Fecha"
-                })
-                addToast("Compras exportadas", "success")
-              }}
-              className="p-2 rounded-full hover:bg-abyssal-surface-high transition-colors active:scale-95"
-            >
-              <Download className="w-5 h-5 text-abyssal-text-secondary" />
-            </button>
+            <ExportDropdown
+              data={purchases.map(p => ({ ...p, created_at: p.created_at || "" }))}
+              filename="compras"
+              headerMap={{ purchase_number: "# Compra", supplier_name: "Proveedor", total_value: "Total", payment_status: "Estado de Pago", created_at: "Fecha" }}
+              title="Reporte de Compras"
+              onExport={(f) => addToast(`Compras exportadas (${f})`, "success")}
+            />
           </div>
         }
       />

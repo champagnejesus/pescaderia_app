@@ -1,17 +1,17 @@
 "use client"
 import { useState, useMemo, useEffect, useCallback } from "react"
-import { Plus, Truck, Download, Truck as TruckIcon, Filter, TrendingUp, ArrowUpRight } from "lucide-react"
+import { Plus, Truck, Truck as TruckIcon, Filter, TrendingUp, ArrowUpRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
+import { ExportDropdown } from "@/components/shared/ExportDropdown"
 import { Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { SupplierCard } from "@/components/suppliers/SupplierCard"
 import { formatCurrency } from "@/lib/formatters"
-import { exportCSV } from "@/lib/export"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import api from "@/lib/api"
@@ -92,19 +92,13 @@ export default function SuppliersPage() {
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar proveedor..." />
-            <button
-              onClick={() => {
-                if (suppliers.length === 0) { addToast("No hay datos para exportar", "error"); return }
-                exportCSV(suppliers.map(s => ({ ...s, pending_payment: s.pending_payment })), "proveedores", {
-                  name: "Nombre", category: "Categoría", status: "Estado", pending_payment: "Pago Pendiente"
-                })
-                addToast("Proveedores exportados", "success")
-              }}
-              className="p-2 rounded-full hover:bg-abyssal-surface-high transition-colors active:scale-95"
-              aria-label="Exportar proveedores"
-            >
-              <Download className="w-5 h-5 text-abyssal-text-secondary" />
-            </button>
+            <ExportDropdown
+              data={suppliers.map(s => ({ ...s, pending_payment: s.pending_payment }))}
+              filename="proveedores"
+              headerMap={{ name: "Nombre", category: "Categoría", status: "Estado", pending_payment: "Pago Pendiente" }}
+              title="Reporte de Proveedores"
+              onExport={(f) => addToast(`Proveedores exportados (${f})`, "success")}
+            />
           </div>
         }
       />

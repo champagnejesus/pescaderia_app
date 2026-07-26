@@ -1,14 +1,14 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, Download, ClipboardList as OrdersIcon } from "lucide-react"
+import { Plus, ClipboardList as OrdersIcon } from "lucide-react"
 import { TopBar } from "@/components/layout/TopBar"
 import { KpiCard } from "@/components/ui/kpi-card"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
+import { ExportDropdown } from "@/components/shared/ExportDropdown"
 import { useOrders } from "@/hooks/useOrders"
 import { useToast } from "@/hooks/useToast"
 import { ToastContainer } from "@/components/ui/ToastContainer"
-import { exportCSV } from "@/lib/export"
 import { FAB } from "@/components/shared/FAB"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatCurrency } from "@/lib/formatters"
@@ -51,18 +51,13 @@ export default function OrdersPage() {
         rightAction={
           <div className="flex items-center gap-1">
             <CollapsibleSearchBar value={searchText} onChange={setSearchText} placeholder="Buscar por cliente o #pedido..." />
-            <button
-              onClick={() => {
-                if (!orders.length) { addToast("No hay datos para exportar", "error"); return }
-                exportCSV(orders.map(o => ({ ...o, created_at: o.created_at || "" })), "pedidos", {
-                  order_number: "# Pedido", client_name: "Cliente", status: "Estado", total_value: "Total", created_at: "Fecha"
-                })
-                addToast("Pedidos exportados", "success")
-              }}
-              className="p-2 rounded-full hover:bg-abyssal-surface-high transition-colors active:scale-95"
-            >
-              <Download className="w-5 h-5 text-abyssal-text-secondary" />
-            </button>
+            <ExportDropdown
+              data={orders.map(o => ({ ...o, created_at: o.created_at || "" }))}
+              filename="pedidos"
+              headerMap={{ order_number: "# Pedido", client_name: "Cliente", status: "Estado", total_value: "Total", created_at: "Fecha" }}
+              title="Reporte de Ventas"
+              onExport={(f) => addToast(`Pedidos exportados (${f})`, "success")}
+            />
           </div>
         }
       />
@@ -73,17 +68,12 @@ export default function OrdersPage() {
             <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Facturación y comisiones</p>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                if (orders.length === 0) return
-                exportCSV(orders.map(o => ({ ...o, created_at: o.created_at || "" })), "pedidos", {
-                  order_number: "# Pedido", client_name: "Cliente", status: "Estado", total_value: "Total", created_at: "Fecha"
-                })
-              }}
-              className="p-2 rounded-lg hover:bg-abyssal-surface-high transition-colors"
-            >
-              <Download size={18} className="text-abyssal-text-secondary-variant" />
-            </button>
+            <ExportDropdown
+              data={orders.map(o => ({ ...o, created_at: o.created_at || "" }))}
+              filename="pedidos"
+              headerMap={{ order_number: "# Pedido", client_name: "Cliente", status: "Estado", total_value: "Total", created_at: "Fecha" }}
+              title="Reporte de Ventas"
+            />
             <button
               onClick={() => router.push("/orders/new")}
               className="px-4 py-2 bg-abyssal-primary text-white rounded-xl text-[13px] font-semibold flex items-center gap-1.5 hover:bg-abyssal-primary/90 transition-colors"

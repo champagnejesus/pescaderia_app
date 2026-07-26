@@ -1,14 +1,14 @@
 "use client"
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, FileText, Download } from "lucide-react"
+import { Plus, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import { useToast } from "@/hooks/useToast"
 import { CollapsibleSearchBar } from "@/components/shared/CollapsibleSearchBar"
+import { ExportDropdown } from "@/components/shared/ExportDropdown"
 import api from "@/lib/api"
-import { exportCSV } from "@/lib/export"
 import { statusColor } from "@/lib/status-colors"
 
 interface Invoice { id: number; invoice_number: string; client_name: string; issue_date: string; total: number; status: string }
@@ -36,7 +36,13 @@ export default function InvoicesPage() {
       </div>
       <div className="flex items-center gap-2">
         <CollapsibleSearchBar value={search} onChange={setSearch} placeholder="Buscar factura..." />
-        <button onClick={() => { if (!invoices.length) { addToast("No hay datos", "error"); return } exportCSV(invoices, "facturas", { invoice_number: "Factura", client_name: "Cliente", total: "Total", status: "Estado" }); addToast("Facturas exportadas", "success") }} className="p-2 rounded-full hover:bg-abyssal-surface-high"><Download className="w-5 h-5 text-abyssal-text-secondary" /></button>
+        <ExportDropdown
+          data={invoices}
+          filename="facturas"
+          headerMap={{ invoice_number: "Factura", client_name: "Cliente", total: "Total", status: "Estado" }}
+          title="Reporte de Facturas"
+          onExport={(f) => addToast(`Facturas exportadas (${f})`, "success")}
+        />
       </div>
       {loading ? (
         <div className="space-y-2">{[...Array(5)].map((_, i) => <Skeleton key={i} className="h-16 rounded-abyssal-lg" />)}</div>
