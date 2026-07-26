@@ -11,6 +11,7 @@ import { TopBar } from "@/components/layout/TopBar"
 import { ToastContainer } from "@/components/ui/ToastContainer"
 import { useToast } from "@/hooks/useToast"
 import api from "@/lib/api"
+import { cn } from "@/lib/utils"
 import type { BusinessProfile, Category, Unit, PaymentMethod, TaxConfig, InvoicePrefs } from "@/lib/types"
 
 interface Collaborator {
@@ -45,6 +46,7 @@ function SectionCard({ title, icon, children }: { title: string; icon: React.Rea
 
 export default function SettingsPage() {
   const { toasts, addToast, removeToast } = useToast()
+  const [activeTab, setActiveTab] = useState<"business" | "users" | "catalogs" | "billing" | "system">("business")
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<SettingsData>({ profile: null, categories: [], units: [], paymentMethods: [], taxConfig: null, invoicePrefs: null, collaborators: [] })
   const [saving, setSaving] = useState<string | null>(null)
@@ -252,384 +254,466 @@ export default function SettingsPage() {
   return (
     <>
       <TopBar title="Configuración" icon={<Settings size={18} />} subtitle="Usuarios, roles y ajustes" />
-      <div className="p-4 lg:p-8 space-y-6 pb-24">
-        <div className="hidden lg:flex items-center justify-between">
+      <div className="p-4 lg:p-8 pb-24">
+        {/* Title row */}
+        <div className="hidden lg:flex items-center justify-between mb-6">
           <div>
             <h1 className="text-[20px] text-abyssal-text-primary font-heading font-semibold">Configuración</h1>
             <p className="text-[14px] text-abyssal-text-secondary-variant font-body">Usuarios, roles y ajustes</p>
           </div>
-            {/* KPI Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
-          <KpiCard>
-            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Usuarios Activos</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              {data.collaborators.filter(c => c.is_active).length}
-            </p>
-          </KpiCard>
-          <KpiCard>
-            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Roles Definidos</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              {new Set(data.collaborators.map(c => c.role)).size || 1}
-            </p>
-          </KpiCard>
-          <KpiCard>
-            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Usuarios Totales</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              {data.collaborators.length}
-            </p>
-          </KpiCard>
-          <KpiCard>
-            <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">PIN de Caja</p>
-            <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
-              {data.profile?.has_pin ? "Activo" : "Inactivo"}
-            </p>
-          </KpiCard>
         </div>
 
-        {/* Usuarios + Ajustes row */}
-        <div className="flex gap-5">
-          {/* Usuarios del Sistema */}
-          <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Usuarios del Sistema</h3>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="gap-1.5 py-1 h-8"
-                onClick={() => setShowAddUser(!showAddUser)}
-              >
-                {showAddUser ? <X size={14} /> : <Plus size={14} />}
-                {showAddUser ? "Cancelar" : "Agregar"}
-              </Button>
-            </div>
+        {/* Tab Layout container */}
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+          {/* Tabs Selector Navigation */}
+          <div className="w-full lg:w-64 shrink-0 flex lg:flex-col overflow-x-auto lg:overflow-x-visible gap-1 pb-3 lg:pb-0 border-b lg:border-b-0 lg:border-r border-abyssal-outline scrollbar-none lg:pr-4">
+            {[
+              { id: "business", label: "Negocio", icon: Briefcase },
+              { id: "users", label: "Equipo", icon: Users },
+              { id: "catalogs", label: "Catálogos", icon: Package },
+              { id: "billing", label: "Facturación", icon: FileText },
+              { id: "system", label: "Sistema", icon: Settings },
+            ].map(tab => {
+              const Icon = tab.icon
+              const isActive = activeTab === tab.id
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all shrink-0 select-none whitespace-nowrap",
+                    isActive
+                      ? "bg-abyssal-primary/10 text-abyssal-primary border-b-2 lg:border-b-0 lg:border-l-2 border-abyssal-primary"
+                      : "text-abyssal-text-secondary hover:bg-abyssal-surface-high hover:text-abyssal-text-primary"
+                  )}
+                >
+                  <Icon size={16} />
+                  <span>{tab.label}</span>
+                </button>
+              )
+            })}
+          </div>
 
-            {showAddUser && (
-              <form onSubmit={addCollaborator} className="mb-6 p-4 bg-abyssal-surface-high border border-abyssal-outline rounded-xl space-y-3">
-                <h4 className="text-[13px] text-abyssal-text-primary font-heading font-semibold">Registrar Nuevo Usuario</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[11px] text-abyssal-text-secondary font-medium">Nombre</label>
-                    <Input
-                      value={userForm.name}
-                      onChange={(e) => setUserForm(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="Ej: María Delgado"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[11px] text-abyssal-text-secondary font-medium">Correo electrónico</label>
-                    <Input
-                      type="email"
-                      value={userForm.email}
-                      onChange={(e) => setUserForm(prev => ({ ...prev, email: e.target.value }))}
-                      placeholder="m.delgado@..."
-                      required
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[11px] text-abyssal-text-secondary font-medium">Contraseña</label>
-                    <Input
-                      type="password"
-                      value={userForm.password}
-                      onChange={(e) => setUserForm(prev => ({ ...prev, password: e.target.value }))}
-                      placeholder="••••••••"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[11px] text-abyssal-text-secondary font-medium">Rol</label>
-                    <select
-                      value={userForm.role}
-                      onChange={(e) => setUserForm(prev => ({ ...prev, role: e.target.value }))}
-                      className="w-full h-10 bg-abyssal-surface rounded-xl px-3 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline appearance-none cursor-pointer"
-                    >
-                      <option value="Administrador">Administrador</option>
-                      <option value="Gerente">Gerente</option>
-                      <option value="Usuario">Usuario</option>
-                    </select>
-                  </div>
+          {/* Tab Content */}
+          <div className="flex-1 w-full space-y-6">
+            {activeTab === "business" && (
+              <div className="space-y-6 max-w-3xl">
+                <div>
+                  <h2 className="text-[18px] text-abyssal-text-primary font-heading font-semibold">Negocio</h2>
+                  <p className="text-[13px] text-abyssal-text-secondary-variant font-body">Datos de perfil de la empresa y seguridad de caja</p>
                 </div>
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button variant="secondary" size="sm" type="button" onClick={() => setShowAddUser(false)}>Cancelar</Button>
-                  <Button variant="primary" size="sm" type="submit" loading={saving === "collab"}>Guardar Usuario</Button>
-                </div>
-              </form>
+                
+                <SectionCard title="Perfil del Negocio" icon={<Briefcase size={18} />}>
+                  <div className="space-y-3">
+                    <label className="text-[13px] text-abyssal-text-secondary block">Nombre del negocio</label>
+                    <Input value={profileForm.business_name} onChange={e => setProfileForm(p => ({ ...p, business_name: e.target.value }))} />
+                    <label className="text-[13px] text-abyssal-text-secondary block">Nombre del dueño</label>
+                    <Input value={profileForm.owner_name} onChange={e => setProfileForm(p => ({ ...p, owner_name: e.target.value }))} />
+                    <label className="text-[13px] text-abyssal-text-secondary block">Teléfono</label>
+                    <Input value={profileForm.phone} onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))} />
+                    <label className="text-[13px] text-abyssal-text-secondary block">Dirección</label>
+                    <Input value={profileForm.address} onChange={e => setProfileForm(p => ({ ...p, address: e.target.value }))} />
+                    <label className="text-[13px] text-abyssal-text-secondary block">Email</label>
+                    <Input value={data.profile?.email || ""} disabled />
+                    <Button variant="primary" onClick={saveProfile} loading={saving === "profile"}><Save size={16} /> Guardar cambios</Button>
+                  </div>
+                </SectionCard>
+
+                <SectionCard title="PIN de Caja" icon={<Key size={18} />}>
+                  <div className="space-y-3">
+                    <p className="text-[13px] text-abyssal-text-secondary">{data.profile?.has_pin ? "PIN configurado" : "PIN no configurado"}</p>
+                    {showPinForm ? (
+                      <div className="space-y-3">
+                        <label className="text-[13px] text-abyssal-text-secondary block">Nuevo PIN (4 dígitos)</label>
+                        <Input type="password" maxLength={4} value={pinForm.pin} onChange={e => setPinForm(p => ({ ...p, pin: e.target.value }))} />
+                        <label className="text-[13px] text-abyssal-text-secondary block">Confirmar PIN</label>
+                        <Input type="password" maxLength={4} value={pinForm.confirm_pin} onChange={e => setPinForm(p => ({ ...p, confirm_pin: e.target.value }))} />
+                        <label className="flex items-center justify-between">
+                          <span className="text-[13px] text-abyssal-text-primary">Requerir PIN para cerrar caja</span>
+                          <button onClick={() => setPinForm(p => ({ ...p, require_pin: !p.require_pin }))}
+                            className={`w-10 h-6 rounded-full transition-colors ${pinForm.require_pin ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
+                            <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${pinForm.require_pin ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
+                          </button>
+                        </label>
+                        <div className="flex gap-2">
+                          <Button variant="secondary" onClick={() => { setShowPinForm(false); setPinForm(p => ({ ...p, pin: "", confirm_pin: "" })) }}>Cancelar</Button>
+                          <Button variant="primary" onClick={savePin} loading={saving === "pin"}>Guardar PIN</Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <Button variant="secondary" onClick={() => setShowPinForm(true)}><Key size={16} /> {data.profile?.has_pin ? "Cambiar PIN" : "Configurar PIN"}</Button>
+                    )}
+                  </div>
+                </SectionCard>
+              </div>
             )}
 
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-abyssal-outline">
-                    <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">USUARIO</th>
-                    <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ROL</th>
-                    <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ESTADO</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.collaborators.length > 0 ? (
-                    data.collaborators.map((u) => {
-                      const isOwner = data.profile?.email === u.email
-                      const isSelf = typeof window !== "undefined" && localStorage.getItem("abyssal-user-email") === u.email
-                      return (
-                        <tr key={u.id} className="border-b border-abyssal-outline">
-                          <td className="py-3">
-                            <p className="text-[13px] text-abyssal-text-primary font-body font-medium">{u.name}</p>
-                            <p className="text-[11px] text-abyssal-text-secondary-variant font-mono">{u.email}</p>
-                          </td>
-                          <td className="py-3 text-right text-[13px] text-abyssal-text-secondary font-body">{u.role}</td>
-                          <td className="py-3 text-right">
-                            <div className="flex items-center justify-end gap-3">
-                              <button
-                                disabled={isOwner || isSelf}
-                                onClick={() => toggleCollabStatus(u.id)}
-                                className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium transition-colors ${
-                                  u.is_active 
-                                    ? "bg-[rgba(34,197,94,0.1)] text-[#22c55e] hover:bg-[rgba(34,197,94,0.15)]" 
-                                    : "bg-[rgba(239,68,68,0.1)] text-[#ef4444] hover:bg-[rgba(239,68,68,0.15)]"
-                                } disabled:opacity-70 disabled:hover:bg-[rgba(34,197,94,0.1)]`}
-                              >
-                                {u.is_active ? "Activo" : "Inactivo"}
-                              </button>
-                              
-                              <button
-                                disabled={isOwner || isSelf}
-                                onClick={() => deleteCollaborator(u.id)}
-                                className="text-abyssal-text-secondary hover:text-[#ef4444] disabled:opacity-40 disabled:hover:text-abyssal-text-secondary p-1 rounded-lg hover:bg-abyssal-surface-high transition-colors"
-                              >
-                                <Trash2 size={14} />
-                              </button>
-                            </div>
-                          </td>
+            {activeTab === "users" && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-[18px] text-abyssal-text-primary font-heading font-semibold">Equipo</h2>
+                  <p className="text-[13px] text-abyssal-text-secondary-variant font-body">Manejo de usuarios, colaboradores de caja y roles de acceso</p>
+                </div>
+
+                {/* KPI Row */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+                  <KpiCard>
+                    <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Usuarios Activos</p>
+                    <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
+                      {data.collaborators.filter(c => c.is_active).length}
+                    </p>
+                  </KpiCard>
+                  <KpiCard>
+                    <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Roles Definidos</p>
+                    <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
+                      {new Set(data.collaborators.map(c => c.role)).size || 1}
+                    </p>
+                  </KpiCard>
+                  <KpiCard>
+                    <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">Usuarios Totales</p>
+                    <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
+                      {data.collaborators.length}
+                    </p>
+                  </KpiCard>
+                  <KpiCard>
+                    <p className="text-[13px] text-abyssal-text-secondary font-body font-medium">PIN de Caja</p>
+                    <p className="text-[26px] text-abyssal-text-primary font-heading font-bold mt-2">
+                      {data.profile?.has_pin ? "Activo" : "Inactivo"}
+                    </p>
+                  </KpiCard>
+                </div>
+
+                <div className="flex flex-col lg:flex-row gap-5">
+                  {/* Usuarios del Sistema */}
+                  <div className="flex-1 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
+                    <div className="flex items-center justify-between mb-5">
+                      <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold">Usuarios del Sistema</h3>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="gap-1.5 py-1 h-8"
+                        onClick={() => setShowAddUser(!showAddUser)}
+                      >
+                        {showAddUser ? <X size={14} /> : <Plus size={14} />}
+                        {showAddUser ? "Cancelar" : "Agregar"}
+                      </Button>
+                    </div>
+
+                    {showAddUser && (
+                      <form onSubmit={addCollaborator} className="mb-6 p-4 bg-abyssal-surface-high border border-abyssal-outline rounded-xl space-y-3">
+                        <h4 className="text-[13px] text-abyssal-text-primary font-heading font-semibold">Registrar Nuevo Usuario</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <label className="text-[11px] text-abyssal-text-secondary font-medium">Nombre</label>
+                            <Input
+                              value={userForm.name}
+                              onChange={(e) => setUserForm(prev => ({ ...prev, name: e.target.value }))}
+                              placeholder="Ej: María Delgado"
+                              required
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] text-abyssal-text-secondary font-medium">Correo electrónico</label>
+                            <Input
+                              type="email"
+                              value={userForm.email}
+                              onChange={(e) => setUserForm(prev => ({ ...prev, email: e.target.value }))}
+                              placeholder="m.delgado@..."
+                              required
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] text-abyssal-text-secondary font-medium">Contraseña</label>
+                            <Input
+                              type="password"
+                              value={userForm.password}
+                              onChange={(e) => setUserForm(prev => ({ ...prev, password: e.target.value }))}
+                              placeholder="••••••••"
+                              required
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] text-abyssal-text-secondary font-medium">Rol</label>
+                            <select
+                              value={userForm.role}
+                              onChange={(e) => setUserForm(prev => ({ ...prev, role: e.target.value }))}
+                              className="w-full h-10 bg-abyssal-surface rounded-xl px-3 text-[13px] text-abyssal-text-primary outline-none border border-abyssal-outline appearance-none cursor-pointer"
+                            >
+                              <option value="Administrador">Administrador</option>
+                              <option value="Gerente">Gerente</option>
+                              <option value="Usuario">Usuario</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="flex justify-end gap-2 pt-2">
+                          <Button variant="secondary" size="sm" type="button" onClick={() => setShowAddUser(false)}>Cancelar</Button>
+                          <Button variant="primary" size="sm" type="submit" loading={saving === "collab"}>Guardar Usuario</Button>
+                        </div>
+                      </form>
+                    )}
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-abyssal-outline">
+                            <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">USUARIO</th>
+                            <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ROL</th>
+                            <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ESTADO</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {data.collaborators.length > 0 ? (
+                            data.collaborators.map((u) => {
+                              const isOwner = data.profile?.email === u.email
+                              const isSelf = typeof window !== "undefined" && localStorage.getItem("abyssal-user-email") === u.email
+                              return (
+                                <tr key={u.id} className="border-b border-abyssal-outline">
+                                  <td className="py-3">
+                                    <p className="text-[13px] text-abyssal-text-primary font-body font-medium">{u.name}</p>
+                                    <p className="text-[11px] text-abyssal-text-secondary-variant font-mono">{u.email}</p>
+                                  </td>
+                                  <td className="py-3 text-right text-[13px] text-abyssal-text-secondary font-body">{u.role}</td>
+                                  <td className="py-3 text-right">
+                                    <div className="flex items-center justify-end gap-3">
+                                      <button
+                                        disabled={isOwner || isSelf}
+                                        onClick={() => toggleCollabStatus(u.id)}
+                                        className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-caption font-medium transition-colors ${
+                                          u.is_active 
+                                            ? "bg-[rgba(34,197,94,0.1)] text-[#22c55e] hover:bg-[rgba(34,197,94,0.15)]" 
+                                            : "bg-[rgba(239,68,68,0.1)] text-[#ef4444] hover:bg-[rgba(239,68,68,0.15)]"
+                                        } disabled:opacity-70 disabled:hover:bg-[rgba(34,197,94,0.1)]`}
+                                      >
+                                        {u.is_active ? "Activo" : "Inactivo"}
+                                      </button>
+                                      
+                                      <button
+                                        disabled={isOwner || isSelf}
+                                        onClick={() => deleteCollaborator(u.id)}
+                                        className="text-abyssal-text-secondary hover:text-[#ef4444] disabled:opacity-40 disabled:hover:text-abyssal-text-secondary p-1 rounded-lg hover:bg-abyssal-surface-high transition-colors"
+                                      >
+                                        <Trash2 size={14} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )
+                            })
+                          ) : (
+                            <tr>
+                              <td colSpan={3} className="py-8 text-center text-[13px] text-abyssal-text-secondary-variant">
+                                No hay usuarios registrados
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Roles y Permisos */}
+                <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg mt-6">
+                  <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Roles y Permisos</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-abyssal-outline">
+                          <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ROL</th>
+                          <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">USUARIOS</th>
+                          <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ACCESO</th>
                         </tr>
-                      )
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan={3} className="py-8 text-center text-[13px] text-abyssal-text-secondary-variant">
-                        No hay usuarios registrados
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>       </div>
-
-          {/* Ajustes Generales */}
-          <div className="w-[380px] shrink-0 bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
-            <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Ajustes Generales</h3>
-            <div className="space-y-0">
-              {[
-                { param: "Idioma", value: "Español" },
-                { param: "Zona Horaria", value: "GMT-5 (Perú)" },
-                { param: "Formato Moneda", value: "PEN (S/)" },
-                { param: "Notificaciones", value: "Activadas" },
-                { param: "Autenticación 2FA", value: "Desactivada" },
-              ].map((item, i) => (
-                <div key={item.param} className={`flex items-center justify-between py-3 ${i < 4 ? "border-b border-abyssal-outline" : ""}`}>
-                  <span className="text-[13px] text-abyssal-text-primary font-body">{item.param}</span>
-                  <span className="text-[12px] text-abyssal-text-secondary font-body">{item.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Roles y Permisos */}
-        <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
-          <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-5">Roles y Permisos</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-abyssal-outline">
-                  <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ROL</th>
-                  <th className="text-left py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">USUARIOS</th>
-                  <th className="text-right py-3 text-[10px] text-abyssal-text-secondary-variant font-caption font-semibold tracking-wider uppercase">ACCESO</th>
-                </tr>
-              </thead>
-              <tbody>
-                {roles.map((r, i) => (
-                  <tr key={i} className="border-b border-abyssal-outline">
-                    <td className="py-4 text-[13px] text-abyssal-text-primary font-body font-medium">{r.role}</td>
-                    <td className="py-4 text-[13px] text-abyssal-text-secondary font-body">{r.users}</td>
-                    <td className="py-4 text-right text-[12px] text-abyssal-text-secondary-variant font-caption">{r.access}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* All functional sections below */}
-        <div className="space-y-4">
-          <SectionCard title="Perfil del Negocio" icon={<Briefcase size={18} />}>
-            <div className="space-y-3">
-              <label className="text-[13px] text-abyssal-text-secondary block">Nombre del negocio</label>
-              <Input value={profileForm.business_name} onChange={e => setProfileForm(p => ({ ...p, business_name: e.target.value }))} />
-              <label className="text-[13px] text-abyssal-text-secondary block">Nombre del dueño</label>
-              <Input value={profileForm.owner_name} onChange={e => setProfileForm(p => ({ ...p, owner_name: e.target.value }))} />
-              <label className="text-[13px] text-abyssal-text-secondary block">Teléfono</label>
-              <Input value={profileForm.phone} onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))} />
-              <label className="text-[13px] text-abyssal-text-secondary block">Dirección</label>
-              <Input value={profileForm.address} onChange={e => setProfileForm(p => ({ ...p, address: e.target.value }))} />
-              <label className="text-[13px] text-abyssal-text-secondary block">Email</label>
-              <Input value={data.profile?.email || ""} disabled />
-              <Button variant="primary" onClick={saveProfile} loading={saving === "profile"}><Save size={16} /> Guardar cambios</Button>
-            </div>
-          </SectionCard>
-
-          <SectionCard title="Categorías de Productos" icon={<Package size={18} />}>
-            <div className="flex flex-wrap gap-2">
-              {data.categories.map(cat => (
-                <span key={cat.id} className="inline-flex items-center gap-1 bg-abyssal-surface-high text-abyssal-text-primary rounded-full px-3 py-1 text-[13px]">
-                  {cat.name}
-                  <button onClick={() => deleteCategory(cat.id)} className="p-0.5 hover:bg-abyssal-surface-highest rounded-full"><X size={14} /></button>
-                </span>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input placeholder="Nueva categoría" value={newCategory} onChange={e => setNewCategory(e.target.value)} className="flex-1" />
-              <Button variant="primary" onClick={addCategory} loading={saving === "cat"}><Plus size={16} /></Button>
-            </div>
-          </SectionCard>
-
-          <SectionCard title="Unidades de Medida" icon={<Ruler size={18} />}>
-            <div className="flex flex-wrap gap-2">
-              {data.units.map(u => (
-                <span key={u.id} className="inline-flex items-center gap-1 bg-abyssal-surface-high text-abyssal-text-primary rounded-full px-3 py-1 text-[13px]">
-                  {u.name} ({u.abbreviation})
-                  <button onClick={() => deleteUnit(u.id)} className="p-0.5 hover:bg-abyssal-surface-highest rounded-full"><X size={14} /></button>
-                </span>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input placeholder="Nombre" value={newUnitName} onChange={e => setNewUnitName(e.target.value)} className="flex-1" />
-              <Input placeholder="Abrev." value={newUnitAbbr} onChange={e => setNewUnitAbbr(e.target.value)} className="w-20" />
-              <Button variant="primary" onClick={addUnit} loading={saving === "unit"}><Plus size={16} /></Button>
-            </div>
-          </SectionCard>
-
-          <SectionCard title="Métodos de Pago" icon={<CreditCard size={18} />}>
-            <div className="space-y-2">
-              {data.paymentMethods.map((pm, idx) => (
-                <div key={pm.id} className="flex items-center justify-between p-2 bg-abyssal-surface-high rounded-xl">
-                  <span className="text-[13px] text-abyssal-text-primary">{pm.name}</span>
-                  <button onClick={() => togglePaymentMethod(pm.id, !pm.is_active)}
-                    className={`w-10 h-6 rounded-full transition-colors ${pm.is_active ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
-                    <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${pm.is_active ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </SectionCard>
-
-          <SectionCard title="Impuesto / IVA" icon={<Percent size={18} />}>
-            <div className="space-y-3">
-              <label className="flex items-center justify-between">
-                <span className="text-[13px] text-abyssal-text-primary">Aplicar impuesto</span>
-                <button onClick={() => setTaxForm(t => ({ ...t, is_enabled: !t.is_enabled }))}
-                  className={`w-10 h-6 rounded-full transition-colors ${taxForm.is_enabled ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
-                  <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${taxForm.is_enabled ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
-                </button>
-              </label>
-              {taxForm.is_enabled && (
-                <>
-                  <label className="text-[13px] text-abyssal-text-secondary block">Nombre del impuesto</label>
-                  <Input value={taxForm.name} onChange={e => setTaxForm(t => ({ ...t, name: e.target.value }))} />
-                  <label className="text-[13px] text-abyssal-text-secondary block">Porcentaje (%)</label>
-                  <Input type="number" value={taxForm.rate} onChange={e => setTaxForm(t => ({ ...t, rate: parseFloat(e.target.value) || 0 }))} />
-                  <label className="flex items-center justify-between">
-                    <span className="text-[13px] text-abyssal-text-primary">Los precios ya incluyen impuesto</span>
-                    <button onClick={() => setTaxForm(t => ({ ...t, included_in_price: !t.included_in_price }))}
-                      className={`w-10 h-6 rounded-full transition-colors ${taxForm.included_in_price ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
-                      <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${taxForm.included_in_price ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
-                    </button>
-                  </label>
-                </>
-              )}
-              <Button variant="primary" onClick={saveTaxConfig} loading={saving === "tax"}><Save size={16} /> Guardar</Button>
-            </div>
-          </SectionCard>
-
-          <SectionCard title="PIN de Caja" icon={<Key size={18} />}>
-            <div className="space-y-3">
-              <p className="text-[13px] text-abyssal-text-secondary">{data.profile?.has_pin ? "PIN configurado" : "PIN no configurado"}</p>
-              {showPinForm ? (
-                <div className="space-y-3">
-                  <label className="text-[13px] text-abyssal-text-secondary block">Nuevo PIN (4 dígitos)</label>
-                  <Input type="password" maxLength={4} value={pinForm.pin} onChange={e => setPinForm(p => ({ ...p, pin: e.target.value }))} />
-                  <label className="text-[13px] text-abyssal-text-secondary block">Confirmar PIN</label>
-                  <Input type="password" maxLength={4} value={pinForm.confirm_pin} onChange={e => setPinForm(p => ({ ...p, confirm_pin: e.target.value }))} />
-                  <label className="flex items-center justify-between">
-                    <span className="text-[13px] text-abyssal-text-primary">Requerir PIN para cerrar caja</span>
-                    <button onClick={() => setPinForm(p => ({ ...p, require_pin: !p.require_pin }))}
-                      className={`w-10 h-6 rounded-full transition-colors ${pinForm.require_pin ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
-                      <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${pinForm.require_pin ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
-                    </button>
-                  </label>
-                  <div className="flex gap-2">
-                    <Button variant="secondary" onClick={() => { setShowPinForm(false); setPinForm(p => ({ ...p, pin: "", confirm_pin: "" })) }}>Cancelar</Button>
-                    <Button variant="primary" onClick={savePin} loading={saving === "pin"}>Guardar PIN</Button>
+                      </thead>
+                      <tbody>
+                        {[
+                          { role: "Administrador", users: `${data.collaborators.filter(c => c.role === "Administrador").length} usuarios`, access: "Total" },
+                          { role: "Gerente", users: `${data.collaborators.filter(c => c.role === "Gerente").length} usuarios`, access: "Ventas, Finanzas" },
+                          { role: "Usuario", users: `${data.collaborators.filter(c => c.role === "Usuario").length} usuarios`, access: "Consultas básicas" },
+                        ].map((r, i) => (
+                          <tr key={i} className="border-b border-abyssal-outline">
+                            <td className="py-4 text-[13px] text-abyssal-text-primary font-body font-medium">{r.role}</td>
+                            <td className="py-4 text-[13px] text-abyssal-text-secondary font-body">{r.users}</td>
+                            <td className="py-4 text-right text-[12px] text-abyssal-text-secondary-variant font-caption">{r.access}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              ) : (
-                <Button variant="secondary" onClick={() => setShowPinForm(true)}><Key size={16} /> {data.profile?.has_pin ? "Cambiar PIN" : "Configurar PIN"}</Button>
-              )}
-            </div>
-          </SectionCard>
-
-          <SectionCard title="Preferencias de Factura" icon={<FileText size={18} />}>
-            <div className="space-y-3">
-              <div>
-                <label className="text-[13px] text-abyssal-text-secondary block">Footer del ticket</label>
-                <textarea className="w-full bg-abyssal-surface-high text-abyssal-text-primary rounded-xl p-3 text-[13px] resize-none h-20 outline-none ring-1 ring-abyssal-primary/20 focus:ring-abyssal-primary"
-                  value={invoiceForm.footer_text} onChange={e => setInvoiceForm(f => ({ ...f, footer_text: e.target.value }))}
-                  placeholder="Texto al pie de cada factura..." />
               </div>
-              <label className="flex items-center justify-between">
-                <span className="text-[13px] text-abyssal-text-primary">Mostrar desglose de impuesto</span>
-                <button onClick={() => setInvoiceForm(f => ({ ...f, show_tax_breakdown: !f.show_tax_breakdown }))}
-                  className={`w-10 h-6 rounded-full transition-colors ${invoiceForm.show_tax_breakdown ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
-                  <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${invoiceForm.show_tax_breakdown ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
-                </button>
-              </label>
-              <Button variant="primary" onClick={saveInvoicePrefs} loading={saving === "inv"}><Save size={16} /> Guardar</Button>
-            </div>
-          </SectionCard>
+            )}
 
-          <SectionCard title="Exportar Datos" icon={<Download size={18} />}>
-            <Button variant="primary" onClick={exportAll}><Download size={16} /> Todo (ZIP)</Button>
-          </SectionCard>
+            {activeTab === "catalogs" && (
+              <div className="space-y-6 max-w-3xl">
+                <div>
+                  <h2 className="text-[18px] text-abyssal-text-primary font-heading font-semibold">Catálogos</h2>
+                  <p className="text-[13px] text-abyssal-text-secondary-variant font-body">Parámetros del inventario y métodos de cobro en caja</p>
+                </div>
 
-          <SectionCard title="Información" icon={<Info size={18} />}>
-            <div className="space-y-1 text-[13px] text-abyssal-text-secondary">
-              <p><span className="text-abyssal-text-primary">App:</span> PESCAMAR ERP</p>
-              <p><span className="text-abyssal-text-primary">Versión:</span> 1.0.0</p>
-              <p><span className="text-abyssal-text-primary">Stack:</span> Next.js + FastAPI</p>
-            </div>
-          </SectionCard>
-
-          <SectionCard title="Limpiar Datos" icon={<Trash2 size={18} />}>
-            <div className="p-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] rounded-xl space-y-3">
-              <p className="text-[13px] text-[#ef4444]">Esta acción eliminará todos los datos transaccionales. No se puede deshacer.</p>
-              {showClearConfirm ? (
-                <div className="space-y-2">
-                  <p className="text-[12px] text-abyssal-text-secondary">Escribe <strong>BORRAR</strong> para confirmar:</p>
-                  <Input value={clearConfirmText} onChange={e => setClearConfirmText(e.target.value)} placeholder="BORRAR" />
+                <SectionCard title="Categorías de Productos" icon={<Package size={18} />}>
+                  <div className="flex flex-wrap gap-2">
+                    {data.categories.map(cat => (
+                      <span key={cat.id} className="inline-flex items-center gap-1 bg-abyssal-surface-high text-abyssal-text-primary rounded-full px-3 py-1 text-[13px]">
+                        {cat.name}
+                        <button onClick={() => deleteCategory(cat.id)} className="p-0.5 hover:bg-abyssal-surface-highest rounded-full"><X size={14} /></button>
+                      </span>
+                    ))}
+                  </div>
                   <div className="flex gap-2">
-                    <Button variant="secondary" onClick={() => { setShowClearConfirm(false); setClearConfirmText("") }}>Cancelar</Button>
-                    <Button variant="primary" className="bg-[#ef4444] hover:bg-[#ef4444]/90" onClick={clearAllData} loading={saving === "clear"}>
-                      <Trash2 size={16} /> Eliminar todo
-                    </Button>
+                    <Input placeholder="Nueva categoría" value={newCategory} onChange={e => setNewCategory(e.target.value)} className="flex-1" />
+                    <Button variant="primary" onClick={addCategory} loading={saving === "cat"}><Plus size={16} /></Button>
+                  </div>
+                </SectionCard>
+
+                <SectionCard title="Unidades de Medida" icon={<Ruler size={18} />}>
+                  <div className="flex flex-wrap gap-2">
+                    {data.units.map(u => (
+                      <span key={u.id} className="inline-flex items-center gap-1 bg-abyssal-surface-high text-abyssal-text-primary rounded-full px-3 py-1 text-[13px]">
+                        {u.name} ({u.abbreviation})
+                        <button onClick={() => deleteUnit(u.id)} className="p-0.5 hover:bg-abyssal-surface-highest rounded-full"><X size={14} /></button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input placeholder="Nombre" value={newUnitName} onChange={e => setNewUnitName(e.target.value)} className="flex-1" />
+                    <Input placeholder="Abrev." value={newUnitAbbr} onChange={e => setNewUnitAbbr(e.target.value)} className="w-20" />
+                    <Button variant="primary" onClick={addUnit} loading={saving === "unit"}><Plus size={16} /></Button>
+                  </div>
+                </SectionCard>
+
+                <SectionCard title="Métodos de Pago" icon={<CreditCard size={18} />}>
+                  <div className="space-y-2">
+                    {data.paymentMethods.map((pm) => (
+                      <div key={pm.id} className="flex items-center justify-between p-2 bg-abyssal-surface-high rounded-xl">
+                        <span className="text-[13px] text-abyssal-text-primary">{pm.name}</span>
+                        <button onClick={() => togglePaymentMethod(pm.id, !pm.is_active)}
+                          className={`w-10 h-6 rounded-full transition-colors ${pm.is_active ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
+                          <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${pm.is_active ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </SectionCard>
+              </div>
+            )}
+
+            {activeTab === "billing" && (
+              <div className="space-y-6 max-w-3xl">
+                <div>
+                  <h2 className="text-[18px] text-abyssal-text-primary font-heading font-semibold">Facturación</h2>
+                  <p className="text-[13px] text-abyssal-text-secondary-variant font-body">Configuración de impuestos y personalización de comprobantes</p>
+                </div>
+
+                <SectionCard title="Impuesto / IVA" icon={<Percent size={18} />}>
+                  <div className="space-y-3">
+                    <label className="flex items-center justify-between">
+                      <span className="text-[13px] text-abyssal-text-primary">Aplicar impuesto</span>
+                      <button onClick={() => setTaxForm(t => ({ ...t, is_enabled: !t.is_enabled }))}
+                        className={`w-10 h-6 rounded-full transition-colors ${taxForm.is_enabled ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
+                        <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${taxForm.is_enabled ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
+                      </button>
+                    </label>
+                    {taxForm.is_enabled && (
+                      <>
+                        <label className="text-[13px] text-abyssal-text-secondary block">Nombre del impuesto</label>
+                        <Input value={taxForm.name} onChange={e => setTaxForm(t => ({ ...t, name: e.target.value }))} />
+                        <label className="text-[13px] text-abyssal-text-secondary block">Porcentaje (%)</label>
+                        <Input type="number" value={taxForm.rate} onChange={e => setTaxForm(t => ({ ...t, rate: parseFloat(e.target.value) || 0 }))} />
+                        <label className="flex items-center justify-between">
+                          <span className="text-[13px] text-abyssal-text-primary">Los precios ya incluyen impuesto</span>
+                          <button onClick={() => setTaxForm(t => ({ ...t, included_in_price: !t.included_in_price }))}
+                            className={`w-10 h-6 rounded-full transition-colors ${taxForm.included_in_price ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
+                            <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${taxForm.included_in_price ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
+                          </button>
+                        </label>
+                      </>
+                    )}
+                    <Button variant="primary" onClick={saveTaxConfig} loading={saving === "tax"}><Save size={16} /> Guardar</Button>
+                  </div>
+                </SectionCard>
+
+                <SectionCard title="Preferencias de Factura" icon={<FileText size={18} />}>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-[13px] text-abyssal-text-secondary block">Footer del ticket</label>
+                      <textarea className="w-full bg-abyssal-surface-high text-abyssal-text-primary rounded-xl p-3 text-[13px] resize-none h-20 outline-none ring-1 ring-abyssal-primary/20 focus:ring-abyssal-primary"
+                        value={invoiceForm.footer_text} onChange={e => setInvoiceForm(f => ({ ...f, footer_text: e.target.value }))}
+                        placeholder="Texto al pie de cada factura..." />
+                    </div>
+                    <label className="flex items-center justify-between">
+                      <span className="text-[13px] text-abyssal-text-primary">Mostrar desglose de impuesto</span>
+                      <button onClick={() => setInvoiceForm(f => ({ ...f, show_tax_breakdown: !f.show_tax_breakdown }))}
+                        className={`w-10 h-6 rounded-full transition-colors ${invoiceForm.show_tax_breakdown ? 'bg-abyssal-primary' : 'bg-abyssal-surface-highest'}`}>
+                        <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${invoiceForm.show_tax_breakdown ? 'translate-x-[18px]' : 'translate-x-[2px]'}`} />
+                      </button>
+                    </label>
+                    <Button variant="primary" onClick={saveInvoicePrefs} loading={saving === "inv"}><Save size={16} /> Guardar</Button>
+                  </div>
+                </SectionCard>
+              </div>
+            )}
+
+            {activeTab === "system" && (
+              <div className="space-y-6 max-w-3xl">
+                <div>
+                  <h2 className="text-[18px] text-abyssal-text-primary font-heading font-semibold">Sistema</h2>
+                  <p className="text-[13px] text-abyssal-text-secondary-variant font-body">Ajustes del servidor, copias de seguridad y mantenimiento</p>
+                </div>
+
+                <div className="bg-abyssal-surface border border-abyssal-outline rounded-abyssal-lg p-6 shadow-abyssal-lg">
+                  <h3 className="text-[16px] text-abyssal-text-primary font-heading font-semibold mb-4">Ajustes Generales</h3>
+                  <div className="space-y-0">
+                    {[
+                      { param: "Idioma", value: "Español" },
+                      { param: "Zona Horaria", value: "GMT-5 (Perú)" },
+                      { param: "Formato Moneda", value: "PEN (S/)" },
+                      { param: "Notificaciones", value: "Activadas" },
+                      { param: "Autenticación 2FA", value: "Desactivada" },
+                    ].map((item, i) => (
+                      <div key={item.param} className={`flex items-center justify-between py-3 ${i < 4 ? "border-b border-abyssal-outline" : ""}`}>
+                        <span className="text-[13px] text-abyssal-text-primary font-body">{item.param}</span>
+                        <span className="text-[12px] text-abyssal-text-secondary font-body">{item.value}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ) : (
-                <Button variant="secondary" className="border-[rgba(239,68,68,0.3)] text-[#ef4444]" onClick={() => setShowClearConfirm(true)}>
-                  <Trash2 size={16} /> Limpiar todos los datos
-                </Button>
-              )}
-            </div>
-          </SectionCard>
+
+                <SectionCard title="Exportar Datos" icon={<Download size={18} />}>
+                  <Button variant="primary" onClick={exportAll}><Download size={16} /> Todo (ZIP)</Button>
+                </SectionCard>
+
+                <SectionCard title="Información" icon={<Info size={18} />}>
+                  <div className="space-y-1 text-[13px] text-abyssal-text-secondary">
+                    <p><span className="text-abyssal-text-primary">App:</span> PESCAMAR ERP</p>
+                    <p><span className="text-abyssal-text-primary">Versión:</span> 1.0.0</p>
+                    <p><span className="text-abyssal-text-primary">Stack:</span> Next.js + FastAPI</p>
+                  </div>
+                </SectionCard>
+
+                <SectionCard title="Limpiar Datos" icon={<Trash2 size={18} />}>
+                  <div className="p-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] rounded-xl space-y-3">
+                    <p className="text-[13px] text-[#ef4444]">Esta acción eliminará todos los datos transaccionales. No se puede deshacer.</p>
+                    {showClearConfirm ? (
+                      <div className="space-y-2">
+                        <p className="text-[12px] text-abyssal-text-secondary">Escribe <strong>BORRAR</strong> para confirmar:</p>
+                        <Input value={clearConfirmText} onChange={e => setClearConfirmText(e.target.value)} placeholder="BORRAR" />
+                        <div className="flex gap-2">
+                          <Button variant="secondary" onClick={() => { setShowClearConfirm(false); setClearConfirmText("") }}>Cancelar</Button>
+                          <Button variant="primary" className="bg-[#ef4444] hover:bg-[#ef4444]/90" onClick={clearAllData} loading={saving === "clear"}>
+                            <Trash2 size={16} /> Eliminar todo
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <Button variant="secondary" className="border-[rgba(239,68,68,0.3)] text-[#ef4444]" onClick={() => setShowClearConfirm(true)}>
+                        <Trash2 size={16} /> Limpiar todos los datos
+                      </Button>
+                    )}
+                  </div>
+                </SectionCard>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
